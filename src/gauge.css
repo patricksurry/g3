@@ -1,0 +1,59 @@
+svg {
+    background-color:  black;
+}
+
+.gauge text {
+    text-anchor:  middle;
+    dominant-baseline:  middle;
+    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
+    font-stretch: condensed;
+    font-size: 10pt;
+    fill: #aaa;
+}
+.gauge-face {
+    fill: #333;
+}
+.gauge-axis {
+    display: none;
+    stroke-width: 1;
+    stroke: #ccc;
+}
+.gauge-region {
+    fill: grey;
+    stroke: none;
+}
+.gauge-region.gauge-region-flaps {
+    fill: #ccc;
+}
+.gauge-region.gauge-region-normal {
+    fill: green;
+}
+.gauge-region.gauge-region-maximum {
+    fill: red;
+}
+.gauge-region.gauge-region-idle {
+    fill: blue;
+}
+.gauge-tickmarks {
+    stroke-width: 1;
+    stroke: #ccc;
+}
+.gauge-tickmark-major {
+    stroke-width: 2;
+}
+.gauge-tickmark-special {
+    stroke-width: 2;
+    stroke: red;
+}
+
+.gauge-ticklabels {
+}
+.gauge-ticklabel-primary text {
+    font-size: 150%;
+}
+.gauge-labels text {
+    fill: #999;
+}
+#suction-gauge text.gauge-label-inches_of_mercury {
+    font-size: 50%;
+}
