@@ -1,10 +1,48 @@
-svg {
+body {
+    margin:  0;
     background-color:  black;
 }
-
+svg {
+    background-color:  black;
+    display: block;
+    margin: 0 auto;
+}
+* {
+    vector-effect: non-scaling-stroke;
+}
+#indicator-sword, #indicator-dagger, #indicator-blade, #indicator-needle, #indicator-rondel {
+    fill: #222;
+    stroke: none;
+}
+#indicator-needle rect {
+    fill: red;
+}
+.indicator-blade {
+    fill:  #e8e8e8;
+    stroke: #aaa;
+}
+.indicator-pin, .dimple-fg {
+    fill: url(#dimple-gradient);
+    fill-opacity: 0.25;
+}
+#indicator-aircraft-plan {
+    stroke:  orange;
+    stroke-width: 2;
+    fill: none;
+}
+#indicator-aircraft-rear {
+    fill: white;
+    stroke: none;
+}
+.screwslot rect {
+    fill: #282828;
+}
+.gauge-tickmarks path, path.gauge-axis {
+    vector-effect: non-scaling-stroke;
+}
 .gauge text {
     text-anchor:  middle;
-    dominant-baseline:  middle;
+    dominant-baseline:  central;
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     font-stretch: condensed;
     font-size: 10pt;
@@ -14,9 +52,12 @@ svg {
     fill: #333;
 }
 .gauge-axis {
-    display: none;
+    visibility: hidden;
     stroke-width: 1;
     stroke: #ccc;
+}
+.gauge .gauge .gauge-axis {
+    visibility: visible;
 }
 .gauge-region {
     fill: grey;
@@ -45,15 +86,14 @@ svg {
     stroke-width: 2;
     stroke: red;
 }
-
 .gauge-ticklabels {
 }
+.gauge-ticklabel-radial text {
+    text-anchor: end;
+}
 .gauge-ticklabel-primary text {
-    font-size: 150%;
+    font-size: 125%;
 }
-.gauge-labels text {
+.gauge-decorations text {
     fill: #999;
-}
-#suction-gauge text.gauge-label-inches_of_mercury {
-    font-size: 50%;
 }
