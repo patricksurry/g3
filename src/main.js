@@ -1,7 +1,16 @@
 import * as d3 from 'd3';
 import './gauge.css';
-import {addGauge, DEG2RAD} from './gauge.js';
+import { css } from '@emotion/css';
+
+import * as engine from './gauges/engine.js';
+
+// import {addGauge, DEG2RAD} from './gauge.js';
 import {gaugeDefs} from './config.js';
+
+import {gauge, gaugeRegistry, registerGauges} from './gauge.js';
+import {axis, axisFace, axisPath, axisMarks, dot, tick, label} from './axis.js';
+import {indicatorNeedle} from './indicator.js';
+import {metricDispatch} from './common.js';
 
 
 const width=1400,
@@ -11,6 +20,121 @@ var svg = d3.select("body").append("svg")
     .attr("id", "flight-panel")
     .attr("width", 320*4)
     .attr("height", 320*Math.floor((Object.keys(gaugeDefs).length+3)/4));
+
+
+var clock = gauge('clock-simple')
+    .metric('time', 'second')
+    .measure(d3.scaleLinear().domain([0,60]).range([0, 360]))
+    .dial([
+        gauge.indicator(gauge(...) ),
+        gauge.face().class(css`foo: bar`),
+        gauge.axis.line(),
+        gauge.axis.ticks(15).inset(5).values(d3.range(0, 60, 5)),
+        gauge.axis.dots(2).inset(-3).values(d3.range(0, 60, 1)),
+        gauge.axis.labels('circular').readable(true).angle().format(v => v/5).values(d3.range(5, 60, 5)),
+        (sel, measure, metric) => sel.append('image').attr('href', '#logo'),
+        gauge.label('foo').x(3).y(7).scale(3),
+        gauge('subgauge').scale(50).x(30),
+        gauge.indicator(pointers.leaf).rescale(v => v/(60*12)),
+        gauge.indicator(pointers.needle).rescale(v => v/60),
+    ]);
+
+
+var clock = gauge({
+    axis: axis({
+        metric: 'time',
+        unit: 'second',
+        measure: d3.scaleLinear().domain([0,60]).range([0, 360]),
+    }),
+    layers: [
+        axisFace(),
+        axisPath(),
+        axisMarks({
+            values: d3.range(0, 60, 5),
+            inset: 5,
+            marker: tick({length: 15}),
+        }),
+        axisMarks({
+            values: d3.range(0, 60, 1),
+            inset: -3,
+            marker: dot({r: 2}),
+        }),
+        axisMarks({
+            values: d3.range(5, 60, 5),
+            marker: label({format: v => v/5}),
+        }),
+        indicatorNeedle({rescale: (v => v/(60*12))}),  // hours
+        indicatorNeedle({rescale: (v => v/60)}), // minutes
+        indicatorNeedle(),  // implies moving using axisTransform
+    ],
+});
+
+
+
+
+
+const tickFilter = v => Math.abs(v - 5*Math.round(v/5)) > 0.25;
+
+var speedmaster = gauge({
+    axis: axis({
+        metric: 'chronometer',
+        unit: 'second',
+        measure: d3.scaleLinear().domain([0,60]).range([0, 360]),
+    }),
+    layers: [
+        axisFace({class: css('fill: #111')}),
+        axisMarks({
+            values: d3.range(0, 60, 0.2).filter(tickFilter),
+            inset: 20,
+            marker: tick({r: 1, length: 2}),
+        }),
+        axisMarks({
+            values: d3.range(0, 60, 1).filter(tickFilter),
+            inset: 20,
+            marker: tick({length: 5}),
+        }),
+        axisMarks({
+            values: d3.range(5, 61, 5),
+            inset: 21.8,
+            marker: label({orientation: 'reading', scale: 0.4, format: d3.format('02d')})
+        })
+    ]
+});
+
+
+svg.append('g')
+    .attr('transform', 'translate(200,200)')
+    .call(clock);
+
+svg.append('g')
+    .attr('transform', 'translate(200,400) scale(1.28)')
+    .call(gaugeRegistry.engine.suction);
+
+svg.append('g')
+    .attr('transform', 'translate(600,200) scale(2)')
+    .call(speedmaster);
+
+setInterval(() => {
+    var d = new Date(),
+        msSinceMidnight = d.getTime() - d.setHours(0,0,0,0),
+        t = Math.round(msSinceMidnight/1000);
+    metricDispatch.call('metric', null, {time: t, suctionPressure: 3.9});
+}, 1000);
+
+
+
+/*
+var panel = cluster([
+    {x: 100, y: 100, gauge: clock},
+    {x: 500, y: 200, gauge: gauge({metric: 'def', axis: axis()})},
+]);
+
+var controllers = panel(svg);
+
+setTimeout(() => {
+    controllers.clock.update('blue');
+    controllers.def.update('green');
+}, 1000);
 
 var defs = svg.append('defs');
 
@@ -159,15 +283,6 @@ svg.selectAll('.panel-gauge')
     .each(function(k) { gauges[k] = addGauge(this, gaugeDefs[k]); })
 
 
-/*
-var altimeter = addGauge('#altimeter-gauge', gaugeDefs.altimeter),
-    clock = addGauge('#clock-gauge', gaugeDefs.clock),
-    airspeed = addGauge('#airspeed-gauge', gaugeDefs.airspeed),
-    tachometer = addGauge('#tachometer-gauge', gaugeDefs.tachometer),
-    manifoldpressure = addGauge("#manifold-pressure-gauge", gaugeDefs.manifoldpressure),
-    suction = addGauge('#suction-gauge', gaugeDefs.suction);
-*/
-
 d3.select('#altitude-gauge > .gauge > .gauge-face').attr('mask', 'url(#altimeter-window)');
 
 gauges.fuel.gauges.front.active(true);
@@ -185,3 +300,5 @@ setInterval(() => {
         msSinceMidnight = d.getTime() - d.setHours(0,0,0,0);
     gauges.clock.update(Math.round(msSinceMidnight/1000));
 }, 1000);
+
+*/

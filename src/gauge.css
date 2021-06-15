@@ -10,6 +10,63 @@ svg {
 * {
     vector-effect: non-scaling-stroke;
 }
+
+.gauge-tickmarks path, path.gauge-axis {
+    vector-effect: non-scaling-stroke;
+}
+.gauge text {
+    text-anchor:  middle;
+    dominant-baseline:  central;
+    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
+    font-stretch: condensed;
+    font-size: 10pt;
+    fill: #aaa;
+}
+.gauge-axis-face {
+    fill: #333;
+}
+.gauge-axis {
+    stroke-width: 1;
+    stroke: #ccc;
+}
+.gauge-axis-marks circle {
+    fill:  white;
+    stroke:  none;
+}
+.gauge-axis-marks path {
+    stroke: white;
+}
+
+
+
+
+
+.gauge-region {
+    fill: grey;
+    stroke: none;
+}
+.gauge-region.gauge-region-flaps {
+    fill: #ccc;
+}
+.gauge-region.gauge-region-normal {
+    fill: green;
+}
+.gauge-region.gauge-region-maximum {
+    fill: red;
+}
+.gauge-region.gauge-region-idle {
+    fill: blue;
+}
+
+.gauge-ticklabel-radial text {
+    text-anchor: end;
+}
+.gauge-ticklabel-primary text {
+    font-size: 125%;
+}
+
+
+
 #indicator-sword, #indicator-dagger, #indicator-blade, #indicator-needle, #indicator-rondel {
     fill: #222;
     stroke: none;
@@ -36,64 +93,4 @@ svg {
 }
 .screwslot rect {
     fill: #282828;
-}
-.gauge-tickmarks path, path.gauge-axis {
-    vector-effect: non-scaling-stroke;
-}
-.gauge text {
-    text-anchor:  middle;
-    dominant-baseline:  central;
-    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
-    font-stretch: condensed;
-    font-size: 10pt;
-    fill: #aaa;
-}
-.gauge-face {
-    fill: #333;
-}
-.gauge-axis {
-    visibility: hidden;
-    stroke-width: 1;
-    stroke: #ccc;
-}
-.gauge .gauge .gauge-axis {
-    visibility: visible;
-}
-.gauge-region {
-    fill: grey;
-    stroke: none;
-}
-.gauge-region.gauge-region-flaps {
-    fill: #ccc;
-}
-.gauge-region.gauge-region-normal {
-    fill: green;
-}
-.gauge-region.gauge-region-maximum {
-    fill: red;
-}
-.gauge-region.gauge-region-idle {
-    fill: blue;
-}
-.gauge-tickmarks {
-    stroke-width: 1;
-    stroke: #ccc;
-}
-.gauge-tickmark-major {
-    stroke-width: 2;
-}
-.gauge-tickmark-special {
-    stroke-width: 2;
-    stroke: red;
-}
-.gauge-ticklabels {
-}
-.gauge-ticklabel-radial text {
-    text-anchor: end;
-}
-.gauge-ticklabel-primary text {
-    font-size: 125%;
-}
-.gauge-decorations text {
-    fill: #999;
 }
