@@ -9,42 +9,42 @@ svg {
 }
 * {
     vector-effect: non-scaling-stroke;
+    stroke-width: 1;
 }
 
 .gauge-tickmarks path, path.gauge-axis {
     vector-effect: non-scaling-stroke;
 }
-.gauge text {
+.panel-gauge text, .gauge text {
     text-anchor:  middle;
     dominant-baseline:  central;
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     font-stretch: condensed;
-    font-size: 10pt;
+    font-size: 20px;
     fill: #aaa;
 }
-.gauge-axis-face {
+.gauge-face {
     fill: #333;
 }
 .gauge-axis {
-    stroke-width: 1;
     stroke: #ccc;
 }
-.gauge-axis-marks circle {
+.gauge-axis-ticks {
+    stroke: white;
+}
+.gauge-axis-dot, .gauge-axis-wedge {
     fill:  white;
     stroke:  none;
 }
-.gauge-axis-marks path {
-    stroke: white;
-}
 
 
-
-
-
-.gauge-region {
+.gauge-sector {
     fill: grey;
     stroke: none;
 }
+
+
+
 .gauge-region.gauge-region-flaps {
     fill: #ccc;
 }
@@ -67,30 +67,36 @@ svg {
 
 
 
-#indicator-sword, #indicator-dagger, #indicator-blade, #indicator-needle, #indicator-rondel {
+.gauge-indicator-pointer {
     fill: #222;
     stroke: none;
 }
-#indicator-needle rect {
+.indicator-needle {
     fill: red;
 }
 .indicator-blade {
     fill:  #e8e8e8;
     stroke: #aaa;
 }
-.indicator-pin, .dimple-fg {
-    fill: url(#dimple-gradient);
-    fill-opacity: 0.25;
-}
-#indicator-aircraft-plan {
+
+.gauge-indicator-pointer-aircraft-heading {
     stroke:  orange;
     stroke-width: 2;
     fill: none;
 }
-#indicator-aircraft-rear {
+.gauge-indicator-pointer-aircraft-turn {
     fill: white;
     stroke: none;
 }
+
+
+
+.indicator-pin, .dimple-fg {
+    fill: url(#dimple-gradient);
+    fill-opacity: 0.25;
+}
+
+
 .screwslot rect {
     fill: #282828;
 }

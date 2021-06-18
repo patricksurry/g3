@@ -19,6 +19,17 @@ module.exports = {
           'style-loader',
           'css-loader'
         ]
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+              loader: 'url-loader',
+              options: {
+                limit: 10000
+              }
+          }
+        ]
       }
     ]
   }
