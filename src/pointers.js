@@ -1,3 +1,5 @@
+//TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
+
 export var pointerShapes = {
     needle: (_) => {
         _.append('rect')

@@ -7,6 +7,7 @@ import 'dseg/css/dseg.css';
 import { pointerShapes } from './pointers.js';
 
 
+
 export const
     identity = v => v,
     DEG2RAD = Math.PI/180,
@@ -22,15 +23,27 @@ function appendId(typ) {
 
 export var registry = {};
 
+//TODO
+window.registry = registry;
+window.d3 = d3;
+
 
 function stylable(f) {
-    var kls = [];
+    var kls = [],
+        style;
 
+    f.stylable = function (selection) {
+        if (kls.length) selection.attr('class', f.class());
+        if (style) selection.attr('style', f.style());
+    }
     f.css = function(_) {
         return arguments.length ? (kls.push(css(_)), f) : kls.join(' ');
     }
     f.class = function(_) {
         return arguments.length ? (kls = kls.concat(_.split(' ')), f) : kls.join(' ');
+    }
+    f.style = function(_) {
+        return arguments.length ? (style = _, f): style;
     }
     return f;
 }
@@ -39,6 +52,9 @@ function stylable(f) {
 function transformable(f) {
     var x=0, y=0, scalex=1, scaley=1, rotate=0;
 
+    f.transformable = function(selection) {
+        selection.attr('transform', `translate(${x}, ${y}) scale(${scalex}, ${scaley}) rotate(${rotate})`);
+    }
     f.x = function(_) {
         return arguments.length ? (x = _, f) : x;
     }
@@ -57,17 +73,11 @@ function transformable(f) {
     f.rotate = function(_) {
         return arguments.length ? (rotate = _, f) : rotate;
     }
-
-    f.transform = function() {
-        return `translate(${x}, ${y}) scale(${scalex}, ${scaley}) rotate(${rotate})`;
-    }
-
     return f;
 }
 
 
 export function gauge(_name) {
-
     if (_name in registry) return registry[_name];
 
     var name = _name,
@@ -76,18 +86,35 @@ export function gauge(_name) {
         measure = d3.scaleLinear(),
         kind = 'circular',
         autoindicate = false,
-        r = 100,
-        layers = [],
-        anchor;
+        r = 100,  // the axis radius, when applicable
+        clip,
+        defs = [],
+        kids = [];
 
     function gauge(selection) {
-        let _ = selection.append('g')
-            .attr('class', gauge.class());
-        _.append('g')
-            .attr('class', 'gauge-layers')
-            .attr('transform', gauge.transform())
-            .selectAll('.gauge-layer')
-            .data(layers)
+        if (defs.length) {
+            let svg = d3.select(selection.node().ownerSVGElement),
+                d = svg.select('defs');
+            if (d.empty()) {
+                d = svg.append('defs');
+            }
+            d.selectAll(null)
+                .data(defs)
+              .enter().each(function(d) { d3.select(this).call(d, gauge)});
+        }
+
+        let _ = selection.append('g');
+        gauge.stylable(_);
+        _ = _.append('g').attr('class', 'gauge-layers');
+
+        if (typeof clip === 'function') {
+            let clipId = appendId('gauge-clip');
+            clip(_.append('clipPath').attr('id', clipId));
+            _.attr('clip-path', `url(#${clipId})`);
+        }
+
+        _.selectAll('.gauge-layer')
+            .data(kids)
           .enter().each(function(d) { d3.select(this).call(d, gauge); });
 
         if (autoindicate) {
@@ -99,7 +126,7 @@ export function gauge(_name) {
                 }
             }
 
-            metricDispatch.on(appendId('metric.autoindicate-' + name), update);
+            metricDispatch.on(appendId(`metric.autoindicate-${name}-`), update);
         }
     }
 
@@ -112,14 +139,20 @@ export function gauge(_name) {
     gauge.kind = function(_) {
         return arguments.length ? (kind = _, gauge) : kind;
     }
+    gauge.clip = function(_) {
+        return arguments.length ? (clip = _, gauge) : clip;
+    }
     gauge.r = function(_) {
         return arguments.length ? (r = _, gauge) : r;
     }
     gauge.measure = function(_) {
         return arguments.length ? (measure = _, gauge) : measure;
     }
-    gauge.layers = function(_) {
-        return arguments.length ? (layers = Array.from(arguments), gauge) : layers;
+    gauge.defs = function(..._) {
+        return arguments.length ? (defs = defs.concat(_), gauge) : defs;
+    }
+    gauge.append = function(..._) {
+        return arguments.length ? (kids = kids.concat(_), gauge) : kids;
     }
     gauge.autoindicate = function(_) {
         return arguments.length ? (autoindicate = _, gauge) : autoindicate;
@@ -157,11 +190,47 @@ export function gauge(_name) {
                 : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
         return path;
     }
-    registry[name] = gauge;
+    registry[_name] = gauge;
 
-    return stylable(transformable(gauge)).class('gauge gauge-' + name);
+    return stylable(gauge).class('gauge gauge-' + name);
 }
 
+
+gauge.element = function(elt, attrs) {
+    var attrs = attrs || {},
+        kids = [];
+
+    function element(sel, g) {
+        var _ = sel.append(elt);
+        element.stylable(_);
+        Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
+        kids.forEach(f => f(_, g));
+    }
+    element.append = function(..._) {
+        return arguments.length ? (kids = kids.concat(_), element) : kids;
+    }
+    element.attr = function(k, _) {
+        return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
+    }
+    return stylable(element);
+}
+
+
+gauge.put = function(f, xform) {
+
+    function put(sel, g) {
+        var _ = sel.append('g');
+        put.transformable(_);
+        put.stylable(_);
+        f(_, g);
+    }
+    stylable(transformable(put));
+    Object.entries(xform || {}).forEach(([k, v]) => {
+        if (typeof put[k] !== 'function') throw `put: unknown attribute ${k}`;
+        put[k](v);
+    });
+    return put;
+}
 
 gauge.face = function () {
     var r = 100,
@@ -169,14 +238,15 @@ gauge.face = function () {
     function face(sel, g) {
         var maskId;
         if (typeof window === 'function') {
-            maskId = appendId('gauge-face-window');
+            maskId = appendId('gauge-face-window-');
             let _ = sel.append('mask').attr('id', maskId);
             _.append('circle').attr('r', r).style('fill', 'white');
-            window.css('fill: black !important')(_, g);
+            _ = _.append('g').attr('style', 'fill: black');
+            window(_, g);
         }
         let _ = sel.append('circle')
-            .attr('class', face.class())
             .attr('r', r);
+        face.stylable(_);
         if (maskId) _.attr('mask', `url(#${maskId})`);
     }
     face.r = function(_) {
@@ -186,6 +256,45 @@ gauge.face = function () {
         return arguments.length ? (window = _, face): window;
     }
     return stylable(face).class('gauge-face');
+}
+
+gauge.label = function(s, opts) {
+    var s = s || '',
+        x = 0, y = 0, dx = 0, dy = 0, size = 10;
+    function label(sel, g) {
+        let _ = sel.append('text')
+            .attr('x', x).attr('y', y)
+            .attr('dx', dx).attr('dy', dy)
+            .attr('font-size', size)
+            .text(s);
+        label.stylable(_);
+    }
+    label.value = function(_) {
+        return arguments.length ? (s = _, label): s;
+    }
+    label.size = function(_) {
+        return arguments.length ? (size = _, label): size;
+    }
+    label.x = function(_) {
+        return arguments.length ? (x = _, label): x;
+    }
+    label.y = function(_) {
+        return arguments.length ? (y = _, label): y;
+    }
+    label.dx = function(_) {
+        return arguments.length ? (dx = _, label): dx;
+    }
+    label.dy = function(_) {
+        return arguments.length ? (dy = _, label): dy;
+    }
+    stylable(label).class('gauge-label');
+    if (typeof opts === 'object') {
+        Object.items(opts).forEach(([k,v]) => {
+            if (typeof label[k] !== 'function') throw `label: unknown attribute ${k}`;
+            label[k](v);
+        });
+    }
+    return label;
 }
 
 //TODO screws, add roberston :)
@@ -238,13 +347,12 @@ d3.select('#altitude-gauge > .gauge > .gauge-face').attr('mask', 'url(#altimeter
 gauge.axis = {}
 
 
-
 gauge.axis.line = function() {
     function line(sel, g) {
-        sel
+        let _ = sel
             .append('path')
-            .attr('class', line.class())
             .attr('d', g.sectorpath(...g.measure().domain()));
+        line.stylable(_);
     }
     return stylable(line).class('gauge-axis');
 }
@@ -254,10 +362,10 @@ gauge.axis.sector = function(_) {
         size = 5,
         inset = 0;
     function sector(sel, g) {
-        sel
+        let _ = sel
             .append('path')
-            .attr('class', sector.class())
             .attr('d', g.sectorpath(...vs, size, inset));
+        sector.stylable(_);
     }
     sector.size = function(_) {
         return arguments.length ? (size = _, sector) : size;
@@ -269,31 +377,32 @@ gauge.axis.sector = function(_) {
 }
 
 function tickvals(vs, step, start, g) {
+    if (typeof vs !== 'undefined') return vs;
+
     var values = vs;
-    if (typeof values === 'undefined') {
-        if (typeof step === 'number') {
-            let domain = g.measure().domain();
-            const range = g.measure().range();
-            domain.sort((a, b) => a - b);
-            values = [];
-            for (var v = start ?? Math.ceil(domain[0]/step)*step; v <= domain[1]; v += step)
-                values.push(v);
-            if (
-                g.kind() == 'circular'
-                && ((range[0] - range[1]) % 360 == 0)
-                && values.includes(domain[0])
-                && values.includes(domain[1])
-            ) values.pop();
-        } else {
-            values = g.measure().ticks();
-        }
+
+    if (typeof step === 'number') {
+        let domain = g.measure().domain();
+        const range = g.measure().range();
+        domain.sort((a, b) => a - b);
+        values = [];
+        for (var v = start ?? Math.ceil(domain[0]/step)*step; v <= domain[1]; v += step)
+            values.push(v);
+        if (
+            g.kind() == 'circular'
+            && ((range[0] - range[1]) % 360 == 0)
+            && values.includes(domain[0])
+            && values.includes(domain[1])
+        ) values.pop();
+    } else {
+        values = g.measure().ticks();
     }
     return values;
 }
 
 
 gauge.axis.ticks = function(vs) {
-    var mark = 'tick',
+    var kind = 'tick',
         size = 10,
         width = 1,
         inset = 0,
@@ -301,16 +410,15 @@ gauge.axis.ticks = function(vs) {
         step, start;
     function ticks(sel, g) {
         let vs = tickvals(values, step, start, g);
-        let _ = sel
-            .append('g')
-            .attr('class', ticks.class())
-            .selectAll('.gauge-axis-' + mark)
+        let _ = sel.append('g');
+        ticks.stylable(_);
+        _ = _.selectAll('.gauge-axis-' + kind)
             .data(vs)
           .enter().append('g')
-            .attr('class', 'gauge-axis-' + mark)
+            .attr('class', 'gauge-axis-' + kind)
             .attr('transform', d => g.marktransform(d, inset));
 
-        switch(mark) {
+        switch(kind) {
             case 'dot':
                 _.append('circle').attr('r', size);
                 break;
@@ -330,8 +438,8 @@ gauge.axis.ticks = function(vs) {
     ticks.start = function(_) {
         return arguments.length ? (start = _, ticks) : start;
     }
-    ticks.mark = function(_) {
-        return arguments.length ? (mark = _, ticks) : mark;
+    ticks.kind = function(_) {
+        return arguments.length ? (kind = _, ticks) : kind;
     }
     ticks.size = function(_) {
         return arguments.length ? (size = _, ticks) : size;
@@ -346,32 +454,52 @@ gauge.axis.ticks = function(vs) {
 }
 
 gauge.axis.labels = function(vs) {
-    var orient = 'fixed',  // 'relative', 'circular'
+    const isMap = typeof vs === 'object' && !Array.isArray(vs);
+
+    var orient = 'fixed',  // 'relative', 'cw', 'ccw'
         upright = true,
-        scale = 1,
+        size = 20,
         inset = 25,
         rotate = 0,
-        format = identity,
-        values = vs && vs.slice(),
+        values = isMap ? Object.keys(vs) : vs,
+        format = isMap ? v => vs[v] : identity,
         step, start;
     function labels(sel, g) {
-        let vs = tickvals(values, step, start, g);
-        let _ = sel
-            .append('g')
-            .attr('class', labels.class())
-            .selectAll('.gauge-axis-label')
+        const vs = tickvals(values, step, start, g),
+            circPath = orient.endsWith('cw'),
+            pathId = circPath ? appendId('axis-label-path-') : undefined;
+
+        let _ = sel.append('g');
+        labels.stylable(_);
+        _ = _.selectAll('.gauge-axis-label')
             .data(vs)
-          .enter().append('text')
-            .attr('class', 'gauge-axis-label')
+          .enter().append('g')
+            .attr('class', 'gauge-axis-label');
+        if (circPath) {
+            const r = g.r() - inset,
+                cw = orient == 'cw' ? 1: 0;
+            _.append('path')
+                .attr('id', (d, i) => `${pathId}-${i}`)
+                .attr('d', `M 0,${r} A ${r},${r},0,1,${cw},0,-${r} A ${r},${r},0,1,${cw},0,${r}`)
+                .attr('style', 'visibility: hidden')
+                .attr('transform', d => g.metrictransform(d));
+        }
+        _ = _.append('text')
+            .attr('font-size', size);
+        if (circPath) {
+            _ = _.append('textPath')
+                .attr('startOffset', '50%')
+                .attr('href', (d, i) => `#${pathId}-${i}`);
+        } else {
 //TODO upright
-//TODO circular
-            .attr('transform', d => {
+            _.attr('transform', d => {
                 let xform = g.marktransform(d, inset);
                 if (orient == 'fixed' && g.kind() == 'circular') xform += ' ' + g.metrictransform(d, true);
                 if (rotate) xform += ` rotate(${rotate})`
-                return `${xform} scale(${scale})`;
+                return `${xform}`;
             })
-            .text(format);
+        }
+        _.text(format);
     }
     labels.step = function(_) {
         return arguments.length ? (step = _, labels) : step;
@@ -385,8 +513,8 @@ gauge.axis.labels = function(vs) {
     labels.upright = function(_) {
         return arguments.length ? (upright = _, labels) : upright;
     }
-    labels.scale = function(_) {
-        return arguments.length ? (scale = _, labels) : scale;
+    labels.size = function(_) {
+        return arguments.length ? (size = _, labels) : size;
     }
     labels.inset = function(_) {
         return arguments.length ? (inset = _, labels) : inset;
@@ -404,14 +532,14 @@ gauge.axis.labels = function(vs) {
 gauge.indicator = {};
 
 gauge.indicator.text = function() {
-    var format = identity;
+    var format = identity,
+        size = 20;
 
     function text(sel, g) {
         const metric = g.metric();
-        let _ = sel.append('text')
-            .attr('transform', text.transform())
-            .attr('class', text.class())
-            .text('');
+        let _ = sel.append('text').attr('font-size', size);
+        text.stylable(_);
+        _ = _.text('');
 
         function update(metrics) {
             if (metric in metrics) {
@@ -419,26 +547,34 @@ gauge.indicator.text = function() {
             }
         }
 
-        metricDispatch.on(appendId('metric.indicator-text-' + g.name), update);
+        metricDispatch.on(appendId(`metric.indicator-text-${g.name}-`), update);
 
     }
     text.format = function(_) {
         return arguments.length ? (format = _, text) : format;
     }
-    return stylable(transformable(text)).class('gauge-indicator-text');
+    text.size = function(_) {
+        return arguments.length ? (size = _, text) : size;
+    }
+    return stylable(text).class('gauge-indicator-text');
 }
 
-
 gauge.indicator.pointer = function(_) {
-    var kind = _ ?? 'needle',
-        rescale = identity;
+    var f, id, rescale = identity;
+
+    if (typeof _ === 'function') {
+        id = 'function';
+        f = _;
+    } else {
+        id = _ in pointerShapes ? _ : 'needle';
+        f = pointerShapes[id];
+    }
 
     function pointer(sel, g) {
         const metric = g.metric();
-        let _ = sel.append('g')
-            .attr('class', pointer.class());
-
-        pointerShapes[kind](_);
+        let _ = sel.append('g');
+        pointer.stylable(_);
+        f(_, g);
 
         function update(metrics) {
             if (metric in metrics) {
@@ -447,10 +583,10 @@ gauge.indicator.pointer = function(_) {
                     .ease(d3.easeElastic);
             }
         }
-        metricDispatch.on(appendId(`metric.indicator-pointer-${kind}-${g.name}`), update);
+        metricDispatch.on(appendId(`metric.indicator-pointer-${id}-${g.name}`), update);
     }
     pointer.rescale = function(_) {
         return arguments.length ? (rescale = _, pointer) : rescale;
     }
-    return stylable(pointer).class('gauge-indicator-pointer gauge-indicator-pointer-' + kind);
+    return stylable(pointer).class('gauge-indicator-pointer gauge-indicator-pointer-' + id);
 }

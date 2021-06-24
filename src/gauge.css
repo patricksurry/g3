@@ -16,11 +16,10 @@ svg {
     vector-effect: non-scaling-stroke;
 }
 .panel-gauge text, .gauge text {
-    text-anchor:  middle;
-    dominant-baseline:  central;
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     font-stretch: condensed;
-    font-size: 20px;
+    text-anchor:  middle;
+    dominant-baseline:  central;
     fill: #aaa;
 }
 .gauge-face {
@@ -37,12 +36,12 @@ svg {
     stroke:  none;
 }
 
-
+/*
 .gauge-sector {
     fill: grey;
     stroke: none;
 }
-
+*/
 
 
 .gauge-region.gauge-region-flaps {
@@ -70,6 +69,7 @@ svg {
 .gauge-indicator-pointer {
     fill: #222;
     stroke: none;
+    filter: url(#dropShadow2);
 }
 .indicator-needle {
     fill: red;

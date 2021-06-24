@@ -6,7 +6,7 @@
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "build": "webpack",
-      "start": "webpack serve --open"
+      "start": "webpack serve --open --host 0.0.0.0"
    },
    "dependencies": {
       "@emotion/css": "^11.1.3",

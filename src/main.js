@@ -4,6 +4,11 @@ import {gauge, registry, metricDispatch} from './gauge.js';
 import './gauges/clocks.js';
 import './gauges/flight.js';
 import './gauges/engine.js';
+//TODO  - electrical.js with volt and ammeter p25 milviz
+
+// import {panelLayouts} from './panels.js';
+
+
 
 var metricDomains = {};
 
@@ -11,22 +16,52 @@ var ks = Object.keys(registry),
     svg = d3.select("body").append("svg")
         .attr("id", "flight-panel")
         .attr("width", 320*4)
-        .attr("height", 320*Math.floor((ks.length+3)/4) + 40)
-        .selectAll('.panel-gauge')
-        .data(ks)
-      .enter().append('g')
-        .attr('class', k => 'panel-gauge panel-gauge-' + k)
-        .attr('transform', (k, i) => 'translate(' + (2*(i%4)+1)*160 + ',' + (2*Math.floor(i/4)+1)*160 + ') scale(1.28)')
-        .each(function(k) {
-            const g = gauge(k);
-            d3.select(this).call(g);
-            if (g.metric()) {
-                metricDomains[g.metric()] = g.measure().domain();
-            }
-        })
-        .append('text').attr('y', 120).text(k => k);
+        .attr("height", 320*Math.floor((ks.length+3)/4) + 40),
+    defs = svg.append('defs');
 
-metricDomains.altitude = metricDomains.altitude.map(v => v*20);
+svg.selectAll('.panel-gauge')
+    .data(ks)
+  .enter().append('g')
+    .attr('class', k => 'panel-gauge panel-gauge-' + k)
+    .attr('transform', (k, i) => 'translate(' + (2*(i%4)+1)*160 + ',' + (2*Math.floor(i/4)+1)*160 + ') scale(1.28)')
+    .each(function(k) {
+        const g = gauge(k);
+        d3.select(this).call(g);
+        if (g.metric()) {
+            metricDomains[g.metric()] = g.measure().domain();
+        }
+    })
+    .append('text').attr('y', 120).text(k => k);
+
+/*
+d3.select("body").append("svg")
+    .attr("id", "flight-panel")
+    .attr("width", 320*4)
+//    .attr("height", 320*Math.floor((ks.length+3)/4))
+    .attr('height', 320*2)
+    .selectAll('.panel-gauge')
+    .data(panelLayouts.dhc2flight)
+  .enter().append('g')
+    .attr('class', 'panel-gauge')
+    .each(function(g) {
+        d3.select(this).call(g);
+        if (g.metric()) {
+            metricDomains[g.metric()] = g.measure().domain();
+        }
+    });
+*/
+
+//TODO global defs somehow
+defs.selectAll('.filter-drop-shadow')
+    .data([1,2,3])
+  .enter().append('filter')
+    .attr('id', d => 'dropShadow' + d)
+    .attr('class', 'filter-drop-shadow')
+    .attr('filterUnits', 'userSpaceOnUse')
+    .append('feDropShadow').attr('stdDeviation', d => d).attr('dx', 0).attr('dy', 0);
+
+
+if ('altitude' in metricDomains) metricDomains.altitude = metricDomains.altitude.map(v => v*20);
 
 var metrics = Object.fromEntries(Object.entries(metricDomains).map(([k,v]) => [k, Math.random()*(v[1] - v[0])+v[0]]));
 
@@ -40,9 +75,9 @@ setInterval(() => {
             v = (Math.random()-0.5)*(d[1]-d[0])*0.01;
         metrics[k] = Math.max(d[0], Math.min(d[1], metrics[k] + v));
     }
-    metrics.time = t;
-    metrics.date = new Date();
+    if ('time' in metrics) metrics.time = t;
+    if ('date' in metrics) metrics.date = new Date();
     metricDispatch.call('metric', null, metrics);
-}, 100);
+}, 1000);
 
 
