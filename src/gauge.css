@@ -15,7 +15,7 @@ svg {
 .gauge-tickmarks path, path.gauge-axis {
     vector-effect: non-scaling-stroke;
 }
-.panel-gauge text, .gauge text {
+text {
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     font-stretch: condensed;
     text-anchor:  middle;
@@ -77,16 +77,6 @@ svg {
 .indicator-blade {
     fill:  #e8e8e8;
     stroke: #aaa;
-}
-
-.gauge-indicator-pointer-aircraft-heading {
-    stroke:  orange;
-    stroke-width: 2;
-    fill: none;
-}
-.gauge-indicator-pointer-aircraft-turn {
-    fill: white;
-    stroke: none;
 }
 
 

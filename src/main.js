@@ -6,10 +6,14 @@ import './gauges/flight.js';
 import './gauges/engine.js';
 //TODO  - electrical.js with volt and ammeter p25 milviz
 
-// import {panelLayouts} from './panels.js';
+import {DHC2Flight} from './panels.js';
 
 
+DHC2Flight(d3.select('body'));
 
+var defs = d3.select('svg defs');
+
+/*
 var metricDomains = {};
 
 var ks = Object.keys(registry),
@@ -33,6 +37,7 @@ svg.selectAll('.panel-gauge')
     })
     .append('text').attr('y', 120).text(k => k);
 
+*/
 /*
 d3.select("body").append("svg")
     .attr("id", "flight-panel")
@@ -51,16 +56,8 @@ d3.select("body").append("svg")
     });
 */
 
-//TODO global defs somehow
-defs.selectAll('.filter-drop-shadow')
-    .data([1,2,3])
-  .enter().append('filter')
-    .attr('id', d => 'dropShadow' + d)
-    .attr('class', 'filter-drop-shadow')
-    .attr('filterUnits', 'userSpaceOnUse')
-    .append('feDropShadow').attr('stdDeviation', d => d).attr('dx', 0).attr('dy', 0);
-
-
+/*
+metricDomains['fuelSelector'] = [0, 1];
 if ('altitude' in metricDomains) metricDomains.altitude = metricDomains.altitude.map(v => v*20);
 
 var metrics = Object.fromEntries(Object.entries(metricDomains).map(([k,v]) => [k, Math.random()*(v[1] - v[0])+v[0]]));
@@ -80,4 +77,4 @@ setInterval(() => {
     metricDispatch.call('metric', null, metrics);
 }, 1000);
 
-
+*/

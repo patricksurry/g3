@@ -9,10 +9,10 @@ gauge('clockSimple')
     .append(
         gauge.face(),
         gauge.axis.ticks().step(5).size(10),
-        gauge.axis.ticks(d3.range(0, 60).filter(v => v % 5)).kind('dot').size(1).inset(2).css('stroke: none; fill: white'),
+        gauge.axis.ticks(d3.range(0, 60).filter(v => v % 5)).shape('dot').size(1).inset(2).style('stroke: none; fill: white'),
         gauge.axis.labels().step(5).start(5).format(v => v/5).inset(20),
-        gauge.indicator.pointer('blade').rescale(v => v/60/12),
-        gauge.indicator.pointer('sword').rescale(v => v/60),
+        gauge.indicator.pointer().shape('blade').rescale(v => v/60/12),
+        gauge.indicator.pointer().shape('sword').rescale(v => v/60),
         gauge.indicator.pointer(),
     );
 
@@ -22,21 +22,25 @@ gauge('casioF91W')
     .metric('date').unit('dateTime')
     .css('text {font-family: DSEG7-Classic; font-weight: bold; fill: #20282C;}')
     .append(
-        gauge.element('rect', {width: 200, height: 80, x: -100, y: -43}).attr('rx', 10).css('fill: #BCDCD8'),
+        gauge.element('rect', {width: 200, height: 80, x: -100, y: -43}).attr('rx', 10).style('fill: #BCDCD8'),
         // am/pm
-        gauge.put(
-            gauge.indicator.text().format(d3.timeFormat('%p')).size(15).style('font-family: Gill Sans !important; font-weight: normal !important;'),
-            {x: -65, y: -20}),
+        gauge.put().x(-65).y(-20).append(
+            gauge.indicator.text().format(d3.timeFormat('%p')).size(15).style('font-family: Gill Sans; font-weight: normal;')
+        ),
         // day of week
-        gauge.put(
-            gauge.indicator.text().format(dowFormat).style('font-family: DSEG14-Classic !important'),
-            {x: -5, y: -25}),
+        gauge.put().x(-5).y(-25).append(
+            gauge.indicator.text().format(dowFormat).style('font-family: DSEG14-Classic')
+        ),
         // day of month
-        gauge.put(
-            gauge.indicator.text().format(d3.timeFormat('%e')).style('font-family: DSEG14-Classic !important'),
-            {x: 70, y: -25}),
-        gauge.put(gauge.indicator.text().format(d3.timeFormat('%_I:%M')).size(36), {x: -20, y: 10}),
-        gauge.put(gauge.indicator.text().format(d3.timeFormat('%S')).size(27), {x: 65, y: 14}),
+        gauge.put().x(70).y(-25).append(
+            gauge.indicator.text().format(d3.timeFormat('%e')).style('font-family: DSEG14-Classic')
+        ),
+        gauge.put().x(-20).y(10).append(
+            gauge.indicator.text().format(d3.timeFormat('%_I:%M')).size(36)
+        ),
+        gauge.put().x(65).y(14).append(
+            gauge.indicator.text().format(d3.timeFormat('%S')).size(27)
+        ),
     );
 
 /*
