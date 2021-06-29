@@ -1,30 +1,24 @@
 import * as d3 from 'd3';
 
 import {
-    stylable, transformable, appendable,
-    element, put,
-    metricDispatch, appendId
+    stylable, transformable, appendable, identity,
+    element, appendId, activeController
 } from './protocol.js';
-export { metricDispatch } from './protocol.js';
-import { axis } from './axis.js';
-import { indicator } from './indicator.js';
+import { indicateStyle } from './indicate.js';
 
 import './gauge.css';
 import 'dseg/css/dseg.css';
 
+export { element, put, snapScale } from './protocol.js';
 
-export var registry = {};
-
-//TODO
-window.registry = registry;
-window.d3 = d3;
-
+export var gaugeRegistry = {}; // only for testing
 
 const DEG2RAD = Math.PI/180;
 
 
 export function gauge(_name) {
-    if (_name in registry) return registry[_name];
+    if (!_name) throw "g3.gauge(name) missing required name argument";
+    if (_name in gaugeRegistry) return gaugeRegistry[_name];
 
     var name = _name,
         metric,
@@ -35,7 +29,7 @@ export function gauge(_name) {
         r = 100,  // the axis radius, when applicable
         clip;
 
-    function gauge(selection) {
+    function gauge(selection, parent) {
         let _ = selection.append('g');
         gauge.stylable(_);
         _ = _.append('g').attr('class', 'gauge-layers');
@@ -49,14 +43,12 @@ export function gauge(_name) {
 
         if (autoindicate) {
             function update(metrics) {
-                if (metric in metrics) {
-                    _.transition().duration(500)
-                        .attr('transform', gauge.metrictransform(metrics[metric], true))
-                        .ease(d3.easeElastic);
-                }
-            }
+                if (!(metric in metrics)) return;
 
-            metricDispatch.on(appendId(`metric.autoindicate-${name}-`), update);
+                activeController.transition(_)
+                    .attr('transform', gauge.metrictransform(metrics[metric], true))
+            }
+            activeController.register(update, metric, `${name}-autoindicate`)
         }
     }
 
@@ -114,21 +106,16 @@ export function gauge(_name) {
                 : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
         return path;
     }
-    registry[_name] = gauge;
+
+    gauge.metrics
+    gauge.children
+    gaugeRegistry[_name] = gauge;
 
     return stylable(appendable(gauge)).class('gauge gauge-' + name);
 }
 
 
-gauge.element = element;
-
-gauge.put = put;
-
-gauge.axis = axis;
-
-gauge.indicator = indicator;
-
-gauge.face = function () {
+export function gaugeFace() {
     var r = 100,
         window;
     function face(sel, g) {
@@ -154,7 +141,8 @@ gauge.face = function () {
     return stylable(face).class('gauge-face');
 }
 
-gauge.label = function(s, opts) {
+
+export function gaugeLabel(s, opts) {
     var s = s || '',
         x = 0, y = 0, dx = 0, dy = 0, size = 10;
     function label(sel, g) {
@@ -193,38 +181,34 @@ gauge.label = function(s, opts) {
     return label;
 }
 
-gauge.panel = function() {
-    var width=1024, height=768;
-    function panel(sel) {
-        let _ = sel.append('svg')
-            .attr('width', width).attr('height', height);
-        _.append('defs')
-        panel.stylable(_);
-        panel.appendable(_);
-    }
-    panel.width = function(_) {
-        return arguments.length ? (width = _, panel): width;
-    }
-    panel.height = function(_) {
-        return arguments.length ? (height = _, panel): height;
-    }
-    stylable(appendable(panel)).class('gauge-panel')
-    panel.append(
-        ...[1,2,3].map(d =>
-            gauge.element('filter', {
-                id: 'dropShadow' + d,
-                // need userSpaceOnUse for drop-shadow to work on 0-width items
-                // but then need explicit extent in target units?
-                filterUnits: 'userSpaceOnUse',
-                x: -width, width: 2*width,
-                y: -height, height: 2*height,
-            }).append(gauge.element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
+
+// shorthand to add a status light of given color
+export function statusLight(_) {
+    var g = gauge(_),
+        trigger = identity,
+        color = 'red';
+    function statusLight(sel, parent) {
+        g.append(
+            g3.indicateStyle().trigger(trigger).append(
+                g3.gaugeFace().style(`fill: ${color}`)
+            )
         )
-    );
-    return panel;
+        g(sel, parent);
+    }
+    statusLight.metric = function(_) {
+        const v = g.metric(_);
+        return arguments.length ? statusLight: v;
+    }
+    statusLight.trigger = function(_) {
+        return arguments.length ? (trigger = _, statusLight): trigger;
+    }
+    statusLight.color = function(_) {
+        return arguments.length ? (color = _, statusLight): color;
+    }
+    return statusLight;
 }
 
-//TODO screws, add roberston :)
+
 /*
 var defs = svg.append('defs');
 

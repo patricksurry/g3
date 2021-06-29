@@ -13,6 +13,34 @@ export function appendId(typ) {
 appendId.nextId = 0;
 
 
+export var activeController;  // hack to provide current context for gauges to register with
+
+
+export function gaugeController(interval) {
+    var id = appendId('controller-'),
+        dispatch = d3.dispatch(id),
+        metrics = new Set();
+
+    function gaugeController(values) {
+        dispatch.call(id, null, values)
+    }
+    gaugeController.register = function(updater, metric, name) {
+        let v = appendId(`${id}.${metric}-${name ?? 'anonymous'}`);
+        dispatch.on(v, updater);
+        metrics.add(metric);
+    }
+    gaugeController.metrics = function() {
+        return Array.from(metrics);
+    }
+    gaugeController.transition = function(sel) {
+        return sel.transition().duration(interval).ease(d3.easeLinear);
+    }
+    activeController = gaugeController;
+    return gaugeController;
+}
+gaugeController();
+
+
 export function stylable(f) {
     var kls = [],
         style;
@@ -100,6 +128,7 @@ export function element(elt, attrs) {
     return stylable(appendable(element));
 }
 
+
 export function put() {
     function put(sel, g) {
         var _ = sel.append('g');
@@ -109,4 +138,29 @@ export function put() {
     }
     stylable(transformable(appendable(put)));
     return put;
+}
+
+
+export function snapScale() {
+    var step = 1,
+        start = 0,
+        strength = 5;
+
+    function snapScale(v) {
+        let v0 = Math.round((v - start)/step)*step + start,
+            w = step/2,
+            dv = d3.scalePow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
+
+        return v0 + dv;
+    }
+    snapScale.start = function(_) {
+        return arguments.length ? (start = _, snapScale): start;
+    }
+    snapScale.step = function(_) {
+        return arguments.length ? (step = _, snapScale): step;
+    }
+    snapScale.strength = function(_) {
+        return arguments.length ? (strength = _, snapScale): strength;
+    }
+    return snapScale;
 }

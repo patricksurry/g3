@@ -66,22 +66,22 @@ text {
 
 
 
-.gauge-indicator-pointer {
+.gauge-indicate-pointer {
     fill: #222;
     stroke: none;
     filter: url(#dropShadow2);
 }
-.indicator-needle {
+.pointer-needle {
     fill: red;
 }
-.indicator-blade {
+.pointer-blade {
     fill:  #e8e8e8;
     stroke: #aaa;
 }
 
 
 
-.indicator-pin, .dimple-fg {
+.pointer-pin, .dimple-fg {
     fill: url(#dimple-gradient);
     fill-opacity: 0.25;
 }

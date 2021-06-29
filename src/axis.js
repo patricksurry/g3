@@ -2,9 +2,6 @@ import * as d3 from 'd3';
 import { stylable, appendId, identity } from './protocol.js';
 
 
-export var axis = {};
-
-
 function tickvals(vs, step, start, g) {
     if (typeof vs !== 'undefined') return vs;
 
@@ -30,7 +27,7 @@ function tickvals(vs, step, start, g) {
 }
 
 
-axis.line = function() {
+export function axisLine() {
     function line(sel, g) {
         let _ = sel
             .append('path')
@@ -41,14 +38,14 @@ axis.line = function() {
 }
 
 
-axis.sector = function(_) {
-    var vs = _.slice(),
+export function axisSector(vs) {
+    var values = vs.slice(),
         size = 5,
         inset = 0;
     function sector(sel, g) {
         let _ = sel
             .append('path')
-            .attr('d', g.sectorpath(...vs, size, inset));
+            .attr('d', g.sectorpath(...values, size, inset));
         sector.stylable(_);
     }
     sector.size = function(_) {
@@ -61,7 +58,7 @@ axis.sector = function(_) {
 }
 
 
-axis.ticks = function(vs) {
+export function axisTicks(vs) {
     var shape = 'tick',
         size = 10,
         width = 1,
@@ -114,7 +111,7 @@ axis.ticks = function(vs) {
 }
 
 
-axis.labels = function(vs) {
+export function axisLabels(vs) {
     const isMap = typeof vs === 'object' && !Array.isArray(vs);
 
     var orient = 'fixed',  // 'relative', 'cw', 'ccw'
@@ -152,7 +149,7 @@ axis.labels = function(vs) {
                 .attr('startOffset', '50%')
                 .attr('href', (d, i) => `#${pathId}-${i}`);
         } else {
-//TODO upright
+//TODO upright text style
             _.attr('transform', d => {
                 let xform = g.marktransform(d, inset);
                 if (orient == 'fixed' && g.kind() == 'circular') xform += ' ' + g.metrictransform(d, true);
