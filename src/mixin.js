@@ -90,11 +90,8 @@ export function appendable(f) {
 
     f.appendable = function(sel, g) {
         if (defs.length) {
-            let svg = d3.select(sel.node().ownerSVGElement),
-                _ = svg.select('defs');
-            if (_.empty()) {
-                throw "Couldn't find svg defs element"
-            }
+            let _ = d3.select(sel.node().ownerSVGElement).select('defs');
+            if (_.empty()) throw "Couldn't find svg defs element"
             _.selectAll(null)
                 .data(defs)
               .enter().each(function(d) { d3.select(this).call(d, g)});
@@ -110,57 +107,4 @@ export function appendable(f) {
         return arguments.length ? (kids = kids.concat(_), f) : kids;
     }
     return f;
-}
-
-
-export function element(elt, attrs) {
-    var attrs = attrs || {};
-
-    function element(sel, g) {
-        var _ = sel.append(elt);
-        Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
-        element.stylable(_);
-        element.appendable(_, g);
-    }
-    element.attr = function(k, _) {
-        return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
-    }
-    return stylable(appendable(element));
-}
-
-
-export function put() {
-    function put(sel, g) {
-        var _ = sel.append('g');
-        put.transformable(_);
-        put.stylable(_);
-        put.appendable(_, g);
-    }
-    stylable(transformable(appendable(put)));
-    return put;
-}
-
-
-export function snapScale() {
-    var step = 1,
-        start = 0,
-        strength = 5;
-
-    function snapScale(v) {
-        let v0 = Math.round((v - start)/step)*step + start,
-            w = step/2,
-            dv = d3.scalePow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
-
-        return v0 + dv;
-    }
-    snapScale.start = function(_) {
-        return arguments.length ? (start = _, snapScale): start;
-    }
-    snapScale.step = function(_) {
-        return arguments.length ? (step = _, snapScale): step;
-    }
-    snapScale.strength = function(_) {
-        return arguments.length ? (strength = _, snapScale): strength;
-    }
-    return snapScale;
 }

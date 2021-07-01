@@ -17,33 +17,37 @@ svg {
 }
 text {
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
-    font-stretch: condensed;
     text-anchor:  middle;
     dominant-baseline:  central;
+    font-stretch: condensed;
     fill: #aaa;
 }
 .gauge-face {
-    fill: #333;
+    fill: #181818;
 }
-.gauge-axis {
-    stroke: #ccc;
+.gauge-axis, .gauge-axis-ticks {
+    stroke: #ddd;
 }
-.gauge-axis-ticks {
-    stroke: white;
+.sector-light {
+    fill: #ddd;
+}
+.sector-blue {
+    fill: #0580BA;
+}
+.sector-green {
+    fill: green;
+}
+.sector-red {
+    fill: red;
 }
 .gauge-axis-dot, .gauge-axis-wedge {
     fill:  white;
     stroke:  none;
 }
-
-/*
-.gauge-sector {
-    fill: grey;
-    stroke: none;
+.tick-warning path {
+    stroke: red;
+    stroke-width: 2;
 }
-*/
-
-
 .gauge-region.gauge-region-flaps {
     fill: #ccc;
 }
@@ -78,15 +82,14 @@ text {
     fill:  #e8e8e8;
     stroke: #aaa;
 }
-
-
-
-.pointer-pin, .dimple-fg {
-    fill: url(#dimple-gradient);
+.gauge-screw {
+    fill: #333;
+}
+.gauge-screw-highlight, .pointer-pin {
+    fill: url(#highlightGradient);
     fill-opacity: 0.25;
 }
 
-
-.screwslot rect {
-    fill: #282828;
+.gauge-screw rect {
+    fill: #222;
 }

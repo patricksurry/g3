@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import { stylable, appendable, identity, appendId, activeController } from './protocol.js';
+import { stylable, appendable, identity, appendId, activeController } from './mixin.js';
 import { pointerShapes } from './pointers.js';
 
 

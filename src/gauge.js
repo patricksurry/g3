@@ -1,15 +1,8 @@
 import * as d3 from 'd3';
 
-import {
-    stylable, transformable, appendable, identity,
-    element, appendId, activeController
-} from './protocol.js';
+import { stylable, transformable, appendable, identity, appendId, activeController } from './mixin.js';
+import { element } from './common.js';
 import { indicateStyle } from './indicate.js';
-
-import './gauge.css';
-import 'dseg/css/dseg.css';
-
-export { element, put, snapScale } from './protocol.js';
 
 export var gaugeRegistry = {}; // only for testing
 
@@ -142,13 +135,55 @@ export function gaugeFace() {
 }
 
 
+export function gaugeScrew() {
+    var r = 8,
+        shape = 'slotted';  // or phillips, robertson
+    function screw(_, g) {
+        let rotate = Math.random()*360;
+        _ = _.append('g').attr('class', 'gauge-screw');
+        screw.transformable(_);
+        screw.stylable(_);
+        _.append('circle').attr('r', r).attr('class', 'gauge-screw-head');
+        _.append('circle').attr('r', r) .attr('class', 'gauge-screw-highlight');
+        switch (shape) {
+            case 'robertson':
+                _.append('rect')
+                    .attr('transform', `scale(${r}) rotate(${rotate})`)
+                    .attr('x', -0.4).attr('width', 0.8)
+                    .attr('y', -0.4).attr('height', 0.8);
+                break;
+            case 'phillips':
+                _.append('rect')
+                    .attr('transform', `scale(${r}) rotate(${rotate+90})`)
+                    .attr('x', -1).attr('width', 2)
+                    .attr('y', -0.2).attr('height', 0.4);
+                // no break
+            default:  // slotted
+                _.append('rect')
+                    .attr('transform', `scale(${r}) rotate(${rotate})`)
+                    .attr('x', -1).attr('width', 2)
+                    .attr('y', -0.2).attr('height', 0.4);
+        }
+    }
+    screw.r = function(_) {
+        return arguments.length ? (r = _, screw): r;
+    }
+    screw.shape = function(_) {
+        return arguments.length ? (shape = _, screw): shape;
+    }
+    return stylable(transformable(screw));
+}
+
+
+
 export function gaugeLabel(s, opts) {
     var s = s || '',
-        x = 0, y = 0, dx = 0, dy = 0, size = 10;
+        x = 0, y = 0, dx = 0, dy = 0, size = 10, rotate=0;
     function label(sel, g) {
         let _ = sel.append('text')
             .attr('x', x).attr('y', y)
             .attr('dx', dx).attr('dy', dy)
+            .attr('rotate', rotate)
             .attr('font-size', size)
             .text(s);
         label.stylable(_);
@@ -158,6 +193,9 @@ export function gaugeLabel(s, opts) {
     }
     label.size = function(_) {
         return arguments.length ? (size = _, label): size;
+    }
+    label.rotate = function(_) {
+        return arguments.length ? (rotate = _, label): rotate;
     }
     label.x = function(_) {
         return arguments.length ? (x = _, label): x;
@@ -190,7 +228,8 @@ export function statusLight(_) {
     function statusLight(sel, parent) {
         g.append(
             g3.indicateStyle().trigger(trigger).append(
-                g3.gaugeFace().style(`fill: ${color}`)
+                g3.gaugeFace().style(`fill: ${color}`),
+                g3.gaugeFace().style("fill: url('#highlightGradient'); fill-opacity: 0.25"),
             )
         )
         g(sel, parent);
@@ -207,54 +246,3 @@ export function statusLight(_) {
     }
     return statusLight;
 }
-
-
-/*
-var defs = svg.append('defs');
-
-
-defs.append('radialGradient')
-    .attr('id', 'dimple-gradient')
-    .attr('cx', '50%').attr('fx', '25%')
-    .attr('cy', '50%').attr('fy', '40%')
-    .attr('r', '50%')
-    .selectAll('stop')
-    .data(['white', 'black'])
-  .enter().append('stop')
-    .attr('stop-color', v => v)
-    .attr('offset', (v, i) => 100*i + '%')
-
-defs.append('g')
-    .attr('id', 'dimple')
-    .attr('class', 'dimple')
-    .selectAll('circle')
-    .data(['bg', 'fg'])
-  .enter().append('circle')
-    .attr('class', (v) => 'dimple-' + v)
-    .attr('r', 10);
-
-let screwslots = defs
-    .selectAll('.screwslot')
-    .data(['slotted', 'phillips'])
-  .enter().append('g')
-    .attr('class', 'screwslot')
-    .attr('id', (v) => 'screwslot-' + v);
-screwslots.append('rect')
-    .attr('x', -2)
-    .attr('y', -10)
-    .attr('width', 4)
-    .attr('height', 20);
-screwslots.filter((v) => v == 'phillips')
-    .append('rect')
-    .attr('y', -2)
-    .attr('x', -10)
-    .attr('width', 20)
-    .attr('height', 4);
-
-
-
-d3.select('#altitude-gauge > .gauge > .gauge-face').attr('mask', 'url(#altimeter-window)');
-*/
-
-
-

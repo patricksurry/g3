@@ -1,4 +1,6 @@
-import {stylable, appendable, element, gaugeController} from './protocol.js';
+import {stylable, appendable, gaugeController} from './mixin.js';
+import {element} from './common.js';
+import {fakeMetrics} from './fake.js';
 
 
 function jsondates(obj) {
@@ -13,27 +15,59 @@ function jsondates(obj) {
 }
 
 
+// global defs we append to panel's svg element
+const globalDefs = (width, height) => [
+    element('radialGradient', {
+        id: 'highlightGradient',
+        cx: '50%', cy: '50%',
+        fx: '25%', fy: '40%',
+        r: '50%',
+    }).append(
+        ...['white', 'black'].map(
+            d => element('stop', {'stop-color': d, offset: d == 'white' ? '0%': '100%'})
+        )
+    ),
+    ...[1,2,3].map(d =>
+        element('filter', {
+            id: 'dropShadow' + d,
+            // need userSpaceOnUse for drop-shadow to work on 0-width items
+            // but then need explicit extent in target units?
+            filterUnits: 'userSpaceOnUse',
+            x: -width, width: 2*width,
+            y: -height, height: 2*height,
+        }).append(element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
+    ),
+];
+
+
 export function panel() {
     var width=1024,
         height=768,
         interval=250,
-        url='/metrics/fake.json';
+        url;
 
     function panel(sel) {
         // draw and start updating panel
         let controller = gaugeController(interval),  // establish context for gauges
             _ = sel.append('svg')
                 .attr('width', width).attr('height', height);
+
+        // insert the global defs now that we know the panel size
+        panel.defs.append(...globalDefs(width, height));
+
         panel.stylable(_);
-        _.append('defs');
         panel.appendable(_);
 
         console.log('Starting panel expecting metrics:', controller.metrics());
 
         setInterval(() => {
-            fetch(url)
-              .then(response => response.json())
-              .then(metrics => controller(jsondates(metrics)));
+                if (url) {
+                    fetch(url)
+                      .then(response => response.json())
+                      .then(metrics => controller(jsondates(metrics)));
+                } else {
+                    controller(fakeMetrics());
+                }
             },
             interval
         );
@@ -51,19 +85,7 @@ export function panel() {
         return arguments.length ? (interval = _, panel): interval;
     }
     stylable(appendable(panel)).class('gauge-panel')
-
-    // add global defs here
-    panel.append(
-        ...[1,2,3].map(d =>
-            element('filter', {
-                id: 'dropShadow' + d,
-                // need userSpaceOnUse for drop-shadow to work on 0-width items
-                // but then need explicit extent in target units?
-                filterUnits: 'userSpaceOnUse',
-                x: -width, width: 2*width,
-                y: -height, height: 2*height,
-            }).append(element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
-        )
-    );
+    panel.defs = element('defs')
+    panel.append(panel.defs);
     return panel;
 }

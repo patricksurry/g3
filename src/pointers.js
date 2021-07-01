@@ -1,4 +1,4 @@
-import { element, put} from './protocol.js';
+import { element, put } from './common.js';
 
 
 //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
@@ -23,11 +23,11 @@ export var pointerShapes = {
         element('circle', {r: 2.4}).class('pointer-hub'),
     ),
     sword: put().scale(5.625, -5.625).append(
-        element('path', {d: 'M 0,16 L 0.75,14 l 0,-12 l -1.5,0 l 0,12 z'}).class('pointer-blade'),
-        element('rect', {x: -0.75, y: -6, height: 8, width: 1.5}).class('pointer-handle'),
-        element('circle', {r: 1.25}).class('pointer-hub'),
+        element('path', {d: 'M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z'}).class('pointer-blade'),
+        element('rect', {x: -0.6, y: -6, height: 8, width: 1.2}).class('pointer-handle'),
+        element('circle', {r: 1.2}).class('pointer-hub'),
         element('circle', {r: 0.5}).class('pointer-pin'),
-        element('circle', {r: 1.25, cy: -6}).class('pointer-pommel'),
+        element('circle', {r: 1.2, cy: -6}).class('pointer-pommel'),
     ),
     'aircraft-heading': put().x(-160).y(-160).scale(0.8).append(
         element('path', {d: "M 200.45288,260.80553 L 203.16177,253.84124 L 225.12833,263.88589 C 227.03295,264.83725 228.33805,264.53956 228.33805,262.63589 L 228.40255,256.61982 C 228.40255,250.22869 224.75105,247.90625 219.51131,243.70732 L 208.47788,235.31446 L 211.28639,196.92161 L 261.23772,213.1716 C 263.62163,213.95469 264.64806,212.98991 264.64806,211.20732 L 264.82432,201.9216 C 264.82432,194.61271 260.92135,191.45797 255.6207,187.81446 L 213.09186,157.27875 C 212.31569,139.15817 210.07741,119.6713 200.45288,103.52874 C 190.82836,119.6713 188.59008,139.15817 187.81391,157.27875 L 145.28507,187.81446 C 139.98442,191.45797 136.08145,194.61271 136.08145,201.9216 L 136.25771,211.20732 C 136.25771,212.98991 137.28414,213.95469 139.66805,213.1716 L 189.61938,196.92161 L 192.42789,235.31446 L 181.39446,243.70732 C 176.15472,247.90625 172.50322,250.22869 172.50322,256.61982 L 172.56772,262.63589 C 172.56772,264.53956 173.87282,264.83725 175.77744,263.88589 L 197.744,253.84124 L 200.45288,260.80553 z"})

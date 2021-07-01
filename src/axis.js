@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { stylable, appendId, identity } from './protocol.js';
+import { stylable, appendId, identity } from './mixin.js';
 
 
 function tickvals(vs, step, start, g) {

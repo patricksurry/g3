@@ -26,7 +26,7 @@ g3.gauge('altitudeDHC2')
                     g3.gaugeFace().style('fill: #111'),
                     g3.axisTicks().step(5).size(5).inset(10),
                     g3.axisTicks().step(1).size(3).inset(10),
-                    g3.axisTicks([1013.25]).size(5).inset(10).style('stroke: red'),
+                    g3.axisTicks([1013.25]).size(5).inset(10).class('tick-warning'),
                     g3.axisLabels(d3.range(955, 1075, 5)).size(10).orient('relative').rotate(-90),
                 )
         ),
@@ -36,7 +36,7 @@ g3.gauge('altitudeDHC2')
         // see https://www.cfinotebook.net/notebook/avionics-and-instruments/altimeter
         // A striped segment is visible below 10,000', when mask starts to cover, fully covered at 15,000'
         g3.indicatePointer().rescale(v => 3*v/100).append(
-            g3.axisSector([625, 1125]).inset(40).size(60).style('fill: #333')
+            g3.axisSector([625, 1125]).inset(40).size(60).class('gauge-face')
         ).style('filter: url(#dropShadow1)'),
         // add a face with two see-through windows
         g3.gaugeFace().window((_, g) => {
@@ -78,7 +78,7 @@ g3.gauge('attitudeDHC2')
                         .css('text {fill: #eee}')
                         .append(
                             g3.element('rect', {height: 200, width: 150, y: -100}) // sky
-                                .style('fill: #05AEEF; stroke: white'),
+                                .class('sector-blue').style('stroke: white'),
                             g3.element('rect', {height: 200, width: 150, x: -150, y: -100}) // ground
                                 .style('fill: #6B5634; stroke: white'),
                             g3.axisTicks([-20,20]).size(50).inset(-25),
@@ -97,7 +97,7 @@ g3.gauge('attitudeDHC2')
                 g3.axisTicks([-45, 45]).shape('wedge').inset(10).size(10).width(10),
                 g3.axisTicks([-20,-10,10,20]).inset(10).size(10),
             ),
-        // outline, post-clipping
+        // add outline, post-clipping
         g3.element('circle', {r: 100}).style('fill: none !important; stroke: white'),
         // top pointer
         g3.element('path', {d: 'M 0,-80 l 5,15 l -10,0 z'})
@@ -109,7 +109,7 @@ g3.gauge('attitudeDHC2')
             .style('fill: #333; filter: url(#dropShadow1)'),
         // handlebar arms and dot
         g3.element('path', {d: 'M -50,0 l 35,0 m 30,0 l 35,0'})
-            .style('stroke: orange; stroke-width: 3; fill: none'),
+            .style('stroke: orange; stroke-width: 3; fill: none; filter: url(#dropShadow1)'),
         g3.element('circle', {r: 2}).style('fill: orange !important; stroke: none; filter: url(#dropShadow1)'),
     );
 
@@ -126,32 +126,56 @@ g3.gauge('headingDHC2')
         g3.indicatePointer().shape('aircraft-heading'),
     );
 
+let deviationScale = d3.scaleLinear().domain([-10,10]).range([-50,50]);
+
 g3.gauge('VORDHC2')
+    // the inner part of the VOR gauge measures the deviation from selected radial
     .metric('radialDeviation').unit('degree')
-    .measure(d3.scaleLinear().domain([-10,10]).range([-50,50]))
+    .measure(deviationScale)
     .kind('linear')
+    .clip(g3.gaugeFace())
     .append(
         g3.gaugeFace(),
-        //TODO change central dot
-        g3.axisTicks().step(2).shape('dot').size(3),
+        g3.axisTicks([-10,-8,-6,-4,0,4,6,8,10]).shape('dot').size(3),
+        g3.element('circle', {r: deviationScale(2)}).style('fill: none; stroke: white; stroke-width: 2'),
+        g3.gaugeLabel('TO').x(35).y(-35).size(8),
+        g3.gaugeLabel('FR').x(35).y(35).size(8),
+        // use a single styled gauge to flip direction by styling the 'on' state over the 'off' state
+        g3.element('path', {d: 'M 35,20 l 7,-8 l -14,0 z', fill: 'orange'}),
+        g3.element('path', {d: 'M 35,-20 l 7,8 l -14,0 z'}).class('gauge-face'),
+        g3.gauge('VORToFr').metric('toFrVOR').append(
+            g3.indicateStyle().trigger(v => v ? 0.9 : 0.1).append(
+                g3.element('path', {d: 'M 35,20 l 7,-8 l -14,0 z'}).class('gauge-face'),
+                g3.element('path', {d: 'M 35,-20 l 7,8 l -14,0 z', fill: 'orange'}),
+            ),
+        ),
+        // a similar styled gauge hides both to show the unreliable signal indicator
+        g3.gauge('VORReliability').metric('reliabilityVOR').append(
+            g3.indicateStyle().trigger(v => v ? 0 : 1).append(
+                g3.element('path', {d: 'M 35,-20 l 7,8 l -14,0 z'}).class('gauge-face'),
+                g3.element('path', {d: 'M 35,20 l 7,-8 l -14,0 z'}).class('gauge-face'),
+                g3.element('rect', {x: 10, width: 12, y: -50, height: 30}).style('fill: red'),
+            ),
+        ),
+        g3.put().y(-28).x(16).rotate(90).append(g3.gaugeLabel('NA V').rotate(-90).style('fill: black')),
         g3.indicatePointer().append(
             g3.element('path', {d: 'M 0,-100 L 0,100'})
         ).css('path {stroke: white; stroke-width: 4}'),
         g3.gauge('radialVORDHC2')
+            // the outer ring auto-indicates to show the radial heading
             .metric('radialVOR').unit('degree')
             .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
             .autoindicate(true)
             .append(
-                g3.axisSector([0,360]).size(30).style('fill: #333; filter: url(#dropShadow3)'),
+                g3.axisSector([0,360]).size(30).style('filter: url(#dropShadow3)').class('gauge-face'),
                 g3.axisTicks().step(30).inset(30).size(-10).style('stroke-width: 2'),
                 g3.axisTicks().step(10).inset(30).size(-10),
                 g3.axisTicks().step(5).inset(30).size(-5),
                 g3.axisLabels().step(30).inset(10).size(16).orient('relative').format(headingFormat),
             ),
-        // top indicator
+        // top triangular indicator
         g3.element('path', {d: 'M 0,-80 l 0,10 l 8,14 l -16,0 l 8,-14 z'})
             .style('stroke: orange; fill: orange; stroke-width: 2'),
-// TODO TO, From, GS(?), no-signal indicators
     );
 
 g3.gauge('ADFDHC2')
@@ -164,7 +188,7 @@ g3.gauge('ADFDHC2')
             .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
             .autoindicate(true)
             .append(
-                g3.axisSector([0,360]).size(30).style('fill: #333'),
+                g3.axisSector([0,360]).size(30).class('gauge-face'),
                 g3.axisTicks().step(30).inset(30).size(-10).style('stroke-width: 2'),
                 g3.axisTicks().step(10).inset(30).size(-10),
                 g3.axisTicks().step(5).inset(30).size(-5),
@@ -198,13 +222,17 @@ g3.gauge('vsiDHC2')
         g3.indicatePointer().shape('sword'),
     );
 
-//TODO add the ball indicator
+//TODO add the ball indicator and finish this
 g3.gauge('turnCoordinatorDHC2')
     .metric('turnrate').unit('degreesPerSecond')
     .measure(d3.scaleLinear().domain([-3, 3]).range([-20, 20]))
     .append(
         g3.gaugeFace(),
         g3.axisTicks([-16.5, -13.5, 13.5, 16.5]).size(10),
+        g3.gaugeScrew().shape('robertson').y(50),
+        g3.gaugeScrew().shape('phillips').y(-50),
+        g3.gaugeScrew().x(-50),
+        g3.gaugeScrew().x(50),
         g3.indicatePointer().shape('aircraft-turn'),
     );
 
@@ -213,14 +241,14 @@ g3.gauge('airspeedDHC2')
     .measure(d3.scaleLinear().domain([40,200]).range([30, 350]))
     .append(
         g3.gaugeFace(),
-        g3.axisSector([60, 105]).inset(10).size(5).style('fill: #ccc'),  // flaps
-        g3.axisSector([60, 145]).size(5).style('fill: green'),  // normal
-        g3.axisSector([145, 180]).size(5).style('fill: red'),  // max
+        g3.axisSector([60, 105]).inset(10).size(5).class('sector-light'),  // flaps
+        g3.axisSector([60, 145]).size(5).class('sector-green'),  // normal
+        g3.axisSector([145, 180]).size(5).class('sector-red'),  // max
         g3.axisTicks().step(10).size(15),
         g3.axisTicks().step(5).size(10),
-        g3.axisTicks([180]).size(20).css('stroke: red'),  //TODO shared class?
-        g3.axisLabels().step(20).inset(33),
-        g3.gaugeLabel("AIRSPEED").y(-33),
+        g3.axisTicks([180]).size(15).class('tick-warning'),
+        g3.axisLabels().step(20).inset(30),
+        g3.gaugeLabel("AIRSPEED").size(12).y(-33),
         g3.gaugeLabel("MPH").y(33),
         g3.indicatePointer().shape('sword'),
     );
