@@ -7,19 +7,26 @@ window.g3 = g3;
 import * as panels from './config/panels.js';
 
 
+
+//TODO package like d3, maybe as g3 pack?
+
+//TODO add a panel registry like gauges to simplify reuse
+
 //TODO github pages demo
 
 //TODO diff on prior metrics + warn on missing metric after first call?
 
 //TODO more throw messages. e.g. for g.measure(2) should be g.measure()(2) type of 2 isn't function
 
-//TODO add electrical.js with volt and ammeter p25 milviz
+//TODO reusability is not great, e.g. draw & modify different versions of a gauge, or reuse tick labeling components
 
 //TODO upright text style
 
 //TODO tidy gauge.css
 
-//TODO fix drop-shadow for window cutout - apply to mask?
+//TODO custom tick mark shape for VSI arrows
+
+//TODO fix drop-shadow for window cutout in altitudeDHC2 - apply to mask?
 
 //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
 

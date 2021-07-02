@@ -63,6 +63,7 @@ var metricSeries = {
     altitude: forceSeries(0, 30000, {fmax: 0.001}),
     pitch: forceSeries(-25, 25),
     roll: forceSeries(-25, 25),
+    incline: forceSeries(-20,20),
     heading: forceSeries(0, 360, {wrap: true}),
     radialDeviation: forceSeries(-10, 10),
     radialVOR: forceSeries(0, 360, {wrap: true}),
@@ -83,6 +84,10 @@ var metricSeries = {
     oilPressure: forceSeries(0, 200),
     fuelPressure: forceSeries(0, 10),
     oilTemperature: forceSeries(0, 100),
+    carbMixtureTemp: forceSeries(-50, 50),
+    cylinderHeadTemp: forceSeries(0, 350),
+    alternatorLoad: forceSeries(-0.1, 1.25),
+    alternatorVolts: forceSeries(0, 30),
 }
 
 

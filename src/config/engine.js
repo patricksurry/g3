@@ -7,11 +7,11 @@ g3.gauge('suctionPressureDHC2')
     .measure(d3.scaleLinear().domain([0, 10]).range([7*30, 17*30]))
     .append(
         g3.gaugeFace(),
-        g3.axisTicks(d3.range(0, 10.1)).size(20),
         g3.axisTicks(d3.range(0, 10.1, 0.2)).size(10),
+        g3.axisTicks(d3.range(0, 10.1)).size(20).style('stroke-width: 2'),
         g3.axisTicks([4.5, 5.4]).size(20).class('tick-warning'),
         g3.axisLabels(d3.range(0, 10.1, 2)).inset(33),
-        g3.gaugeLabel("SUCTION").y(-33),
+        g3.gaugeLabel("SUCTION").size(15).y(-33),
         g3.gaugeLabel("INCHES OF MERCURY").y(25),
 
 /*        decorations: [
@@ -19,7 +19,7 @@ g3.gauge('suctionPressureDHC2')
             {kind: 'screw', style: 'phillips', r: -50, scale: 0.8},
         ],
 */
-        g3.indicatePointer(),
+        g3.indicatePointer().shape('sword'),
     );
 
 g3.gauge('manifoldPressureDHC2')
@@ -29,8 +29,8 @@ g3.gauge('manifoldPressureDHC2')
         g3.gaugeFace(),
         g3.axisSector([30, 35]).size(7).class('sector-green'),  // normal
         g3.axisSector([18, 30]).size(7).class('sector-blue'),     // idle
-        g3.axisTicks(d3.range(10,51,5)).size(15),
         g3.axisTicks(d3.range(10,51)).size(10),
+        g3.axisTicks(d3.range(10,51,5)).size(15).style('stroke-width: 2'),
         g3.axisTicks([30, 36.5]).size(17).class('tick-warning'),
         g3.axisLabels(d3.range(10,51,10)).inset(30).size(25),
         g3.axisLabels(d3.range(15,51,10)).size(15),
@@ -47,14 +47,14 @@ g3.gauge('engineTachometerDHC2')
         g3.gaugeFace(),
         g3.axisSector([1600, 2000]).size(7).class('sector-blue'), // idle
         g3.axisSector([2000, 2200]).size(7).class('sector-green'), // normal
-        g3.axisTicks().step(500).size(15),
         g3.axisTicks().step(100).size(10),
-        g3.axisTicks([2300]).size(17).class('tick-warning'),
-        g3.axisLabels().step(500).inset(30).size(20).format(v => v/100),
+        g3.axisTicks().step(500).size(15).style('stroke-width: 2'),
+        g3.axisTicks([2300]).size(15).class('tick-warning'),
+        g3.axisLabels().step(500).inset(30).format(v => v/100),
         g3.axisLabels([300]).format(v => v/100),
         g3.gaugeLabel('RPM').size(12).y(-45),
-        g3.gaugeLabel('HUNDREDS').size(12).y(-30),
-        g3.indicatePointer().shape('sword'),
+        g3.gaugeLabel('HUNDREDS').size(8).y(-30),
+        g3.indicatePointer().shape('rondel'),
     );
 
 g3.gauge('fuelDHC2')
@@ -169,3 +169,44 @@ g3.gauge('oilFuelDHC2')
         ),
     );
 
+g3.gauge('carbMixtureTempDHC2')
+    .metric('carbMixtureTemp').unit('degreeCelsius')
+    .measure(d3.scaleLinear().domain([-50,50]).range([225,315]))
+    .append(
+        g3.gaugeFace(),
+        g3.gaugeLabel('°C').size(20).x(-10),
+        g3.gaugeScrew().shape('phillips').x(30).y(60),
+        g3.gaugeScrew().shape('phillips').x(30).y(-60),
+        g3.put().x(50).append(
+            g3.axisSector([-10,5]).inset(-10).size(10).class('sector-yellow'),
+            g3.axisSector([5,15]).inset(-10).size(10).class('sector-green'),
+            g3.axisTicks().step(5).inset(-10).size(10),
+            g3.axisTicks().step(10).inset(-20).size(20),
+            g3.axisTicks([20]).inset(-20).size(20).class('tick-warning'),
+            g3.axisLabels().step(20).inset(15).size(15).format(v => {let z = Math.abs(v); return z + (z==40 ? (v > 0 ? '+':'-'): '');}),
+            g3.indicatePointer().shape('needle'),
+        ),
+    );
+
+g3.gauge('cylinderHeadTempDHC2')
+    .metric('cylinderHeadTemp').unit('degreeCelsius')
+    .measure(d3.scaleLinear().domain([0,350]).range([-70,70]))
+    .r(90)
+    .append(
+        g3.gaugeFace(),
+        g3.gaugeLabel('°C').size(12).y(-45),
+        g3.gaugeLabel('CYL.TEMP.').size(12).y(-25),
+        g3.gaugeScrew().shape('phillips').x(50).y(50),
+        g3.gaugeScrew().shape('phillips').x(-50).y(50),
+        g3.put().y(30).append(
+            g3.axisSector([150,230]).inset(-5).size(5).class('sector-blue'),
+            g3.axisSector([230,260]).inset(-5).size(5).class('sector-green'),
+            g3.axisTicks().step(10).size(5).inset(-5),
+            g3.axisTicks().step(50).size(10).inset(-10),
+            g3.axisTicks([100,260]).size(10).inset(-10).class('tick-warning'),
+            g3.axisLabels().step(100).start(100).inset(-20).size(15).format(v => v/100),
+            g3.axisLabels([50,150,250]).inset(-18).size(8),
+            g3.axisLabels({'-10': 0, '360': 350}).inset(0).size(10),
+            g3.indicatePointer().shape('needle'),
+        ),
+    )

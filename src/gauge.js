@@ -178,12 +178,11 @@ export function gaugeScrew() {
 
 export function gaugeLabel(s, opts) {
     var s = s || '',
-        x = 0, y = 0, dx = 0, dy = 0, size = 10, rotate=0;
+        x = 0, y = 0, dx = 0, dy = 0, size = 10;
     function label(sel, g) {
         let _ = sel.append('text')
             .attr('x', x).attr('y', y)
             .attr('dx', dx).attr('dy', dy)
-            .attr('rotate', rotate)
             .attr('font-size', size)
             .text(s);
         label.stylable(_);
@@ -193,9 +192,6 @@ export function gaugeLabel(s, opts) {
     }
     label.size = function(_) {
         return arguments.length ? (size = _, label): size;
-    }
-    label.rotate = function(_) {
-        return arguments.length ? (rotate = _, label): rotate;
     }
     label.x = function(_) {
         return arguments.length ? (x = _, label): x;

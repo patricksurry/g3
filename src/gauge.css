@@ -9,7 +9,6 @@ svg {
 }
 * {
     vector-effect: non-scaling-stroke;
-    stroke-width: 1;
 }
 
 .gauge-tickmarks path, path.gauge-axis {
@@ -25,8 +24,17 @@ text {
 .gauge-face {
     fill: #181818;
 }
+.stroke-dark {
+    stroke:  #181818;
+    fill:  none;
+}
 .gauge-axis, .gauge-axis-ticks {
     stroke: #ddd;
+    fill:  none;
+}
+.gauge-axis-dot, .gauge-axis-wedge {
+    fill:  #ddd;
+    stroke:  none;
 }
 .sector-light {
     fill: #ddd;
@@ -37,12 +45,11 @@ text {
 .sector-green {
     fill: green;
 }
+.sector-yellow {
+    fill: #987808;
+}
 .sector-red {
     fill: red;
-}
-.gauge-axis-dot, .gauge-axis-wedge {
-    fill:  white;
-    stroke:  none;
 }
 .tick-warning path {
     stroke: red;
@@ -68,8 +75,6 @@ text {
     font-size: 125%;
 }
 
-
-
 .gauge-indicate-pointer {
     fill: #222;
     stroke: none;
@@ -79,11 +84,12 @@ text {
     fill: red;
 }
 .pointer-blade {
-    fill:  #e8e8e8;
+    fill: #e8e8e8;
     stroke: #aaa;
 }
 .gauge-screw {
     fill: #333;
+    filter: url(#dropShadow2);
 }
 .gauge-screw-highlight, .pointer-pin {
     fill: url(#highlightGradient);

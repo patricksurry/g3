@@ -27,7 +27,7 @@ const globalDefs = (width, height) => [
             d => element('stop', {'stop-color': d, offset: d == 'white' ? '0%': '100%'})
         )
     ),
-    ...[1,2,3].map(d =>
+    ...[1, 2, 3].map(d =>
         element('filter', {
             id: 'dropShadow' + d,
             // need userSpaceOnUse for drop-shadow to work on 0-width items
@@ -36,6 +36,11 @@ const globalDefs = (width, height) => [
             x: -width, width: 2*width,
             y: -height, height: 2*height,
         }).append(element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
+    ),
+    ...[1, 2, 3].map(d =>
+        element('filter', {
+            id: 'gaussianBlur' + d,
+        }).append(element('feGaussianBlur', {in: 'SourceGraphic', stdDeviation: d}))
     ),
 ];
 

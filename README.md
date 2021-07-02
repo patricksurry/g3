@@ -8,3 +8,5 @@ a rotating indicator, or by rotating itself.  Some gauges use multiple indicator
 value with different precisions, e.g. a standard clock with hours, minutes, seconds or an altimeter.
 
 Composite gauges display multiple values, and provide an update function for each value.
+
+![flight panel screenshot](doc/flightpanel.png)
