@@ -10,10 +10,6 @@ svg {
 * {
     vector-effect: non-scaling-stroke;
 }
-
-.gauge-tickmarks path, path.gauge-axis {
-    vector-effect: non-scaling-stroke;
-}
 text {
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     text-anchor:  middle;

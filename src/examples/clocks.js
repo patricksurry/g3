@@ -20,7 +20,7 @@ const dowFormat = v => d3.timeFormat('%a')(v).slice(0,2).toUpperCase();
 
 g3.gauge('casioF91W')
     .metric('date').unit('dateTime')
-    .css('text {font-family: DSEG7-Classic; font-weight: bold; fill: #20282C;}')
+    .css('text.g3-indicate-text { fill: #20282C }')
     .append(
         g3.element('rect', {width: 200, height: 80, x: -100, y: -43}).attr('rx', 10).style('fill: #BCDCD8'),
         // am/pm
@@ -36,10 +36,10 @@ g3.gauge('casioF91W')
             g3.indicateText().format(d3.timeFormat('%e')).style('font-family: DSEG14-Classic')
         ),
         g3.put().x(-20).y(10).append(
-            g3.indicateText().format(d3.timeFormat('%_I:%M')).size(36)
+            g3.indicateText().format(d3.timeFormat('%_I:%M')).size(36).style('font-family: DSEG7-Classic')
         ),
         g3.put().x(65).y(14).append(
-            g3.indicateText().format(d3.timeFormat('%S')).size(27)
+            g3.indicateText().format(d3.timeFormat('%S')).size(27).style('font-family: DSEG7-Classic')
         ),
     );
 

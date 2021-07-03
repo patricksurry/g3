@@ -12,7 +12,7 @@ g3.gauge('ammeterDHC2')
             g3.axisLine(),
             g3.axisTicks().step(0.1).size(5).inset(-5),
             g3.axisTicks().step(0.5).start(0).size(10).inset(-10),
-            g3.axisTicks([1.0]).size(10).inset(-10).class('tick-warning'),
+            g3.axisTicks([1.0]).size(10).inset(-10).class('g3-danger-stroke'),
             g3.axisLabels().start(0).step(0.5).inset(-20).size(15).format(v => v.toFixed(1)),
             g3.axisLabels({'-0.2': 'D', 1.3: 'C'}).size(15).inset(0),
             g3.indicatePointer().shape('rondel'),

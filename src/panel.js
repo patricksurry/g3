@@ -3,16 +3,7 @@ import {element} from './common.js';
 import {fakeMetrics} from './fake.js';
 
 
-function jsondates(obj) {
-    return Object.fromEntries(Object.entries(obj).map(
-        ([k,v]) => {
-            if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
-                v = new Date(v);
-            }
-            return [k, v];
-        }
-    ))
-}
+export var panelRegistry = {};
 
 
 // global defs we append to panel's svg element
@@ -45,7 +36,24 @@ const globalDefs = (width, height) => [
 ];
 
 
-export function panel() {
+// helper function to convert string-serialized date metrics back to JS objects
+function jsondates(obj) {
+    return Object.fromEntries(Object.entries(obj).map(
+        ([k,v]) => {
+            if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
+                v = new Date(v);
+            }
+            return [k, v];
+        }
+    ))
+}
+
+
+
+export function panel(_name) {
+    if (!_name) throw "g3.panel(name) missing required name argument";
+    if (_name in panelRegistry) return panelRegistry[_name];
+
     var width=1024,
         height=768,
         interval=250,
@@ -89,8 +97,10 @@ export function panel() {
     panel.interval = function(_) {
         return arguments.length ? (interval = _, panel): interval;
     }
-    stylable(appendable(panel)).class('gauge-panel')
+    stylable(appendable(panel)).class('g3-panel')
     panel.defs = element('defs')
     panel.append(panel.defs);
+
+    panelRegistry[_name] = panel;
     return panel;
 }

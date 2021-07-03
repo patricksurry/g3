@@ -34,7 +34,7 @@ export function axisLine() {
             .attr('d', g.sectorpath(...g.measure().domain()));
         line.stylable(_);
     }
-    return stylable(line).class('gauge-axis');
+    return stylable(line).class('g3-axis-line');
 }
 
 
@@ -54,7 +54,7 @@ export function axisSector(vs) {
     sector.inset = function(_) {
         return arguments.length ? (inset = _, sector) : inset;
     }
-    return stylable(sector).class('gauge-sector');
+    return stylable(sector).class('g3-axis-sector');
 }
 
 
@@ -68,11 +68,10 @@ export function axisTicks(vs) {
     function ticks(sel, g) {
         let vs = tickvals(values, step, start, g);
         let _ = sel.append('g');
-        ticks.stylable(_);
-        _ = _.selectAll('.gauge-axis-' + shape)
+        ticks.class('g3-axis-ticks-' + shape).stylable(_);
+        _ = _.selectAll(null)
             .data(vs)
           .enter().append('g')
-            .attr('class', 'gauge-axis-' + shape)
             .attr('transform', d => g.marktransform(d, inset));
 
         switch(shape) {
@@ -107,15 +106,24 @@ export function axisTicks(vs) {
     ticks.inset = function(_) {
         return arguments.length ? (inset = _, ticks) : inset;
     }
-    return stylable(ticks).class('gauge-axis-ticks');
+    return stylable(ticks).class('g3-axis-ticks');
 }
 
 
 export function axisLabels(vs) {
     const isMap = typeof vs === 'object' && !Array.isArray(vs);
 
+    /*
+    orientation:
+    - fixed: normal reading orientation independent of axis position
+    - relative: relative to axis orientation at label position, with normal reading orientation when axis is rotated to top
+    - cw / ccw: text is drawn along the axis path in either clockwise or counter-clockwise direction
+
+    - rotate: rotation to apply w.r.t. fixed or relative orientation
+    - upright: choose between rotate and rotate+180 direction based on whichever is pointing up
+    */
     var orient = 'fixed',  // 'relative', 'cw', 'ccw'
-        upright = true,
+        upright = true,  //TODO
         size = 20,
         inset = 25,
         rotate = 0,
@@ -129,10 +137,9 @@ export function axisLabels(vs) {
 
         let _ = sel.append('g');
         labels.stylable(_);
-        _ = _.selectAll('.gauge-axis-label')
+        _ = _.selectAll(null)
             .data(vs)
-          .enter().append('g')
-            .attr('class', 'gauge-axis-label');
+          .enter().append('g');
         if (circPath) {
             const r = g.r() - inset,
                 cw = orient == 'cw' ? 1: 0;
@@ -183,5 +190,5 @@ export function axisLabels(vs) {
     labels.format = function(_) {
         return arguments.length ? (format = _, labels) : format;
     }
-    return stylable(labels).class('gauge-axis-labels');
+    return stylable(labels).class('g3-axis-labels');
 }

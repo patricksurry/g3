@@ -5,20 +5,17 @@
    "private": true,
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "build": "webpack",
-      "start": "webpack serve --open --host 0.0.0.0"
+      "build": "rollup -c",
+      "start": "wds --root-dir src --node-resolve --watch --open"
    },
    "dependencies": {
       "@emotion/css": "^11.1.3",
-      "css-loader": "^5.2.6",
-      "d3": "^7.0.0",
-      "dseg": "^0.46.0",
-      "style-loader": "^3.0.0",
-      "webpack-dev-server": "^3.11.2"
+      "d3": "^7.0.0"
    },
    "devDependencies": {
-      "file-loader": "^6.2.0",
-      "url-loader": "^4.1.1",
-      "webpack-cli": "^4.7.0"
+      "@rollup/plugin-node-resolve": "^13.0.0",
+      "@web/dev-server": "^0.1.18",
+      "rollup-plugin-inject-process-env": "^1.3.1",
+      "rollup-plugin-terser": "^7.0.2"
    }
 }

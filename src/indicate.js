@@ -28,7 +28,7 @@ export function indicateText() {
     text.size = function(_) {
         return arguments.length ? (size = _, text) : size;
     }
-    return stylable(text).class('gauge-indicate-text');
+    return stylable(text).class('g3-indicate-text');
 }
 
 
@@ -58,7 +58,7 @@ export function indicatePointer() {
         if (arguments.length && !(_ in pointerShapes)) throw 'pointer: unknown shape ${_}';
         return arguments.length ? pointer.append(pointerShapes[_]) : pointer.append();
     }
-    return stylable(appendable(pointer)).class('gauge-indicate-pointer');
+    return stylable(appendable(pointer)).class('g3-indicate-pointer');
 }
 
 
@@ -69,7 +69,7 @@ export function indicateStyle() {
     function style(sel, g) {
         const metric = g.metric(),
             tween = d3.interpolate(styleOff, styleOn);
-        let _ = sel.append('g').attr('class', 'gauge-indicate-style');
+        let _ = sel.append('g').attr('class', 'g3-indicate-style');
         style.appendable(_, g);
 
         function update(metrics) {

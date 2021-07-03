@@ -4,7 +4,7 @@ import { stylable, transformable, appendable, identity, appendId, activeControll
 import { element } from './common.js';
 import { indicateStyle } from './indicate.js';
 
-export var gaugeRegistry = {}; // only for testing
+export var gaugeRegistry = {};  // for debugging
 
 const DEG2RAD = Math.PI/180;
 
@@ -25,7 +25,7 @@ export function gauge(_name) {
     function gauge(selection, parent) {
         let _ = selection.append('g');
         gauge.stylable(_);
-        _ = _.append('g').attr('class', 'gauge-layers');
+        _ = _.append('g');
 
         if (typeof clip === 'function') {
             let clipId = appendId('gauge-clip');
@@ -104,7 +104,7 @@ export function gauge(_name) {
     gauge.children
     gaugeRegistry[_name] = gauge;
 
-    return stylable(appendable(gauge)).class('gauge gauge-' + name);
+    return stylable(appendable(gauge)).class('g3-gauge');
 }
 
 
@@ -131,7 +131,7 @@ export function gaugeFace() {
     face.window = function(_) {
         return arguments.length ? (window = _, face): window;
     }
-    return stylable(face).class('gauge-face');
+    return stylable(face).class('g3-gauge-face');
 }
 
 
@@ -140,11 +140,11 @@ export function gaugeScrew() {
         shape = 'slotted';  // or phillips, robertson
     function screw(_, g) {
         let rotate = Math.random()*360;
-        _ = _.append('g').attr('class', 'gauge-screw');
+        _ = _.append('g').attr('class', 'g3-gauge-screw');
         screw.transformable(_);
         screw.stylable(_);
-        _.append('circle').attr('r', r).attr('class', 'gauge-screw-head');
-        _.append('circle').attr('r', r) .attr('class', 'gauge-screw-highlight');
+        _.append('circle').attr('r', r).attr('class', 'g3-gauge-screw-head');
+        _.append('circle').attr('r', r) .attr('class', 'g3-highlight');
         switch (shape) {
             case 'robertson':
                 _.append('rect')
@@ -205,7 +205,7 @@ export function gaugeLabel(s, opts) {
     label.dy = function(_) {
         return arguments.length ? (dy = _, label): dy;
     }
-    stylable(label).class('gauge-label');
+    stylable(label).class('g3-gauge-label');
     if (typeof opts === 'object') {
         Object.items(opts).forEach(([k,v]) => {
             if (typeof label[k] !== 'function') throw `label: unknown attribute ${k}`;
@@ -223,9 +223,9 @@ export function statusLight(_) {
         color = 'red';
     function statusLight(sel, parent) {
         g.append(
-            g3.indicateStyle().trigger(trigger).append(
-                g3.gaugeFace().style(`fill: ${color}`),
-                g3.gaugeFace().style("fill: url('#highlightGradient'); fill-opacity: 0.25"),
+            indicateStyle().trigger(trigger).append(
+                gaugeFace().style(`fill: ${color}`),
+                gaugeFace().class('g3-highlight'),
             )
         )
         g(sel, parent);

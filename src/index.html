@@ -5,10 +5,18 @@
 </head>
 <body>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="./g3-examples.js"></script>
-
 <script>
+window.process = {
+    env: {
+        NODE_ENV: 'development'
+    }
+}
+</script>
+
+<script type='module'>
+import * as d3 from 'd3';
+import * as g3 from './g3.js';
+import './g3-examples.js';
 
 // g3.panel('DHC2FlightPanel').interval(250).url('/metrics/fake.json')(d3.select('body'));
 g3.panel('DHC2FlightPanel')(d3.select('body'));
