@@ -14,14 +14,12 @@ window.process = {
 </script>
 
 <script type='module'>
-import * as d3 from 'd3';
-import * as g3 from './g3.js';
-import './g3-examples.js';
+import * as g3 from './g3-examples.js';
 
 // g3.panel('DHC2FlightPanel').interval(250).url('/metrics/fake.json')(d3.select('body'));
-g3.panel('DHC2FlightPanel')(d3.select('body'));
-g3.panel('ClocksPanel')(d3.select('body'));
-g3.panel('DHC2EnginePanel')(d3.select('body'));
+g3.panel('DHC2FlightPanel')('body');
+g3.panel('ClocksPanel')('body');
+g3.panel('DHC2EnginePanel')('body');
 
 </script>
 </body>

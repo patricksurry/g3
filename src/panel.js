@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+
 import {stylable, appendable, gaugeController} from './mixin.js';
 import {element} from './common.js';
 import {fakeMetrics} from './fake.js';
@@ -60,6 +62,7 @@ export function panel(_name) {
         url;
 
     function panel(sel) {
+        if (typeof sel === 'string') sel = d3.select(sel);
         // draw and start updating panel
         let controller = gaugeController(interval),  // establish context for gauges
             _ = sel.append('svg')
