@@ -62,12 +62,36 @@ g3.panel('DHC2FlightPanel')('body');
 
 ### Core concepts
 
-A gauge has a circular face displaying a (semi-)circular axis scale, usually including tick marks and labels
-and sometimes other decorations.  Each gauge provides an update function that displays a current value using
-a rotating indicator, or by rotating itself.  Some gauges use multiple indicators to display the same underlying
-value with different precisions, e.g. a standard clock with hours, minutes, seconds or an altimeter.
+A *panel* is a container that presents a collection of *gauges*, 
+and orchestrates the display of *metrics*,
+normally retrieved by polling some external source.  
+(It's also easy to generate fake metrics that vary over time for development purposes.)
 
-Composite gauges display multiple values, and provide an update function for each value.
+A simple *gauge* displays some *metric*, 
+using a *scale* to transform the raw metric 
+and *indicate* that value on a local *axis*,
+usually adorned with *ticks*, *labels* and other decorations.   
+Typical "steam gauges" use a circular coordinate system and indicate
+metric values using a rotating *pointer*.  
+More complex gauges might display the same metric at several scales
+(e.g. a clock with a second, minute and hour hand,
+or an altimeter displaying hundreds, thousands and ten-thousands);
+contain one or more sub-gauges that display different metrics
+(like a combined oil and fuel temperature gauge);
+or indicate values using text or color rather than a pointer.
+Some gauges *auto-indicate*, in that the gauge itself 
+tracks the metric value with respect to a fixed point, 
+for example the pressure reading of a altimeter 
+or the "day of month" of some watches
+where the axis is rotated to be visible through a fixed window.
+
+In order to keep things modular and separate gauge configuration
+from usage in a specific panel, 
+G3 uses the pattern of closures with getter-setter methods
+suggested by [Mike Bostock](https://bost.ocks.org/mike/chart/)
+
+Each gauge registers interest in ...
+
 
 Everything is a drawable function
 
