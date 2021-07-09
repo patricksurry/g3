@@ -42,7 +42,19 @@ npm install @patricksurry/g3
 
 ### Display an existing panel
 
-Check things are working
+Display your a predefined instrument panel with fake readings by pasting this HTML code into a file like `panel.html`:
+
+```html
+<html>
+    <body>
+        <script src="./g3-examples.min.js"></script>
+        <script>
+g3.panel('DHC2FlightPanel')('body');
+        </script>
+    </body>
+</html>
+```
+
 
 ### Create a panel with existing gauges
 
