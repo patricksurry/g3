@@ -32,6 +32,8 @@ that you can use or modify as desired.
 
 TODO
 
+Create a project directory and install G3:
+
 ```bash
 npm install @patricksurry/g3
 ```
@@ -42,50 +44,112 @@ npm install @patricksurry/g3
 
 ### Display an existing panel
 
-Check things are working
+Check things are working by creating a minimal HTML file to display an existing panel with fake metrics.
+Create a new file called `test.html` containing:
+
+```html
+<html>
+  <body>
+    <script src="./g3-examples.min.js"></script>
+    <script>
+g3.panel('DHC2FlightPanel')('body');
+    </script>
+  </body>
+</html>
+```
+This tells G3 to retrieve the pre-defined `DHC2FlightPanel` panel,
+and draw it as a new SVG object into the HTML `<body>` element.
+By default the panel provides fake metrics so you can see your gauges moving
+in a somewhat realistic but random way.
+Save the file and use a terminal window to serve it locally using your favorite HTTP server.  
+For example
+```shell
+python -m http.server
+```
+or
+```shell
+npx http-server -p 8000
+```
+and point your browser at http://localhost:8000/test.html.
+You should see something like the [live demo](https://patricksurry.github.io/) above.
 
 ### Create a panel with existing gauges
 
+The [examples folder](https://github.com/patricksurry/d3-gauges/tree/master/src/examples)
+contains a number of predefined gauges (flight, electrical, engine, clocks) and panels.
+You can see them all by using `test.html` to display the `DebugPanel` which includes
+every defined gauge, including showing 'exploded' views of all subgauges.
+
+Let's make a panel that simply shows a clock and a heading gauge.
+Create a new html file called `panel.html` that looks like this:
+```html
+<html>
+  <body>
+    <script src="./g3-examples.min.js"></script>
+    <script>
+var panel = g3.panel('SimplePanel')
+        .width(600).height(300)
+        .append(
+            g3.put().x(150).y(150).append(g3.gauge('clockSimple')),
+            g3.put().x(450).y(150).append(g3.gauge('headingDHC2')),
+        );
+panel('body')
+    </script>
+  </body>
+</html>
+```
+This defines a new panel, `SimplePanel`, which creates a 600x300
+SVG container, retrieves existing gauges and places them at (150,150) and (450,150).
+By convention gauges are drawn assuming a radius 100 circle,
+but you can simply add `.scale(1.5)` to the `put()` if you prefer radius 150, say.
+Serve locally as before and browse to http://localhost:8000/panel.html
+and you should see something like this:
+
+TODO - test screenshot
+
 ### Display real metrics
+
 
 ### Core concepts
 
-A *panel* is a container that presents a collection of *gauges*, 
+A *panel* is a container that presents a collection of *gauges*,
 and orchestrates the display of *metrics*,
-normally retrieved by polling some external source.  
+normally retrieved by polling some external source.
 (It's also easy to generate fake metrics that vary over time for development purposes.)
-
 A simple *gauge* displays some *metric*, 
 using a *scale* to transform the raw metric 
 and *indicate* that value on a local *axis*,
 usually adorned with *ticks*, *labels* and other decorations.   
-Typical "steam gauges" use a circular coordinate system and indicate
-metric values using a rotating *pointer*.  
+Typical "steam gauges" use a circular coordinate system to indicate
+metric values using a rotating *pointer*.
 More complex gauges might display the same metric at several scales
 (e.g. a clock with a second, minute and hour hand,
-or an altimeter displaying hundreds, thousands and ten-thousands);
+or an altimeter displaying hundreds, thousands and ten-thousands of feet);
 contain one or more sub-gauges that display different metrics
 (like a combined oil and fuel temperature gauge);
-or indicate values using text or color rather than a pointer.
-Some gauges *auto-indicate*, in that the gauge itself 
-tracks the metric value with respect to a fixed point, 
-for example the pressure reading of a altimeter 
+or indicate values using text (such as a digital watch or radio frequency LCD)
+or color rather than a pointer.
+Some gauges *auto-indicate*, in that the gauge itself
+tracks the metric value with respect to a fixed point,
+for example the pressure reading of an altimeter
 or the "day of month" of some watches
-where the axis is rotated to be visible through a fixed window.
+where the gauge axis rotates to be visible through a fixed window.
 
-In order to keep things modular and separate gauge configuration
+In order to keep things modular, and separate gauge configuration
 from usage in a specific panel, 
 G3 uses the pattern of closures with getter-setter methods
-suggested by [Mike Bostock](https://bost.ocks.org/mike/chart/)
-
-Each gauge registers interest in ...
-
-
-Everything is a drawable function
-
+from Mike Bostock's approach to [reusable charts](https://bost.ocks.org/mike/chart/).
+This means that most G3 components result in a configurable drawing function
+which is eventually called by passing it a concrete [D3 selection](https://github.com/d3/d3-selection)
+(or CSS selector string) into which it draws itself.
+The typical drawing function looks like this:
 ```js
-(selection, gauge) => { /* draw into selection, optionally using containing gauge information */}
+(selection, gauge) => { 
+  /* append component instance to selection, perhaps based on parent gauge properties */
+}
 ```
+[Gauge components](#gauge) use [D3 dispatch](https://github.com/d3/d3-dispatch) to register interest
+in the named metric so that the containing [panel](#panel) can send updates as the metric changes.
 
 ### Create a new gauge
 
