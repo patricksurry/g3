@@ -80,7 +80,7 @@ contains a number of predefined gauges (flight, electrical, engine, clocks) and 
 You can see them all by using `test.html` to display the `DebugPanel` which includes
 every defined gauge, including showing 'exploded' views of all subgauges.
 
-Let's make a panel that simply shows a clock and a heading gauge.
+Let's make a panel that shows a clock and a heading gauge side by side.
 Create a new html file called `panel.html` that looks like this:
 ```html
 <html>
@@ -93,13 +93,13 @@ var panel = g3.panel('SimplePanel')
             g3.put().x(150).y(150).append(g3.gauge('clockSimple')),
             g3.put().x(450).y(150).append(g3.gauge('headingDHC2')),
         );
-panel('body')
+panel('body');
     </script>
   </body>
 </html>
 ```
-This defines a new panel, `SimplePanel`, which creates a 600x300
-SVG container, retrieves existing gauges and places them at (150,150) and (450,150).
+This defines a new panel, `SimplePanel`, which---when called---creates a 600x300
+SVG container, retrieves existing gauges, and places them at (150,150) and (450,150).
 By convention gauges are drawn assuming a radius 100 circle,
 but you can simply add `.scale(1.5)` to the `put()` if you prefer radius 150, say.
 Serve locally as before and browse to http://localhost:8000/panel.html
@@ -109,8 +109,34 @@ TODO - test screenshot
 
 ### Display real metrics
 
+We've built a panel, but it's displaying fake metrics.
+We can poll for external metrics by specifying a URL
+that responds with a json object containing the current metrics,
+and optionally a polling interval (default 250ms, or four times per second).
+Let's add that to `panel.html`, replacing `panel('body');` with:
 
-### Core concepts
+```js
+...
+panel.interval(500).url('/metrics/fake.json')('body');
+...
+```
+
+Now we just need our server to provide metrics at the endpoint.
+First we'll create an endpoint that serves fake metrics:
+the behavior will look similar at first but we can hook it up to whatever we want.
+
+TODO - include python fastapi example
+
+TODO - show how we can change a specific metric
+
+More usefully, we'd have our server collect metrics from our simulation,
+for example via [SimConnect](https://github.com/odwdinc/Python-SimConnect),
+and provide those in our endpoint.
+
+TODO - example of SimConnnect
+
+
+### Key concepts
 
 A *panel* is a container that presents a collection of *gauges*,
 and orchestrates the display of *metrics*,
@@ -119,7 +145,7 @@ normally retrieved by polling some external source.
 A simple *gauge* displays some *metric*, 
 using a *scale* to transform the raw metric 
 and *indicate* that value on a local *axis*,
-usually adorned with *ticks*, *labels* and other decorations.   
+usually adorned with *ticks*, *labels* and other decorations.
 Typical "steam gauges" use a circular coordinate system to indicate
 metric values using a rotating *pointer*.
 More complex gauges might display the same metric at several scales
@@ -152,6 +178,8 @@ The typical drawing function looks like this:
 in the named metric so that the containing [panel](#panel) can send updates as the metric changes.
 
 ### Create a new gauge
+
+
 
 ## Contributing
 
