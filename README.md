@@ -2,7 +2,7 @@
 
 G3 (backronym: generic gauge grammar) is a flexible framework for designing and
 running "steam gauge" instrument panels for flight (or other) simulators, like this
-(or see [live demo](https://patricksurry.github.io/)):
+(also see [live demo](https://patricksurry.github.io/)):
 
 ![flight panel screenshot](doc/flightpanel.png)
 
@@ -11,7 +11,7 @@ G3 is part of a quixotic pandemic project to build a
 cockpit simpit.
 Although there are plenty of [alternatives](#resources)
 for creating instrument panels,
-I decided it would be fun to roll my own using [D3](https://d3js.org/).
+I decided it would be fun to roll my own based on pure Javascript with SVG using [D3](https://d3js.org/).
 After several iterations, I ended up very close to
 the pattern suggested by
 [Mike Bostock](https://bost.ocks.org/mike/)
@@ -27,6 +27,8 @@ that you can use or modify as desired.
 - Give back by [contributing](#contributing) new gauges and panels
 - Explore related [resources](#resources)
 - Dig in to the full [API reference](#api-reference)
+
+**Keywords**: G3 flight simulator gauges control panel SVG javascript D3
 
 ## Installing
 
@@ -136,47 +138,6 @@ and provide those in our endpoint.
 TODO - example of SimConnnect
 
 
-### Key concepts
-
-A *panel* is a container that presents a collection of *gauges*,
-and orchestrates the display of *metrics*,
-normally retrieved by polling some external source.
-(It's also easy to generate fake metrics that vary over time for development purposes.)
-A simple *gauge* displays some *metric*, 
-using a *scale* to transform the raw metric 
-and *indicate* that value on a local *axis*,
-usually adorned with *ticks*, *labels* and other decorations.
-Typical "steam gauges" use a circular coordinate system to indicate
-metric values using a rotating *pointer*.
-More complex gauges might display the same metric at several scales
-(e.g. a clock with a second, minute and hour hand,
-or an altimeter displaying hundreds, thousands and ten-thousands of feet);
-contain one or more sub-gauges that display different metrics
-(like a combined oil and fuel temperature gauge);
-or indicate values using text (such as a digital watch or radio frequency LCD)
-or color rather than a pointer.
-Some gauges *auto-indicate*, in that the gauge itself
-tracks the metric value with respect to a fixed point,
-for example the pressure reading of an altimeter
-or the "day of month" of some watches
-where the gauge axis rotates to be visible through a fixed window.
-
-In order to keep things modular, and separate gauge configuration
-from usage in a specific panel, 
-G3 uses the pattern of closures with getter-setter methods
-from Mike Bostock's approach to [reusable charts](https://bost.ocks.org/mike/chart/).
-This means that most G3 components result in a configurable drawing function
-which is eventually called by passing it a concrete [D3 selection](https://github.com/d3/d3-selection)
-(or CSS selector string) into which it draws itself.
-The typical drawing function looks like this:
-```js
-(selection, gauge) => { 
-  /* append component instance to selection, perhaps based on parent gauge properties */
-}
-```
-[Gauge components](#gauge) use [D3 dispatch](https://github.com/d3/d3-dispatch) to register interest
-in the named metric so that the containing [panel](#panel) can send updates as the metric changes.
-
 ### Create a new gauge
 
 
@@ -204,6 +165,47 @@ https://github.com/odwdinc/Python-SimConnect
 
 ## API reference
 
+### Key concepts
+
+A [panel](#panel) is a container that presents a collection of [gauges](#gauge),
+and orchestrates the display of [metrics](#metrics),
+normally retrieved by polling some external source.
+(G3 also generates fake time-varying metrics for development purposes.)
+A simple gauge displays some metric, 
+using a [scale](#scale) to transform the raw metric 
+and [indicate](#indicate) that value on a local [axis](#axis),
+usually adorned with [ticks](#axis), [labels](#axis) and other SVG [decorations](#SVG).
+Typical "steam gauges" use a circular coordinate system to indicate
+metric values using a rotating [pointer](#indicate).
+More complex gauges might display the same metric at several scales
+(e.g. a clock with a second, minute and hour hand,
+or an altimeter displaying hundreds, thousands and ten-thousands of feet);
+contain one or more sub-gauges that display different metrics
+(like a combined oil and fuel temperature gauge);
+or indicate values using [text](#indicate) (such as a digital watch or radio frequency LCD)
+or SVG [style](#indicate) such as color rather than a pointer.
+Some gauges *auto-indicate*, in that the gauge itself
+tracks the metric value with respect to a fixed point,
+for example the pressure reading of an altimeter
+or the "day of month" of some watches
+where the gauge axis rotates to be visible through a fixed window.
+
+In order to keep things modular, and separate gauge configuration
+from usage in a specific panel, 
+G3 uses the pattern of closures with getter-setter methods
+from Mike Bostock's approach to [reusable charts](https://bost.ocks.org/mike/chart/).
+This means that most G3 components return a configurable drawing function
+which is ultimately rendered to SVG by calling it with a [D3 selection](https://github.com/d3/d3-selection)
+or CSS selector string.
+The typical drawing function looks like this:
+```js
+(selection, gauge) => { 
+  /* append component instance to selection, perhaps based on parent gauge properties */
+}
+```
+[Gauge components](#gauge) use [D3 dispatch](https://github.com/d3/d3-dispatch) to register interest
+in the named metric so that the containing [panel](#panel) can send updates as the metric changes.
+
 ### Gauge and panel examples
 
 https://github.com/patricksurry/d3-gauges/blob/master/src/examples/panels.js
@@ -215,10 +217,65 @@ https://github.com/patricksurry/d3-gauges/blob/master/src/examples/electrical.js
 
 ### Gauge
 
-[source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+g3.**gauge**(*identifier*: string) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
-e.g.
-<a name="arc" href="#arc">#</a> d3.<b>arc</b>() · [Source](https://github.com/d3/d3-shape/blob/master/src/arc.js)
+Create a configurable gauge rendering function, registered with the required *identifier*,
+or return an existing gauge renderer if the identifier has already been registered.
+Use the getter/setter methods to configure it, like *gauge*.r(100), 
+or call it to draw it directly to an SVG document like *gauge*(d3.select('svg.mygauge')).
+Typically *gauge* is not drawn directly 
+but instead added to a [panel](#panel) which will draw it and manage metric updates.
+
+*gauge*.**metric**([*metric*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *metric* is specified, set the name of the metric that this gauge will indicate.
+If *metric* is not specified, return the name of the current metric, defaulting to *undefined*.
+
+*gauge*.**unit**([*unit*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+*(Currently unused.)*  
+If *unit* is specified, set the unit of measurement for the current metric,
+otherwise return the current unit, defaulting to *undefined*.
+In future this is intended to support better discovery of metric units and potentially
+conversion between compatible units (feet &harr; meters, inches of mercury &harr; hectopascals, etc)
+
+*gauge*.**kind**([*kind*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *kind* is specified, it must be either the string `"circular"` or `"linear"`
+to select how the axis is displayed for this gauge.
+If *kind* is not specified, return the current value, defaulting to `"circular"`.
+
+*gauge*.**measure**([*measure*: object]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *measure* is specified, it defines a [d3.scale](https://github.com/d3/d3-scale)-like 
+function which transforms metric values to the axis coordinate system of the gauge,
+and provides *measure*.domain() and *measure*.range() accessors reporting the expected
+range of the source metric and axis coordinates respectively.
+For example, on a gauge with a circular axis, 
+*gauge*.measure(d3.scaleLinear().domain([0,10]).range([-90, 90]))
+would map a metric expected to take values between 0 and 10 to a semi-circular axis on the top half of the gauge face.
+
+*gauge*.**r**([*radius*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *radius* is specified it defines the size of the gauge in SVG units,
+otherwise the current *radius* is returned, defaulting to 100.
+
+*gauge*.**autoindicate**([*flag*: bool]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *flag* is set, the boolean value defines whether this gauge should self-indicate,
+otherwise return the current value, defaulting to false.
+Most gauges are fixed and use a pointer, text or style to indicate the current metric value.
+A self-indicating gauge transforms itself so that the axis location corresponding 
+to the current metric value stays at a fixed position.
+A circular gauge rotates so the correct axis value is shown at the top,
+and a linear gauge slides itself to the correct axis value is shown centered at *x*=0.
+
+*gauge*.**clip**([*clippath*: function]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *clippath* is set, it defines a G3 drawing function that, when called, draws a clipping path for this gauge.
+Otherwise, it returns the current drawing function, defaulting to undefined.
+For complex nested gauges, like the attitude indicator, it is sometimes convenient to clip to a simple circle
+via *gauge*.clip(g3.gaugeFace()).
 
 
 ### Axis
@@ -255,3 +312,7 @@ e.g.
 - Omega tachymeter example
 
 - diff on prior metrics + warn on missing metric after first call?
+
+- fish-eye axis style for a magnetic compass, where we're looking at a disc edge on
+
+
