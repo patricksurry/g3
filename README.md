@@ -221,11 +221,11 @@ g3.**gauge**(*identifier*: string) · [source](https://github.com/patricksurry/d
 
 Create a configurable gauge rendering function, registered with the required *identifier*,
 or return an existing gauge renderer if the identifier has already been registered.
-Use the getter/setter methods to configure it, like *gauge*.r(100), 
-or call it to draw it directly to an SVG document like *gauge*(d3.select('svg.mygauge')).
+Use its getter/setter methods (below) to configure it, like *gauge*.r(100), 
+then call it to draw it within an SVG document like *gauge*(d3.select('svg.mygauge')).
 Typically *gauge* is not drawn directly 
-but instead added to a [panel](#panel) which will draw it and manage metric updates.
-A *gauge* is styable and appendable, see [mixins](#mixins).
+but instead appended to a [panel](#panel) which will draw it and manage metric updates.
+A *gauge* is also styable and appendable via [mixins](#mixins).
 
 *gauge*.**metric**([*metric*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
@@ -299,11 +299,21 @@ G3 elements support common getters and setters via mixins.
 by adding class names, element styles, or inline CSS via the
 [@emotion/css package](https://www.npmjs.com/package/@emotion/css).
 
-*styable*.style([style: string]) element styles
+*styable*.style([style: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
 
-*styable*.class([class: string]) space separate list of class names
+If #style# is defined, set the object's inline style property, otherwise return the current inline style value.
 
-*styable*.css([css: string]) inline css, often as a multiline string
+*styable*.class([class: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+
+If #class# is defined, add it as a space-separated list of class names to the object's class property,
+otherwise return the current space-separated list of classes.
+
+*styable*.css([css: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+
+If #css# is defined, interpet as inline CSS rules using [@emotion/css](https://www.npmjs.com/package/@emotion/css),
+which injects the CSS into the HTML doc using a new class name and adds that class to the current list of classes.
+If #css# is not defined, return the current space-separated list of classes.
+This can be helpful to override the default style of child elements that are not directly stylable themselves.
 
 **transformable** objects support 
 [SVG transformation](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform).
