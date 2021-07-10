@@ -109,6 +109,15 @@ and you should see something like this:
 
 TODO - test screenshot
 
+The G3-examples package includes several 
+[example panels](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/panels.js)
+along with several collections of gauges, including
+[clocks](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/clocks.js),
+[flight gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/flight.js),
+[engine gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/engine.js),
+and [electrical gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/electrical.js).
+
+
 ### Display real metrics
 
 We've built a panel, but it's displaying fake metrics.
@@ -206,15 +215,6 @@ The typical drawing function looks like this:
 [Gauge components](#gauge) use [D3 dispatch](https://github.com/d3/d3-dispatch) to register interest
 in the named metric so that the containing [panel](#panel) can send updates as the metric changes.
 
-### Gauge and panel examples
-
-https://github.com/patricksurry/d3-gauges/blob/master/src/examples/panels.js
-
-https://github.com/patricksurry/d3-gauges/blob/master/src/examples/clocks.js
-https://github.com/patricksurry/d3-gauges/blob/master/src/examples/flight.js
-https://github.com/patricksurry/d3-gauges/blob/master/src/examples/engine.js
-https://github.com/patricksurry/d3-gauges/blob/master/src/examples/electrical.js
-
 ### Gauge
 
 g3.**gauge**(*identifier*: string) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
@@ -225,6 +225,7 @@ Use the getter/setter methods to configure it, like *gauge*.r(100),
 or call it to draw it directly to an SVG document like *gauge*(d3.select('svg.mygauge')).
 Typically *gauge* is not drawn directly 
 but instead added to a [panel](#panel) which will draw it and manage metric updates.
+A *gauge* is styable and appendable, see [mixins](#mixins).
 
 *gauge*.**metric**([*metric*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
@@ -289,6 +290,35 @@ via *gauge*.clip(g3.gaugeFace()).
 ### Panel
 
 [source](https://github.com/patricksurry/d3-gauges/blob/master/src/panel.js)
+
+### Mixins
+
+G3 elements support common getters and setters via mixins.
+
+**styable** objects support CSS styling,
+by adding class names, element styles, or inline CSS via the
+[@emotion/css package](https://www.npmjs.com/package/@emotion/css).
+
+*styable*.style([style: string]) element styles
+
+*styable*.class([class: string]) space separate list of class names
+
+*styable*.css([css: string]) inline css, often as a multiline string
+
+**transformable** objects support 
+[SVG transformation](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform).
+
+*transformable*.x
+y
+scale
+rotate
+
+**appendable**
+
+defs - add shared elements like filters to SVG defs 
+append - use spread operator `...` to expand a list
+
+
 
 ### SVG elements
 
