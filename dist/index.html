@@ -5,15 +5,14 @@
 </head>
 <body>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="./g3-examples.min.js"></script>
 
 <script>
 
 // g3.panel('DHC2FlightPanel').interval(250).url('/metrics/fake.json')(d3.select('body'));
-g3.panel('DHC2FlightPanel')(d3.select('body'));
-g3.panel('ClocksPanel')(d3.select('body'));
-g3.panel('DHC2EnginePanel')(d3.select('body'));
+g3.panel('DHC2FlightPanel')('body');
+g3.panel('ClocksPanel')('body');
+g3.panel('DHC2EnginePanel')('body');
 
 </script>
 </body>
