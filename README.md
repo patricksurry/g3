@@ -237,7 +237,7 @@ If *metric* is not specified, return the name of the current metric, defaulting 
 If *unit* is specified, set the unit of measurement for the current metric,
 otherwise return the current unit, defaulting to *undefined*.
 In future this is intended to support better discovery of metric units and potentially
-conversion between compatible units (feet &harr; meters, inches of mercury &harr; hectopascals, etc)
+conversion between compatible units (feet ⟷ meters, inches of mercury ⟷ hectopascals, etc)
 
 *gauge*.**kind**([*kind*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
