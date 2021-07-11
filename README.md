@@ -1,4 +1,4 @@
-# G3: a flexible pure Javascript framework for steam gauge instrument panels
+# G3: a flexible framework for steam gauge instrument panels
 
 G3&mdash;a tortured backronym for "generic gauge grammar"&mdash;is a flexible Javascript
 framework for designing and running steam gauge style instrument panels
@@ -232,8 +232,12 @@ in the named metric so that the containing [panel](#panel) can send updates as t
 
 ### Gauge
 
-TODO link to the different subsections with anchors like D3 #.
+A [*gauge()*](#g3-gauge) is the core component of G3,
+typically containing a number of components to indicate one or more metrics.
+Gauges are often decorated with a [*gaugeFace()*](#g3-gaugeFace),
+[*gaugeLabel()s*](#g3-gaugeLabel) and [*gaugeScrew()s*](#g3-gaugeScrew).
 
+<a name="g3-gauge" href="#g3-gauge">#</a>
 g3.**gauge**(*identifier*: string) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
 Create a configurable gauge rendering function, registered with the required *identifier*,
@@ -297,6 +301,7 @@ For complex nested gauges, like the attitude indicator, it is sometimes convenie
 via *gauge*.clip(g3.gaugeFace()).
 
 
+<a name="g3-gaugeFace" href="#g3-gaugeFace">#</a>
 g3.**gaugeFace**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
 Returns a [stylable](#mixins) *gaugeFace* object, which when called will draw a circle with CSS class `g3-gauge-face`.
@@ -312,6 +317,7 @@ If *window* is defined, use that drawing function to define an
 on the gauge face to "cut out" a window.  Otherwise, return the current window defaulting to undefined.
 
 
+<a name="g3-gaugeLabel" href="#g3-gaugeLabel">#</a>
 g3.**gaugeLabel**([*value*: string [, *opts*: object]]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
 Create a [stylable](#mixins) *gaugeLabel* function is called to add SVG text to a gauge.
@@ -337,6 +343,7 @@ Set or return the *x*, *y*, *dx* or *dy* values of the underlying
 respectively.
 
 
+<a name="g3-gaugeScrew" href="#g3-gaugeScrew">#</a>
 g3.**gaugeScrew**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
 stylable, transformable
