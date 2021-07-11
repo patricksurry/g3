@@ -4,7 +4,7 @@ import { element, put } from './common.js';
 //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
 
 
-export var pointerShapes = {
+export var pointers = {
     needle: put().append(
         element('rect', {x: -1, y: -90, width: 2, height: 100}).class('g3-pointer-needle'),
         element('circle', {r: 5}).class('g3-pointer-hub'),

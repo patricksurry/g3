@@ -1,10 +1,14 @@
 # G3: a flexible pure Javascript framework for steam gauge instrument panels
 
-G3 (backronym: generic gauge grammar) is a flexible framework for designing and
-running "steam gauge" instrument panels for flight (or other) simulators, like this
-(also see [live demo](https://patricksurry.github.io/)):
+G3&mdash;a tortured backronym for "generic gauge grammar"&mdash;is a flexible Javascript
+framework for designing and running steam gauge style instrument panels
+for flight (or other) simulators, to display externally provided metrics.
+Here's an example of some of the pre-defined flight instruments
+(you can also see a [live demo](https://patricksurry.github.io/)):
 
-![flight panel screenshot](doc/flightpanel.png)
+<div align='center'>
+    <img src="doc/flightpanel.png" alt='flight panel screenshot'>
+</div>
 
 G3 is part of a quixotic pandemic project to build a
 [DHC-2 Beaver](https://en.wikipedia.org/wiki/De_Havilland_Canada_DHC-2_Beaver)
@@ -28,7 +32,7 @@ that you can use or modify as desired.
 - Explore related [resources](#resources)
 - Dig in to the full [API reference](#api-reference)
 
-**Keywords**: G3 flight simulator gauges control panel SVG javascript D3
+**Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments control panel metrics telemetry
 
 ## Installing
 
@@ -74,17 +78,24 @@ or
 npx http-server -p 8000
 ```
 and point your browser at http://localhost:8000/test.html.
-You should see something like the [live demo](https://patricksurry.github.io/) above.
+You should see something that looks like the [live demo](https://patricksurry.github.io/) above.
 
 ### Create a panel with existing gauges
 
 The [examples folder](https://github.com/patricksurry/d3-gauges/tree/master/src/examples)
-contains a number of predefined gauges (flight, electrical, engine, clocks) and panels.
-You can see them all by using `test.html` to display the `DebugPanel` which includes
-every defined gauge, including showing 'exploded' views of all subgauges.
+included with `G3-examples`contains a number of predefined gauges including
+[clocks](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/clocks.js),
+[flight instruments](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/flight.js),
+[engine gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/engine.js),
+and [electrical gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/electrical.js);
+as well as a few
+[example panels](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/panels.js).
+You can see them all by modifying `test.html` to display the `DebugPanel` which
+automatically displays every registered gauge,
+as well as exploded views of all subgauges.
 
 Let's make a panel that shows a clock and a heading gauge side by side.
-Create a new html file called `panel.html` that looks like this:
+Create a new HTML file called `panel.html` that looks like this:
 ```html
 <html>
   <body>
@@ -108,22 +119,18 @@ but you can simply add `.scale(1.5)` to the `put()` if you prefer radius 150, sa
 Serve locally as before and browse to http://localhost:8000/panel.html
 and you should see something like this:
 
-TODO - test screenshot
+<div align='center'>
+    <img src="doc/simplepanel.png" alt='simple panel screenshot'>
+</div>
 
-The G3-examples package includes several
-[example panels](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/panels.js)
-along with several collections of gauges, including
-[clocks](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/clocks.js),
-[flight gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/flight.js),
-[engine gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/engine.js),
-and [electrical gauges](https://github.com/patricksurry/d3-gauges/blob/master/src/examples/electrical.js).
 
 
 ### Display real metrics
 
 We've built a panel, but it's displaying fake metrics.
 We can poll for external metrics by specifying a URL
-that responds with a json object containing the current metrics,
+that responds with a [JSON](https://www.json.org/json-en.html)
+object containing the current metrics,
 and optionally a polling interval (default 250ms, or four times per second).
 Let's add that to `panel.html`, replacing `panel('body');` with:
 
@@ -156,6 +163,13 @@ TODO - example of SimConnnect
 
 TODO - set up a development environment
 
+Test locally via `src/index.html` and `npm run start`.
+
+Use `rollup` to package, via
+
+```sh
+npm run build
+```
 
 ## Resources
 
@@ -218,6 +232,8 @@ in the named metric so that the containing [panel](#panel) can send updates as t
 
 ### Gauge
 
+TODO link to the different subsections with anchors like D3 #.
+
 g3.**gauge**(*identifier*: string) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
 Create a configurable gauge rendering function, registered with the required *identifier*,
@@ -226,7 +242,7 @@ Use its getter/setter methods (below) to configure it, like *gauge*.r(100),
 then call it to draw it within an SVG document like *gauge*(d3.select('svg.mygauge')).
 Typically *gauge* is not drawn directly
 but instead appended to a [panel](#panel) which will draw it and manage metric updates.
-A *gauge* is also styable and appendable via [mixins](#mixins).
+A *gauge* is also stylable and appendable via [mixins](#mixins).
 
 *gauge*.**metric**([*metric*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
@@ -261,6 +277,7 @@ would map a metric expected to take values between 0 and 10 to a semi-circular a
 
 If *radius* is specified it defines the size of the gauge in SVG units,
 otherwise the current *radius* is returned, defaulting to 100.
+For circular gauges, the axis line will be placed here.
 
 *gauge*.**autoindicate**([*flag*: bool]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
@@ -280,13 +297,134 @@ For complex nested gauges, like the attitude indicator, it is sometimes convenie
 via *gauge*.clip(g3.gaugeFace()).
 
 
+g3.**gaugeFace**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+Returns a [stylable](#mixins) *gaugeFace* object, which when called will draw a circle with CSS class `g3-gauge-face`.
+
+*gaugeFace*.**r**([*r*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *r* is defined, set the radius for the circular face, otherwise return the current value, defaulting to 100.
+
+*gaugeFace*.**window**([*window*: object]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+If *window* is defined, use that drawing function to define an
+[SVG mask](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask)
+on the gauge face to "cut out" a window.  Otherwise, return the current window defaulting to undefined.
+
+
+g3.**gaugeLabel**([*value*: string [, *opts*: object]]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+Create a [stylable](#mixins) *gaugeLabel* function is called to add SVG text to a gauge.
+If *value* is set, it defines the initial value of the label.
+The optional *opts* can be used as a shortcut for the accessor functions.
+For example `g3.gaugeLabel("hello", {x: 20, y: 20})`
+is equivalent to `g3.gaugeLabel().value("hello").x(20).y(20)`.
+
+*gaugeLabel*.**value**([*value*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+Set the label text to *value* if defined, otherwise return the current value.
+
+*gaugeLabel*.**x**([*x*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+*gaugeLabel*.**y**([*y*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+*gaugeLabel*.**dx**([*dx*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+*gaugeLabel*.**dy**([*dy*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+Set or return the *x*, *y*, *dx* or *dy* values of the underlying
+[SVG text element](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text)
+respectively.
+
+
+g3.**gaugeScrew**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
+
+stylable, transformable
+
+r=8
+shape=slotted [phillips, robertson]
+
 ### Axis
 
-[source](https://github.com/patricksurry/d3-gauges/blob/master/src/axis.js)
+g3.**axisLine**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/axis.js)
+
+Draws an axis line spanning the gauge metric's domain.
+Essentially a shortcut for g3.axisSector([*min, max*]).size(0).inset(0).class('g3-axis-line')
+where [*min, max*] are the smallest and largest values of this gauge's metric.
+*axisLine* is stylable.
+
+g3.**axisSector**(*vs*: array[number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/axis.js)
+
+stylable
+
+size = 5
+inset = 0
+
+g3.**axisTicks**([*vs*: array[number]]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/axis.js)
+
+stylable
+
+shape = 'tick' [dot, wedge, rect],
+        size = 10,
+        width = 1,
+        inset = 0,
+        values = vs && vs.slice(),
+        step,
+
+g3.**axisLabels**([*vs*: array[number]]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/axis.js)
+
+
+/*
+orientation:
+- fixed: normal reading orientation independent of axis position
+- relative: relative to axis orientation at label position, with normal reading orientation when axis is rotated to top
+- cw / ccw: text is drawn along the axis path in either clockwise or counter-clockwise direction
+- rotate: rotation to apply w.r.t. fixed or relative orientation
+- upright: choose between rotate and rotate+180 direction based on whichever is pointing up
+*/
+var orient = 'fixed',  // 'relative', 'cw', 'ccw'
+    upright = true,  //TODO
+    size = 20,
+    inset = 25,
+    rotate = 0,
+    values = isMap ? Object.keys(vs) : vs,
+    format = isMap ? v => vs[v] : identity,
+    step, start;
+
+
 
 ### Indicate
 
 [source](https://github.com/patricksurry/d3-gauges/blob/master/src/indicate.js)
+
+
+g3.**indicateText**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/indicate.js)
+
+stylable
+
+format
+size=20
+
+g3.**indicatePointer**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/indicate.js)
+
+stylable, appendable
+
+rescale
+shape [=needle]
+
+<div align='center'>
+    <img src="doc/pointers.png" alt='G3 pointer shapes'>
+</div>
+
+g3.**indicateStyle**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/indicate.js)
+
+appendable
+
+trigger = identity
+styleOn = {opacity: 1},
+styleOff = {opacity: 0}
+
+g3.**statusLight**() · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/gauge.js)
 
 ### Panel
 
@@ -294,41 +432,71 @@ via *gauge*.clip(g3.gaugeFace()).
 
 ### Mixins
 
-G3 elements support common getters and setters via mixins.
+Many G3 object support standard configuration options via mixins.
 
-**styable** objects support CSS styling,
+**stylable** objects support CSS styling,
 by adding class names, element styles, or inline CSS via the
 [@emotion/css package](https://www.npmjs.com/package/@emotion/css).
 
-*styable*.style([style: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+*stylable*.**style**([*style*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
 
-If #style# is defined, set the object's inline style property, otherwise return the current inline style value.
+If *style* is defined, set the object's inline style property, otherwise return the current inline style value.
 
-*styable*.class([class: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+*stylable*.**class**([*class*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
 
-If #class# is defined, add it as a space-separated list of class names to the object's class property,
+If *class* is defined, add it as a space-separated list of class names to the object's class property,
 otherwise return the current space-separated list of classes.
 
-*styable*.css([css: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+*stylable*.**css**([*css*: string]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
 
-If #css# is defined, interpet as inline CSS rules using [@emotion/css](https://www.npmjs.com/package/@emotion/css),
+If *css* is defined, interpret as inline CSS rules using [@emotion/css](https://www.npmjs.com/package/@emotion/css),
 which injects the CSS into the HTML doc using a new class name and adds that class to the current list of classes.
-If #css# is not defined, return the current space-separated list of classes.
+If *css* is not defined, return the current space-separated list of classes.
 This can be helpful to override the default style of child elements that are not directly stylable themselves.
 
 **transformable** objects support
-[SVG transformation](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform).
+[SVG transformation](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform)
+via translation, scaling and rotation.
+Note the resulting transformation is always applied as `translate(...) scale(...) rotate(...)`
+regardless of the order in which the transformation is configured.
+Also note that applies transformations right to left, so rotation happens first,
+then scaling, and finally translation.
 
-*transformable*.x
-y
-scale
-rotate
+*transformable*.**x**([*x*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
 
-**appendable**
+*transformable*.**y**([*y*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
 
-defs - add shared elements like filters to SVG defs
-append - use spread operator `...` to expand a list
+If *x* (*y*) is defined, set the current translation in the x (y) direction,
+otherwise return the current value, which defaults to 0.
 
+*transformable*.**scale**([*sx*: number, [*sy*: number]]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+
+If both *sx* and *sy* are defined, set the corresponding scale in each dimension.
+If only one value *sx* is provided, set a common scale in both dimensions.
+If no arguments are provided, return an array with the current [*sx, sy*] values,
+which default to [1, 1].
+
+*transformable*.**rotate**([*angle*: number]) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+
+If *angle* is defined, set the current rotation, otherwise return the current value, which defaults to 0.
+
+**appendable** objects support appending of child objects,
+as well as shared global definitions like fill patterns, gradients or SVG filters.
+This allows flexible nested configuration of panels and gauges.
+
+*appendable*.**append**([*a*, [*b*, [*c*, ...]]]: object) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+
+If any arguments are provided, append those G3 objects to *appendable*,
+otherwise return the current list of appended objects, defaulting to the empty list.
+The Javascript spread operator `...` is useful to append from a list,
+e.g. *appendable*.append(...*xs*).
+
+*appendable*.**defs**([*a*, [*b*, [*c*, ...]]]: object) · [source](https://github.com/patricksurry/d3-gauges/blob/master/src/mixin.js)
+
+Similar to *appendable*.**append**() but when this object is drawn the appended *defs*
+are added to a [`<defs>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs)
+child of the top-level `<svg>` container.
+These elements aren't rendered directly but referenced from other parts of the SVG.
 
 
 ### SVG elements

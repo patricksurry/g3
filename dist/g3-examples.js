@@ -7002,6 +7002,7 @@
             url;
 
         function panel(sel) {
+            if (typeof sel === 'string') sel = select(sel);
             // draw and start updating panel
             let controller = gaugeController(interval),  // establish context for gauges
                 _ = sel.append('svg')
@@ -7050,7 +7051,7 @@
     //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
 
 
-    var pointerShapes = {
+    var pointers = {
         needle: put().append(
             element('rect', {x: -1, y: -90, width: 2, height: 100}).class('g3-pointer-needle'),
             element('circle', {r: 5}).class('g3-pointer-hub'),
@@ -7119,7 +7120,7 @@
         function pointer(sel, g) {
             const metric = g.metric();
             let _ = sel.append('g');
-            if (!pointer.append().length) pointer.append(pointerShapes.needle);
+            if (!pointer.append().length) pointer.append(pointers.needle);
 
             pointer.stylable(_);
             pointer.appendable(_, g);
@@ -7136,8 +7137,8 @@
             return arguments.length ? (rescale = _, pointer) : rescale;
         };
         pointer.shape = function(_) {
-            if (arguments.length && !(_ in pointerShapes)) throw 'pointer: unknown shape ${_}';
-            return arguments.length ? pointer.append(pointerShapes[_]) : pointer.append();
+            if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
+            return arguments.length ? pointer.append(pointers[_]) : pointer.append();
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
     }
@@ -7186,7 +7187,7 @@
         var name = _name,
             metric,
             unit,
-            measure = linear(),
+            measure = linear().range([0,360]),
             kind = 'circular',
             autoindicate = false,
             r = 100,  // the axis radius, when applicable
@@ -7795,6 +7796,138 @@ body {
     });
 
 
+    const speedMasterTachymetre =  [].concat(
+        d3.range(60,95,5),
+        d3.range(100,200,10),
+        d3.range(200,300,25),
+        d3.range(300,400,50),
+        d3.range(400,600,100),
+    );
+
+            // speedmaster-watch
+            metric: "tachymetre",
+            unit: "unitPerSecond",
+            axis: {
+                r: 85,
+                scale: d3.scalePow().exponent(-1).domain([60, 500]).range([360, 43.2]),
+                tickMarks: {
+                    minor: { values: d3.range(60,100), dr: -3 },
+                    major: { values: d3.range(60,140,5), dr: -5 },
+                    special: {values: speedMasterTachymetre, style: 'dot', dr: 1.5 },
+                },
+                tickLabels: {
+                    special: speedMasterTachymetre.map(v => {return {value: v, label: v, dr: -7}})
+                },
+            },
+            decorations: [
+                { kind: "use", href: "#speedmaster"}
+            ],
+            indicator: { href: ''},
+            childGauges: [
+                {
+                    metric: 'chronSecond',
+                    unit: 'second',
+                    r: 80,
+                    axis: {
+                        scale: d3.scaleLinear().domain([0,60]).range([0,360]),
+                        tickMarks: {
+                            minor: { step: 0.2, dr: 3 },
+                            major: { step: 1 }
+                        }
+                    },
+                    indicator: { href: '#indicator-needle' },
+                    childGauges: [
+                        {
+                            metric: 'clockSecond',
+                            unit: 'second',
+                            r: 30,
+                            cx: -45,
+                            axis: {
+                                scale: d3.scaleLinear().domain([0,60]).range([0,360]),
+                                tickMarks: {
+                                    minor: {values: [5,10,20,25,35,40,50,55], dr: 10},
+                                },
+                                tickLabels: {
+                                    primary: {start: 15, step: 15, dr: 20}
+                                }
+                            },
+                            style: css(`
+    .gauge-tickmark-major { stroke-width: 1}
+    path.gauge-axis { stroke: #222; stroke-width: 1; visibility: visible !important}
+    `)
+                        },
+                        {
+                            metric: 'chronMinute',
+                            unit: 'minute',
+                            r: 30,
+                            cx: 45,
+                            axis: {
+                                scale: d3.scaleLinear().domain([0,30]).range([0,360]),
+                                tickMarks: {
+                                    major: {start: 5, step: 5, dr: 15},
+                                    minor: {start: 1, dr: 10},
+                                },
+                                tickLabels: {
+                                    primary: {start: 10, step: 10, dr: 40}
+                                }
+                            },
+                            style: css(`
+    .gauge-tickmark-major { stroke-width: 1}
+    path.gauge-axis { stroke: #222; stroke-width: 1; visibility: visible !important}
+    `)
+                        },
+                        {
+                            metric: 'chronHour',
+                            unit: 'hour',
+                            r: 30,
+                            cy: 45,
+                            axis: {
+                                scale: d3.scaleLinear().domain([0,12]).range([0,360]),
+                                tickMarks: {
+                                    minor: {values: [1,2,4,5,7,8,10,11], dr: 15},
+                                },
+                                tickLabels: {
+                                    primary: {start: 3, step: 3, dr: 10}
+                                }
+                            },
+                            style: css(`
+    .gauge-tickmark-major { stroke-width: 1}
+    path.gauge-axis { stroke: #222; stroke-width: 1; visibility: visible !important}
+    `)
+                        },
+
+                        {
+                            metric: 'clockMinute',
+                            unit: 'minute',
+                            r: 95,
+                            axis: {
+                                scale: d3.scaleLinear().domain([0,60]).range([0,360]),
+                                tickMarks: {
+                                    major: { start: 5, step: 5, dr: 16},
+                                }
+                            },
+                            indicators: [
+                                { href: '#indicator-blade', scale: d3.scaleLinear().domain([0,60*12]).range([0, 360])},
+                                { href: '#indicator-sword',  },
+                            ],
+                            style: css(`
+    .gauge-tickmark-major { stroke-width: 4 !important }
+    `)
+                        },
+                    ]
+                }
+            ],
+            style: css(`
+    .gauge .gauge-axis { visibility: hidden; }
+    .gauge-face { fill: #111; }
+    .gauge .gauge-face circle { visibility: hidden; }
+    .gauge-tickmarks, .gauge-tickmark-major { stroke-width: 0.5 }
+    .gauge-tickmark-special { stroke: none; fill: white; }
+    .gauge-ticklabel-special text { font-size: 30% }
+    .gauge .gauge-ticklabel-primary text { font-size: 300% }
+    `)
+        },
+
     */
 
     const headingFormat = (v) => (v%90==0)?'NESW'.charAt(v/90):(v/10);
@@ -8364,14 +8497,38 @@ body {
         put().x(480).y(1000).scale(1.28).append(gauge('ammeterDHC2')),
     );
 
-    // A panel showing all registered gauges with labels, with sub-gauges also shown separately
+    // A panel showing all registered gauges with labels, including exploded views of sub-gauges
     const ids = Object.keys(gaugeRegistry);
+    panel('DebugPanel')
+        .width(320*4).height(320*Math.floor((ids.length+3)/4) + 40)
+        .append(
+            ...ids.map(
+                (k, i) => put()
+                    .x(320*(i%4)+160).y(320*Math.floor(i/4)+160).scale(1.28)
+                    .append(
+                        gauge(k),
+                        gaugeLabel(k).y(120)
+                    )
+            )
+        );
 
-    panel('DebugPanel').width(320*4).height(320*Math.floor((ids.length+3)/4) + 40).append(
-        ...ids.map((k, i) => put().x(320*(i%4)+160).y(320*Math.floor(i/4)+160).scale(1.28).append(
-            gauge(k), gaugeLabel(k).y(120)
-        ))
-    );
+    // A panel showing all the pointer shapes
+    const ks = Object.keys(pointers);
+    panel('PointerGalleryPanel')
+        .width(240*5).height(240*Math.floor((ks.length+4)/5) + 40)
+        .append(
+            ...ks.map(
+                (k, i) => put()
+                    .x(240*(i%5) + 120).y(240*Math.floor(i/5) + 120)
+                    .append(
+                        gauge('pointer-' + k).append(
+                            axisLine(),
+                            indicatePointer().shape(k),
+                        ),
+                        gaugeLabel(k).y(120)
+                    )
+            )
+        );
 
     exports.axisLabels = axisLabels;
     exports.axisLine = axisLine;
@@ -8388,6 +8545,7 @@ body {
     exports.indicateText = indicateText;
     exports.panel = panel;
     exports.panelRegistry = panelRegistry;
+    exports.pointers = pointers;
     exports.put = put;
     exports.snapScale = snapScale;
     exports.statusLight = statusLight;

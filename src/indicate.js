@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 import { stylable, appendable, identity, appendId, activeController } from './mixin.js';
-import { pointerShapes } from './pointers.js';
+import { pointers } from './pointers.js';
 
 
 export function indicateText() {
@@ -38,7 +38,7 @@ export function indicatePointer() {
     function pointer(sel, g) {
         const metric = g.metric();
         let _ = sel.append('g');
-        if (!pointer.append().length) pointer.append(pointerShapes.needle);
+        if (!pointer.append().length) pointer.append(pointers.needle);
 
         pointer.stylable(_);
         pointer.appendable(_, g);
@@ -55,8 +55,8 @@ export function indicatePointer() {
         return arguments.length ? (rescale = _, pointer) : rescale;
     }
     pointer.shape = function(_) {
-        if (arguments.length && !(_ in pointerShapes)) throw 'pointer: unknown shape ${_}';
-        return arguments.length ? pointer.append(pointerShapes[_]) : pointer.append();
+        if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
+        return arguments.length ? pointer.append(pointers[_]) : pointer.append();
     }
     return stylable(appendable(pointer)).class('g3-indicate-pointer');
 }

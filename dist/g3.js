@@ -6107,6 +6107,7 @@
             url;
 
         function panel(sel) {
+            if (typeof sel === 'string') sel = select(sel);
             // draw and start updating panel
             let controller = gaugeController(interval),  // establish context for gauges
                 _ = sel.append('svg')
@@ -6155,7 +6156,7 @@
     //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
 
 
-    var pointerShapes = {
+    var pointers = {
         needle: put().append(
             element('rect', {x: -1, y: -90, width: 2, height: 100}).class('g3-pointer-needle'),
             element('circle', {r: 5}).class('g3-pointer-hub'),
@@ -6224,7 +6225,7 @@
         function pointer(sel, g) {
             const metric = g.metric();
             let _ = sel.append('g');
-            if (!pointer.append().length) pointer.append(pointerShapes.needle);
+            if (!pointer.append().length) pointer.append(pointers.needle);
 
             pointer.stylable(_);
             pointer.appendable(_, g);
@@ -6241,8 +6242,8 @@
             return arguments.length ? (rescale = _, pointer) : rescale;
         };
         pointer.shape = function(_) {
-            if (arguments.length && !(_ in pointerShapes)) throw 'pointer: unknown shape ${_}';
-            return arguments.length ? pointer.append(pointerShapes[_]) : pointer.append();
+            if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
+            return arguments.length ? pointer.append(pointers[_]) : pointer.append();
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
     }
@@ -6291,7 +6292,7 @@
         var name = _name,
             metric,
             unit,
-            measure = linear(),
+            measure = linear().range([0,360]),
             kind = 'circular',
             autoindicate = false,
             r = 100,  // the axis radius, when applicable
@@ -6838,6 +6839,7 @@ body {
     exports.indicateText = indicateText;
     exports.panel = panel;
     exports.panelRegistry = panelRegistry;
+    exports.pointers = pointers;
     exports.put = put;
     exports.snapScale = snapScale;
     exports.statusLight = statusLight;

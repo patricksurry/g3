@@ -26,13 +26,35 @@ g3.panel('DHC2EnginePanel').width(320*2).height(320*4).append(
     g3.put().x(480).y(1000).scale(1.28).append(g3.gauge('ammeterDHC2')),
 );
 
-// A panel showing all registered gauges with labels, with sub-gauges also shown separately
+// A panel showing all registered gauges with labels, including exploded views of sub-gauges
 const ids = Object.keys(g3.gaugeRegistry);
+g3.panel('DebugPanel')
+    .width(320*4).height(320*Math.floor((ids.length+3)/4) + 40)
+    .append(
+        ...ids.map(
+            (k, i) => g3.put()
+                .x(320*(i%4)+160).y(320*Math.floor(i/4)+160).scale(1.28)
+                .append(
+                    g3.gauge(k),
+                    g3.gaugeLabel(k).y(120)
+                )
+        )
+    );
 
-g3.panel('DebugPanel').width(320*4).height(320*Math.floor((ids.length+3)/4) + 40).append(
-    ...ids.map((k, i) => g3.put().x(320*(i%4)+160).y(320*Math.floor(i/4)+160).scale(1.28).append(
-        g3.gauge(k), g3.gaugeLabel(k).y(120)
-    ))
-);
-
-
+// A panel showing all the pointer shapes
+const ks = Object.keys(g3.pointers);
+g3.panel('PointerGalleryPanel')
+    .width(240*5).height(240*Math.floor((ks.length+4)/5) + 40)
+    .append(
+        ...ks.map(
+            (k, i) => g3.put()
+                .x(240*(i%5) + 120).y(240*Math.floor(i/5) + 120)
+                .append(
+                    g3.gauge('pointer-' + k).append(
+                        g3.axisLine(),
+                        g3.indicatePointer().shape(k),
+                    ),
+                    g3.gaugeLabel(k).y(120)
+                )
+        )
+    );

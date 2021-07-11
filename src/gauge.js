@@ -16,7 +16,7 @@ export function gauge(_name) {
     var name = _name,
         metric,
         unit,
-        measure = d3.scaleLinear(),
+        measure = d3.scaleLinear().range([0,360]),
         kind = 'circular',
         autoindicate = false,
         r = 100,  // the axis radius, when applicable
