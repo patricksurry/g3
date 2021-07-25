@@ -1,6 +1,6 @@
 {
    "name": "@patricksurry/g3",
-   "version": "0.1.0",
+   "version": "0.1.1",
    "author": "Patrick Surry <patrick.surry@gmail.com>",
    "description": "A flexible framework for designing and running steam gauge style instrument panels for flight (or other) simulators, displaying external metrics",
    "keywords": ["G3", "D3", "SVG", "flight", "simulator", "gauges", "instruments", "control panel", "metrics", "telemetry"],
