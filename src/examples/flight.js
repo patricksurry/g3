@@ -41,7 +41,7 @@ g3.gauge('altitudeDHC2')
         // add a face with two see-through windows
         g3.gaugeFace().window((_, g) => {
             g3.axisSector([225, 275]).inset(11).size(24).style('fill: black')(_, g); // pressure window
-            g3.axisSector([425, 575]).inset(40).size(40).style('fill: black')(_, g); // danger window
+            g3.axisSector([425, 575]).inset(40).size(40).style('fill: black')(_, g); // low-altitude danger window
         }).style('filter: url(#dropShadow3)'),  //TODO doesn't drop shadow windows properly?
         g3.axisTicks([250]).shape('wedge').size(10).width(3),
         g3.axisTicks().step(20),
