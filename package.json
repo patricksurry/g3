@@ -1,8 +1,16 @@
 {
-   "name": "d3-gauges",
+   "name": "@patricksurry/g3",
    "version": "0.1.0",
-   "description": "",
-   "private": true,
+   "author": "Patrick Surry <patrick.surry@gmail.com>",
+   "description": "A flexible framework for designing and running steam gauge style instrument panels for flight (or other) simulators, displaying external metrics",
+   "keywords": ["G3", "D3", "SVG", "flight", "simulator", "gauges", "instruments", "control panel", "metrics", "telemetry"],
+   "license": "ISC",
+   "type": "module",
+   "homepage": "https://github.com/patricksurry/g3",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/patricksurry/g3.git"
+   },
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "build": "rollup -c",
@@ -14,8 +22,8 @@
    },
    "devDependencies": {
       "@rollup/plugin-node-resolve": "^13.0.0",
-      "@web/dev-server": "^0.1.18",
       "rollup-plugin-inject-process-env": "^1.3.1",
-      "rollup-plugin-terser": "^7.0.2"
+      "rollup-plugin-terser": "^7.0.2",
+      "@web/dev-server": "^0.1.18"
    }
 }

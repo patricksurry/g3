@@ -37,15 +37,11 @@ that you can use or modify as desired.
 
 ## Installing
 
-TODO
-
 Create a project directory and install G3:
 
 ```bash
 npm install @patricksurry/g3
 ```
-
-... or something like that
 
 ## Getting started
 
