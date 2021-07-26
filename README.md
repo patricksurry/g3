@@ -2,7 +2,7 @@
 
 G3&mdash;a tortured backronym for "generic gauge grammar"&mdash;is a flexible Javascript
 framework for designing and running steam gauge style instrument panels
-for flight (or other) simulators, to display externally provided metrics.
+for flight (or other) simulators, and displaying external metrics.
 Here's an example of some of the pre-defined flight instruments
 (you can also see a [live demo](https://patricksurry.github.io/)):
 
@@ -12,8 +12,7 @@ Here's an example of some of the pre-defined flight instruments
 
 [G3](https://github.com/patricksurry/g3)
 is part of a quixotic pandemic project to build a
-[DHC-2 Beaver](https://en.wikipedia.org/wiki/De_Havilland_Canada_DHC-2_Beaver)
-cockpit simpit.
+[DHC-2 Beaver](https://en.wikipedia.org/wiki/De_Havilland_Canada_DHC-2_Beaver) simpit.
 Although there are plenty of [alternatives](#resources)
 for creating instrument panels,
 I decided it would be fun to roll my own based on pure Javascript with SVG using [D3](https://d3js.org/).
@@ -37,11 +36,27 @@ that you can use or modify as desired.
 
 ## Installing
 
-Create a project directory and install G3:
+You can skip installing and just refer to a standalone copy of the module distribution remotely
+(or download locally) using an NPM CDN URL like:
 
-```bash
-npm install @patricksurry/g3
-```
+    https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js
+
+If you prefer, you can download from github by picking a distribution,
+clicking the 'Raw' button, and then right-clicking to "save as":
+
+    https://github.com/patricksurry/g3/tree/master/dist
+
+You can choose any of `g3[-examples][.min].js`:
+The `.min` versions are minified to load slightly faster,
+and the `-examples` versions include example gauges and panels.
+Choosing `g3-examples.js` is probably a good start.
+
+You can also set up an [npm project](https://docs.npmjs.com/getting-started),
+by creating a project directory and installing G3:
+
+    npm install @patricksurry/g3
+
+Also see [Contributing](#contributing) if you want to hack on G3.
 
 ## Getting started
 
@@ -53,8 +68,7 @@ Create a new file called `test.html` containing:
 ```html
 <html>
   <body>
-    <!-- TODO - installed vs local package ref -->
-    <script src="./g3-examples.min.js"></script>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
     <script>
 g3.panel('DHC2FlightPanel')('body');
     </script>
@@ -62,7 +76,7 @@ g3.panel('DHC2FlightPanel')('body');
 </html>
 ```
 
-This tells G3 to retrieve the pre-defined `DHC2FlightPanel` panel,
+This tells G3 to retrieve the pre-defined `DHC2FlightPanel` example panel,
 and draw it as a new SVG object into the HTML `<body>` element.
 By default the panel provides fake metrics so you can see your gauges moving
 in a somewhat realistic but random way.
@@ -76,12 +90,13 @@ or
 npx http-server -p 8000
 ```
 and point your browser at http://localhost:8000/test.html.
-You should see something that looks like the [live demo](https://patricksurry.github.io/) above.
+You should see something that looks like the [live demo](https://patricksurry.github.io/)
+screenshot above.
 
 ### Create a panel with existing gauges
 
-The [examples folder](https://github.com/patricksurry/d3-gauges/tree/master/src/examples)
-included with `G3-examples`contains a number of predefined gauges including
+The [examples folder](src/examples)
+included with `g3-examples.js` contains a number of predefined gauges including
 [clocks](src/examples/clocks.js),
 [flight instruments](src/examples/flight.js),
 [engine gauges](src/examples/engine.js),
@@ -90,14 +105,14 @@ as well as a few
 [example panels](src/examples/panels.js).
 You can see them all by modifying `test.html` to display the `DebugPanel` which
 automatically displays every registered gauge,
-including exploded views of all subgauges.
+including exploded views of all sub-gauges.
 
 Let's make a panel that shows a clock and a heading gauge side by side.
 Create a new HTML file called `panel.html` that looks like this:
 ```html
 <html>
   <body>
-    <script src="./g3-examples.min.js"></script>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
     <script>
 var panel = g3.panel('SimplePanel')
         .width(600).height(300)
@@ -110,10 +125,11 @@ panel('body');
   </body>
 </html>
 ```
-This defines a new panel, `SimplePanel`, which&mdash;when called&mdash;creates a 600x300
-SVG container, retrieves existing gauges, and places them at (150,150) and (450,150).
-By convention gauges are drawn assuming a radius 100 circle,
-but you can simply add `.scale(1.5)` to the `put()` if you prefer radius 150, say.
+This defines a new panel, `SimplePanel`, which&mdash;when called via `panel('body')`&mdash;creates a 600x300
+SVG container with the document `<body>`, retrieves existing gauge definitions,
+and places them with centers at (150,150) and (450,150).
+By convention gauges are drawn with a radius of 100 units,
+but you could simply add `.scale(1.5)` to the `put()` if you prefer a radius 150.
 Serve locally as before and browse to http://localhost:8000/panel.html
 and you should see something like this:
 
@@ -122,11 +138,10 @@ and you should see something like this:
 </div>
 
 
-
 ### Display real metrics
 
 We've built a panel, but it's displaying fake metrics.
-G3 can poll an external URL for metrics,
+G3 normally polls an external URL for metrics,
 and expects a response containing
 a [JSON](https://www.json.org/json-en.html) dictionary
 with an entry for each metric.
@@ -157,7 +172,14 @@ TODO - example of SimConnnect
 
 ### Create a new gauge
 
+Perhaps the easiest way to get started is to find an example gauge
+in the provided `DebugPanel` similar to what you're trying to make,
+and investigate its implementation in the
+[examples source code](https://github.com/patricksurry/g3/tree/master/src/examples).
+
+
 TODO - simple example
+
 
 ## Contributing
 
@@ -220,7 +242,7 @@ The typical drawing function looks like this:
 }
 ```
 [Gauge components](#gauge) use [D3 dispatch](https://github.com/d3/d3-dispatch) to register interest
-in the named metric so that the containing [panel](#panel) can send updates as the metric changes.
+in their designated metric so that the containing [panel](#panel) can send updates as the metric changes.
 
 
 ### Gauge
@@ -523,9 +545,12 @@ Use a negative value for sectors outside the axis line.
 ### Indicate
 
 Gauges are only useful when they *indicate* one or more metrics.
-Some gauges [self indicate][#g3-gauge-autoindicate] but most
+Some gauges [self indicate](#g3-gauge-autoindicate) but most
 use a [pointer](#g3-indicatePointer), [text](#g3-indicateText),
 or [style](#g3-indicateStyle) to display the current metric value.
+You can create fairly compelling segmented LCD displays using
+[DSEG](https://www.keshikan.net/fonts-e.html) fonts,
+declared by G3 as the `DSEG7-Classic` and `DSEG14-Classic` font-family.
 
 
 <a name="g3-indicateText" href="#g3-indicateText">#</a>
@@ -607,16 +632,104 @@ to the *indicateStyle* contents when the *trigger* is false.
 Otherwise, returns the current styles, which default to `{opacity: 0}`.
 
 
+<a name="g3-snapScale" href="#g3-snapScale">#</a>
+g3.**snapScale**() · [source](src/common.js)
+
+Creates a *snapScale* object which provides a continuous
+"staircase" transformation function that pulls its input value
+towards the closest step value.
+This is useful to create pointers that "tick" like the second hand of a clock,
+and can be provided as an argument to rescale an [indicator](#indicate).
+When called, the closest step to the input value is determined, and the
+output is transformed according to a D3 [power scale](https://github.com/d3/d3-scale#power-scales):
+
+    d3.scalePow().domain([-w,w]).range([-w,w]).exponent(strength)
+
+where *w* is half the step size, and *strength* determines how strong the pull is.
+
+*snapScale*.**start**([*start*: number]) · [source](src/common.js)
+
+If defined, *start* sets the starting anchor point for calculating steps,
+otherwise returns the current value defaulting to 0.
+
+*snapScale*.**step**([*step*: number]) · [source](src/common.js)
+
+If defined, *step* sets the step size,
+otherwise returns the current value defaulting to 1.
+
+*snapScale*.**strength**([*strength*: number]) · [source](src/common.js)
+
+If defined, *strength* sets the strength of pull towards each step location,
+otherwise returns the current value defaulting to 5.
+A value of 1 results in a linear scale, i.e. with no pull,
+and positive values less than 1 result in repulsion away from step locations.
+
+
 <a name="g3-statusLight" href="#g3-statusLight">#</a>
 g3.**statusLight**() · [source](src/gauge.js)
 
-TODO: actually a gauge
+A convenience wrapper for [indicateStyle](#g3-indicateStyle)
+that creates a gauge whose face lights up when its metric meets a trigger threshold.
+Roughly equivalent to:
+
+    g3.gauge().metric(metric).append(
+        g3.indicateStyle().trigger(trigger).append(
+            gaugeFace().style(`fill: ${color}`),
+            gaugeFace().class('g3-highlight'),
+        )
+    )
+
+*statusLight*.**metric**([*metric*: string]) · [source](src/gauge.js)
+
+Set or return the [gauge](#g3-gauge)'s metric.
+
+*statusLight*.**trigger**([*trigger*: any => boolean]) · [source](src/gauge.js)
+
+Set or return the trigger function for the [indicateStyle](#g3-indicateStyle).
+
+*statusLight*.**color**([*color*: string]) · [source](src/gauge.js)
+
+If *color* is defined, sets the color to display when the trigger is on.
+Otherwise return the current color, which defaults to `red`.
+
 
 ### Panel
 
-TODO
+A [*panel()*](#g3-panel) is a container for gauges,
+which is used to manage layout and coordinate the update of metrics
+which are polled from an external source.
 
-[source](src/panel.js)
+
+<a name="g3-panel" href="#g3-panel">#</a>
+g3.**panel**(*identifier*: string) · [source](src/panel.js)
+
+Creates a or returns an existing [stylable](#stylable),
+[appendable](#appendable) *panel* object with the unique *identifier*.
+When called, *panel(selector)* appends an SVG element to *selector*,
+renders its children
+(typically [gauges](#g3-gauge) or other [elements](#g3-element))
+and begins polling for metric updates.
+
+*panel*.**width**([*width*: integer]) · [source](src/panel.js)
+*panel*.**height**([*height*: integer]) · [source](src/panel.js)
+
+Set or return the current width or height of the SVG container.
+
+*panel*.**url**([*url*: string]) · [source](src/panel.js)
+
+If defined, *url* sets the URL from which to retrieve metrics,
+otherwise the current URL is returned, defaulting to undefined.
+When URL is undefined, the panel supplies fake metrics for testing.
+Otherwise, an HTTP GET to the *url* should return a JSON dictionary
+of metrics in the form `{metricName: value, ...}`.
+
+*panel*.**interval**([*interval*: number]) · [source](src/panel.js)
+
+If defined, *interval* sets the polling interval in milliseconds,
+otherwise the current interval is returned, defaulting to 250.
+The panel will query the configured URL (or generate fake metrics)
+once each interval.
+
 
 ### Mixins
 
@@ -692,25 +805,33 @@ These elements aren't rendered directly but referenced from other parts of the S
 
 ### SVG elements
 
-TODO
+G3 provides simple wrappers to support deferred rendering of standard SVG elements.
+The [g3.put()](#g3-put) object is a convenience wrapper for an SVG `<g>` element,
+and [g3.element()](#g3-element) supports arbitrary elements.
 
-[source](src/common.js)
 
-g3.element()
+<a name="g3-put" href="#g3-put">#</a>
+g3.**put**() · [source](src/common.js)
 
-styable, appendable
+Creates a [stylable](#stylable), [transformable](#transformable),
+[appendable](#appendable) container object which renders an
+SVG `<g>` element with its children when called.
 
-attr
 
-g3.put()
+<a name="g3-element" href="#g3-element">#</a>
+g3.**element**(*element*: string[, *attrs*: object]) · [source](src/common.js)
 
-stylable, transformable, appendable container
+Creates a [stylable](#stylable), [appendable](#appendable) object that
+renders the named SVG *element* when called.
+If *attrs* is defined, it defines a dictionary of attributes
+like `{name: value, ...}` which are added to the element.
 
-g3.snapScale()
+*element*.**attr**(*attribute*: any) · [source](src/common.js)
 
-Returns a function that  continuous snap
-useful for rescale
-start, step, strength
+If *attribute* is defined, adds an attribute to the element,
+otherwise return the full dictionary of current attributes, defaulting to empty.
+
+
 
 ## TODO
 
