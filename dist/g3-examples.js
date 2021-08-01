@@ -6902,8 +6902,18 @@
     }
 
 
+    function elapsedSecondsSeries() {
+        const dt = new Date();
+        function next() {
+            return (new Date() - dt)/1000;
+        }
+        return next;
+    }
+
+
     var metricSeries = {
         time: midnightSecondsSeries(),
+        elapsed: elapsedSecondsSeries(),
         date: datetimeSeries(),
         atmosphericPressure: forceSeries(955, 1075),
         altitude: forceSeries(0, 30000, {fmax: 0.001}),
@@ -6993,7 +7003,6 @@
 
 
     function panel(_name) {
-        if (!_name) throw "g3.panel(name) missing required name argument";
         if (_name in panelRegistry) return panelRegistry[_name];
 
         var width=1024,
@@ -7044,7 +7053,7 @@
         panel.defs = element('defs');
         panel.append(panel.defs);
 
-        panelRegistry[_name] = panel;
+        if (_name) panelRegistry[_name] = panel;
         return panel;
     }
 
@@ -7075,6 +7084,27 @@
             element('circle', {r: 1.2}).class('g3-pointer-hub'),
             element('circle', {r: 0.5}).class('g3-highlight'),
             element('circle', {r: 1.2, cy: -6}).class('g3-pointer-pommel'),
+        ),
+        wedge: put().append(
+            element('path', {d: 'M 5,25 l -10,0 l 5,-120 z'}).class('g3-pointer-blade'),
+            element('circle', {r: 10}).class('g3-pointer-hub'),
+            element('circle', {r: 4}).class('g3-highlight'),
+        ),
+        'omega-second': put().append(
+            element('path', {d: 'M 3,25 l -6,0 l 3,-115 z M 0,-72 l 4,15 l -4,5 l -4,-5 z'}).class('g3-pointer-blade'),
+            element('path', {d: 'M 0,-69 l 3,12 l -3,3 l -3,-3 z'}).class('g3-pointer-luminous'),
+            element('circle', {r: 4}).class('g3-pointer-hub'),
+            element('circle', {r: 2}).class('g3-highlight'),
+        ),
+        'omega-baton-long': put().append(
+            element('path', {d: 'M 3,0 l 0,-80 l -3,-10 l -3,10 l 0,80 z'}).class('g3-pointer-blade'),
+            element('path', {d: 'M 2,0 l 0,-80 l -4,0 l 0,80 z'}).class('g3-pointer-luminous'),
+            element('circle', {r: 6.5}).class('g3-pointer-hub'),
+        ),
+        'omega-baton-short': put().append(
+            element('path', {d: 'M 3.5,0 l 0,-55 l -3.5,-10 l -3.5,10 l 0,55 z'}).class('g3-pointer-blade'),
+            element('path', {d: 'M 2.5,0 l 0,-55 l -5,0 l 0,55 z'}).class('g3-pointer-luminous'),
+            element('circle', {r: 9}).class('g3-pointer-hub'),
         ),
         'aircraft-heading': put().x(-160).y(-160).scale(0.8).append(
             element('path', {d: "M 200.45288,260.80553 L 203.16177,253.84124 L 225.12833,263.88589 C 227.03295,264.83725 228.33805,264.53956 228.33805,262.63589 L 228.40255,256.61982 C 228.40255,250.22869 224.75105,247.90625 219.51131,243.70732 L 208.47788,235.31446 L 211.28639,196.92161 L 261.23772,213.1716 C 263.62163,213.95469 264.64806,212.98991 264.64806,211.20732 L 264.82432,201.9216 C 264.82432,194.61271 260.92135,191.45797 255.6207,187.81446 L 213.09186,157.27875 C 212.31569,139.15817 210.07741,119.6713 200.45288,103.52874 C 190.82836,119.6713 188.59008,139.15817 187.81391,157.27875 L 145.28507,187.81446 C 139.98442,191.45797 136.08145,194.61271 136.08145,201.9216 L 136.25771,211.20732 C 136.25771,212.98991 137.28414,213.95469 139.66805,213.1716 L 189.61938,196.92161 L 192.42789,235.31446 L 181.39446,243.70732 C 176.15472,247.90625 172.50322,250.22869 172.50322,256.61982 L 172.56772,262.63589 C 172.56772,264.53956 173.87282,264.83725 175.77744,263.88589 L 197.744,253.84124 L 200.45288,260.80553 z"})
@@ -7115,7 +7145,7 @@
 
 
     function indicatePointer() {
-        var rescale = identity;
+        var convert = identity;
 
         function pointer(sel, g) {
             const metric = g.metric();
@@ -7129,12 +7159,12 @@
                 if (!(metric in metrics)) return;
 
                 activeController.transition(_)
-                    .attr('transform', g.metrictransform(rescale(metrics[metric])));
+                    .attr('transform', g.metrictransform(convert(metrics[metric])));
             }
             activeController.register(update, metric, `${g.name}-indicate-pointer`);
         }
-        pointer.rescale = function(_) {
-            return arguments.length ? (rescale = _, pointer) : rescale;
+        pointer.convert = function(_) {
+            return arguments.length ? (convert = _, pointer) : convert;
         };
         pointer.shape = function(_) {
             if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
@@ -7181,11 +7211,11 @@
 
 
     function gauge(_name) {
-        if (!_name) throw "g3.gauge(name) missing required name argument";
         if (_name in gaugeRegistry) return gaugeRegistry[_name];
 
-        var name = _name,
+        var name = _name || appendId('_gauge'),
             metric,
+            convert = identity,
             unit,
             measure = linear().range([0,360]),
             kind = 'circular',
@@ -7210,7 +7240,7 @@
                     if (!(metric in metrics)) return;
 
                     activeController.transition(_)
-                        .attr('transform', gauge.metrictransform(metrics[metric], true));
+                        .attr('transform', gauge.metrictransform(convert(metrics[metric]), true));
                 }
                 activeController.register(update, metric, `${name}-autoindicate`);
             }
@@ -7218,6 +7248,9 @@
 
         gauge.metric = function(_) {
             return arguments.length ? (metric = _, gauge) : metric;
+        };
+        gauge.convert = function(_) {
+            return arguments.length ? (convert = _, gauge) : convert;
         };
         gauge.unit = function(_) {
             return arguments.length ? (unit = _, gauge) : unit;
@@ -7270,7 +7303,8 @@
                     : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
             return path;
         };
-        gaugeRegistry[_name] = gauge;
+
+        if (_name) gaugeRegistry[_name] = gauge;
 
         return stylable(appendable(gauge)).class('g3-gauge');
     }
@@ -7448,13 +7482,13 @@
 
 
     function axisSector(vs) {
-        var values = vs.slice(),
+        var values = vs ? vs.slice(): null,
             size = 5,
             inset = 0;
         function sector(sel, g) {
             let _ = sel
                 .append('path')
-                .attr('d', g.sectorpath(...values, size, inset));
+                .attr('d', g.sectorpath(...(values || g.measure().domain()), size, inset));
             sector.stylable(_);
         }
         sector.size = function(_) {
@@ -7520,19 +7554,10 @@
 
 
     function axisLabels(vs) {
-        const isMap = typeof vs === 'object' && !Array.isArray(vs);
+        const isMap = typeof vs === 'object' && !Array.isArray(vs),
+            orientations = ['fixed', 'relative', 'upward', 'clockwise', 'counterclockwise'];
 
-        /*
-        orientation:
-        - fixed: normal reading orientation independent of axis position
-        - relative: relative to axis orientation at label position, with normal reading orientation when axis is rotated to top
-        - cw / ccw: text is drawn along the axis path in either clockwise or counter-clockwise direction
-
-        - rotate: rotation to apply w.r.t. fixed or relative orientation
-        - upright: choose between rotate and rotate+180 direction based on whichever is pointing up
-        */
-        var orient = 'fixed',  // 'relative', 'cw', 'ccw'
-            upright = true,  //TODO
+        var orient = 'fixed',
             size = 20,
             inset = 25,
             rotate = 0,
@@ -7541,7 +7566,7 @@
             step, start;
         function labels(sel, g) {
             const vs = tickvals(values, step, start, g),
-                circPath = orient.endsWith('cw'),
+                circPath = orient.endsWith('clockwise'),
                 pathId = circPath ? appendId('axis-label-path-') : undefined;
 
             let _ = sel.append('g');
@@ -7551,7 +7576,7 @@
               .enter().append('g');
             if (circPath) {
                 const r = g.r() - inset,
-                    cw = orient == 'cw' ? 1: 0;
+                    cw = orient == 'clockwise' ? 1: 0;
                 _.append('path')
                     .attr('id', (d, i) => `${pathId}-${i}`)
                     .attr('d', `M 0,${r} A ${r},${r},0,1,${cw},0,-${r} A ${r},${r},0,1,${cw},0,${r}`)
@@ -7565,11 +7590,17 @@
                     .attr('startOffset', '50%')
                     .attr('href', (d, i) => `#${pathId}-${i}`);
             } else {
-    //TODO upright text style
                 _.attr('transform', d => {
-                    let xform = g.marktransform(d, inset);
-                    if (orient == 'fixed' && g.kind() == 'circular') xform += ' ' + g.metrictransform(d, true);
-                    if (rotate) xform += ` rotate(${rotate})`;
+                    let xform = g.marktransform(d, inset),
+                        rot = rotate;
+                    if (g.kind() == 'circular') {
+                        if (orient == 'fixed') xform += ' ' + g.metrictransform(d, true);
+                        else if (orient == 'upward') {
+                            const v = ((g.measure()(d + rot) % 360) + 360) % 360;
+                            if (90 < v && v < 270) rot += 180;
+                        }
+                    }
+                    if (rot) xform += ` rotate(${rot})`;
                     return `${xform}`;
                 });
             }
@@ -7582,10 +7613,9 @@
             return arguments.length ? (start = _, labels) : start;
         };
         labels.orient = function(_) {
+            if (_ && !orientations.includes(_))
+                throw `g3.axisLabels().orient() unknown orientation '${_}'`
             return arguments.length ? (orient = _, labels) : orient;
-        };
-        labels.upright = function(_) {
-            return arguments.length ? (upright = _, labels) : upright;
         };
         labels.size = function(_) {
             return arguments.length ? (size = _, labels) : size;
@@ -7659,7 +7689,6 @@ body {
 .g3-bg-stroke {
     stroke:  #181818;
 }
-
 /* semantic styles */
 .g3-no-fill {
     fill: none;
@@ -7704,7 +7733,11 @@ body {
 }
 .g3-pointer-blade {
     fill: #e8e8e8;
-    stroke: #aaa;
+    stroke: #e8e8e8;
+}
+.g3-pointer-luminous {
+    fill: #e0e8d0;
+    stroke: #d0d8c0;
 }
 .g3-gauge-screw {
     fill: #333;
@@ -7722,15 +7755,14 @@ body {
     gauge('clockSimple')
         .metric('time').unit('second')
         .measure(linear().domain([0, 60]).range([0, 360]))
-    //    .defs()
         .append(
             gaugeFace(),
             axisTicks().step(5).size(10),
             axisTicks(range(0, 60).filter(v => v % 5)).shape('dot').size(1).inset(2).style('stroke: none; fill: white'),
             axisLabels().step(5).start(5).format(v => v/5).inset(20),
-            indicatePointer().shape('blade').rescale(v => v/60/12),
-            indicatePointer().shape('sword').rescale(v => v/60),
-            indicatePointer().rescale(snapScale()),
+            indicatePointer().shape('blade').convert(v => v/60/12),
+            indicatePointer().shape('sword').convert(v => v/60),
+            indicatePointer().convert(snapScale()),
         );
 
     const dowFormat = v => timeFormat('%a')(v).slice(0,2).toUpperCase();
@@ -7761,177 +7793,124 @@ body {
         );
 
 
-    [].concat(
-        range(60,95,5),
-        range(100,200,10),
-        range(200,300,25),
-        range(300,400,50),
-        range(400,600,100),
-    );
+    const
+        tachyLabels =  [].concat(
+            range(60,95,5),
+            range(100,200,10),
+            range(200,300,25),
+            range(300,400,50),
+            range(400,600,100),
+        ),
+        noTachyLabels = (v => !tachyLabels.includes(v)),
+        noNearlyFives = (v => Math.abs(v - 5*Math.round(v/5)) > 0.25);
 
 
-    /*
-    //TODO
-
-    // tachymetre
-
-
-
-    const tickFilter = v => Math.abs(v - 5*Math.round(v/5)) > 0.25;
-
-    var speedmaster = gauge({
-        axis: axis({
-            metric: 'chronometer',
-            unit: 'second',
-            measure: d3.scaleLinear().domain([0,60]).range([0, 360]),
-        }),
-        layers: [
-            axisFace({class: css('fill: #111')}),
-            axisMarks({
-                values: d3.range(0, 60, 0.2).filter(tickFilter),
-                inset: 20,
-                marker: tick({r: 1, length: 2}),
+    // See https://en.wikipedia.org/wiki/Omega_Speedmaster tho this is a date variant
+    gauge('omegaSpeedmaster')
+        .metric('time').unit('second')
+        .measure(linear().domain([0,60]).range([0, 360]))
+        .css(`
+.g3-pointer-hub, .g3-pointer-blade {fill: #ddd; stroke: #ddd}
+text {fill: #ccc}
+.g3-highlight {fill-opacity: 0.5;}
+`)
+        .append(
+            // indicate the date at the 3 o'clock position
+            put().rotate(90).append(
+                gauge().autoindicate(true)
+                    .metric('date').unit('dateTime')
+                    .convert(dt => dt.getDate())
+                    .measure(linear().domain([1,32]).range([0,360]))
+                    .append(
+                        axisLabels().step(1).orient('relative').rotate(-90).size(13).inset(45)
+                    ),
+            ),
+            gaugeFace().window(
+                axisSector([13.75, 16.25]).inset(36).size(19).style('fill: black')
+            ),
+            gaugeFace().r(45).style('fill: #282828'),
+            axisSector([13.75, 16.25]).inset(36).size(19).style('fill: none; stroke: #ccc; stroke-width: 3'),
+            // watch outline and tachymetre divider
+            axisLine().style('stroke-width: 4; stroke: #aaa'),
+            axisSector().inset(14).size(10).style('fill: #aaa'),
+            axisSector().inset(17).size(1).style('fill: white; filter: url(#gaussianBlur1)'),
+            // Gauge with no metric or pointer to render the inverted speed scale
+            gauge()
+                .measure(pow().exponent(-1).domain([60, 500]).range([360, 43.2]))
+                .append(
+                    axisTicks(range(60,100).filter(noTachyLabels)).inset(12).size(-3),
+                    axisTicks(range(60,140,5).filter(noTachyLabels)).inset(12).size(-5),
+                    axisTicks(tachyLabels).shape('dot').size(0.5).inset(12),
+                    axisLabels(tachyLabels).inset(6).size(6),
+                ),
+            axisLabels({3.6: 'TACHYMETRE'}).orient('clockwise').inset(7).size(7),
+            // main face ticks
+            put().scale(0.72).append(
+                axisTicks(range(0, 60, 0.2).filter(noNearlyFives)).size(3).style('stroke: #888'),
+                axisTicks(range(0, 60, 1).filter(noNearlyFives)).size(8),
+                axisTicks([29, 31]).inset(3).size(5).class('g3-bg-stroke'),
+                axisTicks(range(0, 60, 5).filter(v => v % 15)).inset(8).size(16)
+                    .shape('wedge').width(4).style('stroke-width: 3'),
+                axisLabels().step(5).start(5).format(format('02d')).inset(2.5).size(7.5).orient('upward'),
+            ),
+            axisLabels({31: 'SWISS', 29: 'MADE'}).orient('counterclockwise').inset(31.5).size(2.5),
+            element('image', {
+                href: 'speedmaster_logo.png',
+                width: 32,
+                x: 9,
+                y: -16,
             }),
-            axisMarks({
-                values: d3.range(0, 60, 1).filter(tickFilter),
-                inset: 20,
-                marker: tick({length: 5}),
-            }),
-            axisMarks({
-                values: d3.range(5, 61, 5),
-                inset: 21.8,
-                marker: label({orientation: 'reading', scale: 0.4, format: d3.format('02d')})
-            })
-        ]
-    });
-
-
-
-            // speedmaster-watch
-            metric: "tachymetre",
-            unit: "unitPerSecond",
-            axis: {
-                r: 85,
-                scale: d3.scalePow().exponent(-1).domain([60, 500]).range([360, 43.2]),
-                tickMarks: {
-                    minor: { values: d3.range(60,100), dr: -3 },
-                    major: { values: d3.range(60,140,5), dr: -5 },
-                    special: {values: speedMasterTachymetre, style: 'dot', dr: 1.5 },
-                },
-                tickLabels: {
-                    special: speedMasterTachymetre.map(v => {return {value: v, label: v, dr: -7}})
-                },
-            },
-            decorations: [
-                { kind: "use", href: "#speedmaster"}
-            ],
-            indicator: { href: ''},
-            childGauges: [
-                {
-                    metric: 'chronSecond',
-                    unit: 'second',
-                    r: 80,
-                    axis: {
-                        scale: d3.scaleLinear().domain([0,60]).range([0,360]),
-                        tickMarks: {
-                            minor: { step: 0.2, dr: 3 },
-                            major: { step: 1 }
-                        }
-                    },
-                    indicator: { href: '#indicator-needle' },
-                    childGauges: [
-                        {
-                            metric: 'clockSecond',
-                            unit: 'second',
-                            r: 30,
-                            cx: -45,
-                            axis: {
-                                scale: d3.scaleLinear().domain([0,60]).range([0,360]),
-                                tickMarks: {
-                                    minor: {values: [5,10,20,25,35,40,50,55], dr: 10},
-                                },
-                                tickLabels: {
-                                    primary: {start: 15, step: 15, dr: 20}
-                                }
-                            },
-                            style: css(`
-    .gauge-tickmark-major { stroke-width: 1}
-    path.gauge-axis { stroke: #222; stroke-width: 1; visibility: visible !important}
-    `)
-                        },
-                        {
-                            metric: 'chronMinute',
-                            unit: 'minute',
-                            r: 30,
-                            cx: 45,
-                            axis: {
-                                scale: d3.scaleLinear().domain([0,30]).range([0,360]),
-                                tickMarks: {
-                                    major: {start: 5, step: 5, dr: 15},
-                                    minor: {start: 1, dr: 10},
-                                },
-                                tickLabels: {
-                                    primary: {start: 10, step: 10, dr: 40}
-                                }
-                            },
-                            style: css(`
-    .gauge-tickmark-major { stroke-width: 1}
-    path.gauge-axis { stroke: #222; stroke-width: 1; visibility: visible !important}
-    `)
-                        },
-                        {
-                            metric: 'chronHour',
-                            unit: 'hour',
-                            r: 30,
-                            cy: 45,
-                            axis: {
-                                scale: d3.scaleLinear().domain([0,12]).range([0,360]),
-                                tickMarks: {
-                                    minor: {values: [1,2,4,5,7,8,10,11], dr: 15},
-                                },
-                                tickLabels: {
-                                    primary: {start: 3, step: 3, dr: 10}
-                                }
-                            },
-                            style: css(`
-    .gauge-tickmark-major { stroke-width: 1}
-    path.gauge-axis { stroke: #222; stroke-width: 1; visibility: visible !important}
-    `)
-                        },
-
-                        {
-                            metric: 'clockMinute',
-                            unit: 'minute',
-                            r: 95,
-                            axis: {
-                                scale: d3.scaleLinear().domain([0,60]).range([0,360]),
-                                tickMarks: {
-                                    major: { start: 5, step: 5, dr: 16},
-                                }
-                            },
-                            indicators: [
-                                { href: '#indicator-blade', scale: d3.scaleLinear().domain([0,60*12]).range([0, 360])},
-                                { href: '#indicator-sword',  },
-                            ],
-                            style: css(`
-    .gauge-tickmark-major { stroke-width: 4 !important }
-    `)
-                        },
-                    ]
-                }
-            ],
-            style: css(`
-    .gauge .gauge-axis { visibility: hidden; }
-    .gauge-face { fill: #111; }
-    .gauge .gauge-face circle { visibility: hidden; }
-    .gauge-tickmarks, .gauge-tickmark-major { stroke-width: 0.5 }
-    .gauge-tickmark-special { stroke: none; fill: white; }
-    .gauge-ticklabel-special text { font-size: 30% }
-    .gauge .gauge-ticklabel-primary text { font-size: 300% }
-    `)
-        },
-
-    */
+            // Time seconds at the 9 o'clock position
+            put().x(-42).scale(0.25).append(
+                gaugeFace(),
+                axisLine().style('stroke: #aaa; stroke-width: 4'),
+                axisSector().size(50).style('fill: #282828'),
+                axisTicks(range(5,60,5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'),
+                axisLabels().step(15).start(15).size(40),
+                indicatePointer().shape('wedge').convert(snapScale()),
+            ),
+            // gauge for chrono hour and minute
+            gauge()
+                .metric('elapsed').unit('second')
+                .measure(linear().domain([0,60]).range([0, 360]))
+                .append(
+                    // 30-minute counter at the 12 o'clock position
+                    put().y(-42).scale(0.25).append(
+                        // TODO need to manually scale ticks/labels for 30 minute counter
+                        gaugeFace(),
+                        axisLine().style('stroke: #aaa; stroke-width: 4'),
+                        axisSector().size(50).style('fill: #282828'),
+                        axisTicks(
+                            range(2, 60, 2)
+                            .filter(v => Math.abs(v - Math.round(v/20)*20) > 2)
+                        ).step(2).inset(5).size(10),
+                        axisTicks().start(10).step(20).inset(5).size(20).style('stroke-width: 2'),
+                        axisLabels().start(20).step(20).size(40).format(v => v/2),
+                        indicatePointer().shape('wedge').convert(v => v/30),
+                    ),
+                    // 12-hour counter at the 6 o'clock position
+                    put().y(42).scale(0.25).append(
+                        gaugeFace(),
+                        axisLine().style('stroke: #aaa; stroke-width: 4'),
+                        axisSector().size(50).style('fill: #282828'),
+                        axisTicks(range(5,60,5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'),
+                        axisLabels().step(15).start(15).size(40).format(v => v/5),
+                        indicatePointer().shape('wedge').convert(v => v/60/12),
+                    ),
+            ),
+            // time hours and minutes indicator
+            put().scale(0.75).append(
+                indicatePointer().shape('omega-baton-short').convert(v => v/60/12),
+                indicatePointer().shape('omega-baton-long').convert(v => v/60),
+                // indicator for chrono seconds
+                gauge()
+                    .metric('elapsed').unit('second')
+                    .measure(linear().domain([0,60]).range([0, 360]))
+                    .append(
+                        indicatePointer().shape('omega-second')
+                    ),
+            ),
+        );
 
     const headingFormat = (v) => (v%90==0)?'NESW'.charAt(v/90):(v/10);
 
@@ -7948,8 +7927,9 @@ body {
             }).append(element('rect', {width: 10, height: 5}).class('g3-fg-fill')),
         )
         .append(
+            // self-indicating gauge for pressure, to view through window
             put().rotate(90).append(
-                gauge('atmosphericPressureDHC2')
+                gauge()
                     .metric('atmosphericPressure').unit('hPa')
                     .measure(linear().domain([955,1075]).range([0, 360]))
                     .autoindicate(true)
@@ -7966,7 +7946,7 @@ body {
             // rotating cover for danger stripes, behind the main face
             // see https://www.cfinotebook.net/notebook/avionics-and-instruments/altimeter
             // A striped segment is visible below 10,000', when mask starts to cover, fully covered at 15,000'
-            indicatePointer().rescale(v => 3*v/100).append(
+            indicatePointer().convert(v => 3*v/100).append(
                 axisSector([625, 1125]).inset(40).size(60).class('g3-bg-fill')
             ).style('filter: url(#dropShadow1)'),
             // add a face with two see-through windows
@@ -7980,13 +7960,13 @@ body {
             axisLabels().step(100).format(v => v/100).size(25),
             axisLabels({950: '100', 50: 'FEET'}).orient('relative').size(8).inset(16),
             // g3.gaugeLabel("ALTITUDE").y(-10).size(15),
-            axisLabels({0: '1000 FEET'}).orient('cw').inset(50).size(8),
-            axisLabels({0: '10000 FEET'}).orient('cw').inset(62).size(8),
+            axisLabels({0: '1000 FEET'}).orient('clockwise').inset(50).size(8),
+            axisLabels({0: '10000 FEET'}).orient('clockwise').inset(62).size(8),
             gaugeLabel("CALIBRATED").x(-40).y(-8).size(6),
             gaugeLabel("TO").x(-40).y(0).size(6),
             gaugeLabel("20,000 FEET").x(-40).y(8).size(6),
-            indicatePointer().shape('dagger').rescale(v => v/100),
-            indicatePointer().shape('blade').rescale(v => v/10),
+            indicatePointer().shape('dagger').convert(v => v/100),
+            indicatePointer().shape('blade').convert(v => v/10),
             indicatePointer().shape('sword'),
         );
 
@@ -7994,7 +7974,7 @@ body {
         // outer gauge is invisible other than the indicator marks
         .append(
             // the outer dial is a self-indicating roll gauge
-            gauge('rollDHC2')
+            gauge()
                 .metric('roll').unit('degree')
                 .measure(linear().domain([-90,90]).range([-90,90]))
                 .autoindicate(true)
@@ -8002,7 +7982,7 @@ body {
                 .append(
                     // the inner dial is a self-indicating pitch gauge with a linear scale
                     put().rotate(-90).append(
-                        gauge('pitchDHC2')
+                        gauge()
                             .metric('pitch').unit('degree')
                             .measure(linear().domain([-20, 20]).range([-25,25]))
                             .kind('linear').autoindicate(true)
@@ -8074,17 +8054,17 @@ body {
             element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
             gaugeLabel('TO').x(35).y(-35).size(8),
             gaugeLabel('FR').x(35).y(35).size(8),
-            // use a single styled gauge to flip direction by styling the 'on' state over the 'off' state
+            // use a single styled gauge to flip to/from dir by styling the 'on' state over the 'off' state
             element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-highlight-fill'),
             element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
-            gauge('VORToFr').metric('toFrVOR').append(
+            gauge().metric('toFrVOR').append(
                 indicateStyle().trigger(v => v ? 0.9 : 0.1).append(
                     element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
                     element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-highlight-fill'),
                 ),
             ),
             // a similar styled gauge hides both to show the unreliable signal indicator
-            gauge('VORReliability').metric('reliabilityVOR').append(
+            gauge().metric('reliabilityVOR').append(
                 indicateStyle().trigger(v => v ? 0 : 1).append(
                     element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
                     element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
@@ -8099,7 +8079,7 @@ body {
             indicatePointer().append(
                 element('path', {d: 'M 0,-100 L 0,100'}).class('g3-fg-stroke').style('stroke-width: 4')
             ),
-            gauge('radialVORDHC2')
+            gauge()
                 // the outer ring auto-indicates to show the radial heading
                 .metric('radialVOR').unit('degree')
                 .measure(linear().domain([0, 360]).range([0, 360]))
@@ -8120,8 +8100,8 @@ body {
         .metric('relativeADF').unit('degree')
         .measure(linear().domain([0, 360]).range([0, 360]))
         .append(
-            // pilot set heading
-            gauge('headingADFDHC2')
+            // pilot set heading gauge
+            gauge()
                 .metric('headingADF').unit('degree')
                 .measure(linear().domain([0, 360]).range([0, 360]))
                 .autoindicate(true)
@@ -8176,7 +8156,8 @@ body {
         .metric('turnrate').unit('degreesPerSecond')
         .measure(linear().domain([-3, 3]).range([-20, 20]))
         .append(
-            gauge('inclineDHC2')
+            // gaguge for incline ball
+            gauge()
                 .metric('incline').unit('degree')
                 .measure(linear().domain([-20,20]).range([170,190]))
                 .r(300)
@@ -8288,7 +8269,7 @@ body {
             gaugeFace(),
             gaugeLabel('FUEL').size(15).y(75),
             put().scale(0.4).x(-45).y(30*0.866).append(
-                gauge('fuelFrontDHC2')
+                gauge()
                     .metric('fuelFront').unit('USgal')  // 29 gal capacity
                     .measure(linear().domain([3,25]).range([180+48,360+180-48]))
                     .append(
@@ -8299,14 +8280,14 @@ body {
                         axisLabels({2: 'E', 26: 'F'}).inset(10).size(25),
                         gaugeLabel("FRONT").size(25).y(-30),
                         put().y(40).scale(0.1).append(
-                            statusLight('fuelIndicatorFront')
+                            statusLight()
                                 .metric('fuelSelector').trigger(v => v == 'front' ? 1: 0.1).color('orange')
                         ),
                         indicatePointer().shape('rondel'),
                     )
             ),
             put().scale(0.4).x(45).y(30*0.866).append(
-                gauge('fuelCenterDHC2')
+                gauge()
                     .metric('fuelCenter').unit('USgal')  // 29 gal capacity
                     .measure(linear().domain([3,25]).range([180+48,360+180-48]))
                     .append(
@@ -8317,14 +8298,14 @@ body {
                         axisLabels({2: 'E', 26: 'F'}).inset(10).size(25),
                         gaugeLabel("CENTER").size(25).y(-30),
                         put().y(40).scale(0.1).append(
-                            statusLight('fuelIndicatorCenter')
+                            statusLight()
                                 .metric('fuelSelector').trigger(v => v == 'center' ? 1: 0.1).color('orange')
                         ),
                         indicatePointer().shape('rondel'),
                     ),
             ),
             put().scale(0.4).y(-60*0.866).append(
-                gauge('fuelRearDHC2')
+                gauge()
                     .metric('fuelRear').unit('USgal')  // 21 gal capacity
                     .measure(linear().domain([2,19]).range([180+44,360+180-44]))
                     .append(
@@ -8335,7 +8316,7 @@ body {
                         axisLabels({1.25: 'E', 19.75: 'F'}).inset(10).size(25),
                         gaugeLabel("REAR").size(25).y(-30),
                         put().y(40).scale(0.1).append(
-                            statusLight('fuelIndicatorRear')
+                            statusLight()
                                 .metric('fuelSelector').trigger(v => v == 'rear' ? 1: 0.1).color('orange')
                         ),
                         indicatePointer().shape('rondel'),
@@ -8350,7 +8331,7 @@ body {
             gaugeLabel('LBS').y(50),
             gaugeLabel('SQ.IN').size(7).y(60),
             put().scale(0.5).x(-15).y(40).append(
-                gauge('oilPressureDHC2').r(90)
+                gauge().r(90)
                     .metric('oilPressure').unit('PSI')
                     .measure(linear().domain([0,200]).range([180, 360]))
                     .append(
@@ -8365,7 +8346,7 @@ body {
                     ),
             ),
             put().scale(0.5).x(15).y(40).append(
-                gauge('fuelPressureDHC2').r(90)
+                gauge().r(90)
                     .metric('fuelPressure').unit('PSI')
                     .measure(linear().domain([0,10]).range([180, 0]))
                     .append(
@@ -8379,7 +8360,7 @@ body {
                     ),
             ),
             put().scale(0.9).y(-5).append(
-                gauge('oilTemperatureDHC2').r(90)
+                gauge().r(90)
                     .metric('oilTemperature').unit('degreeCelsius')
                     .measure(linear().domain([0, 100]).range([-90, 90]))
                     .append(
@@ -8476,9 +8457,10 @@ body {
 
     // configure various panels
 
-    panel('ClocksPanel').width(640).height(320).append(
+    panel('ClocksPanel').width(640).height(720).append(
         put().x(160).y(160).scale(1.28).append(gauge('clockSimple')),
         put().x(480).y(160).scale(1.28).append(gauge('casioF91W')),
+        put().x(320).y(480).scale(1.92).append(gauge('omegaSpeedmaster')),
     );
 
     panel('DHC2FlightPanel').width(320*4).height(320*2).append(

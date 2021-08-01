@@ -6007,8 +6007,18 @@
     }
 
 
+    function elapsedSecondsSeries() {
+        const dt = new Date();
+        function next() {
+            return (new Date() - dt)/1000;
+        }
+        return next;
+    }
+
+
     var metricSeries = {
         time: midnightSecondsSeries(),
+        elapsed: elapsedSecondsSeries(),
         date: datetimeSeries(),
         atmosphericPressure: forceSeries(955, 1075),
         altitude: forceSeries(0, 30000, {fmax: 0.001}),
@@ -6098,7 +6108,6 @@
 
 
     function panel(_name) {
-        if (!_name) throw "g3.panel(name) missing required name argument";
         if (_name in panelRegistry) return panelRegistry[_name];
 
         var width=1024,
@@ -6149,7 +6158,7 @@
         panel.defs = element('defs');
         panel.append(panel.defs);
 
-        panelRegistry[_name] = panel;
+        if (_name) panelRegistry[_name] = panel;
         return panel;
     }
 
@@ -6180,6 +6189,27 @@
             element('circle', {r: 1.2}).class('g3-pointer-hub'),
             element('circle', {r: 0.5}).class('g3-highlight'),
             element('circle', {r: 1.2, cy: -6}).class('g3-pointer-pommel'),
+        ),
+        wedge: put().append(
+            element('path', {d: 'M 5,25 l -10,0 l 5,-120 z'}).class('g3-pointer-blade'),
+            element('circle', {r: 10}).class('g3-pointer-hub'),
+            element('circle', {r: 4}).class('g3-highlight'),
+        ),
+        'omega-second': put().append(
+            element('path', {d: 'M 3,25 l -6,0 l 3,-115 z M 0,-72 l 4,15 l -4,5 l -4,-5 z'}).class('g3-pointer-blade'),
+            element('path', {d: 'M 0,-69 l 3,12 l -3,3 l -3,-3 z'}).class('g3-pointer-luminous'),
+            element('circle', {r: 4}).class('g3-pointer-hub'),
+            element('circle', {r: 2}).class('g3-highlight'),
+        ),
+        'omega-baton-long': put().append(
+            element('path', {d: 'M 3,0 l 0,-80 l -3,-10 l -3,10 l 0,80 z'}).class('g3-pointer-blade'),
+            element('path', {d: 'M 2,0 l 0,-80 l -4,0 l 0,80 z'}).class('g3-pointer-luminous'),
+            element('circle', {r: 6.5}).class('g3-pointer-hub'),
+        ),
+        'omega-baton-short': put().append(
+            element('path', {d: 'M 3.5,0 l 0,-55 l -3.5,-10 l -3.5,10 l 0,55 z'}).class('g3-pointer-blade'),
+            element('path', {d: 'M 2.5,0 l 0,-55 l -5,0 l 0,55 z'}).class('g3-pointer-luminous'),
+            element('circle', {r: 9}).class('g3-pointer-hub'),
         ),
         'aircraft-heading': put().x(-160).y(-160).scale(0.8).append(
             element('path', {d: "M 200.45288,260.80553 L 203.16177,253.84124 L 225.12833,263.88589 C 227.03295,264.83725 228.33805,264.53956 228.33805,262.63589 L 228.40255,256.61982 C 228.40255,250.22869 224.75105,247.90625 219.51131,243.70732 L 208.47788,235.31446 L 211.28639,196.92161 L 261.23772,213.1716 C 263.62163,213.95469 264.64806,212.98991 264.64806,211.20732 L 264.82432,201.9216 C 264.82432,194.61271 260.92135,191.45797 255.6207,187.81446 L 213.09186,157.27875 C 212.31569,139.15817 210.07741,119.6713 200.45288,103.52874 C 190.82836,119.6713 188.59008,139.15817 187.81391,157.27875 L 145.28507,187.81446 C 139.98442,191.45797 136.08145,194.61271 136.08145,201.9216 L 136.25771,211.20732 C 136.25771,212.98991 137.28414,213.95469 139.66805,213.1716 L 189.61938,196.92161 L 192.42789,235.31446 L 181.39446,243.70732 C 176.15472,247.90625 172.50322,250.22869 172.50322,256.61982 L 172.56772,262.63589 C 172.56772,264.53956 173.87282,264.83725 175.77744,263.88589 L 197.744,253.84124 L 200.45288,260.80553 z"})
@@ -6220,7 +6250,7 @@
 
 
     function indicatePointer() {
-        var rescale = identity;
+        var convert = identity;
 
         function pointer(sel, g) {
             const metric = g.metric();
@@ -6234,12 +6264,12 @@
                 if (!(metric in metrics)) return;
 
                 activeController.transition(_)
-                    .attr('transform', g.metrictransform(rescale(metrics[metric])));
+                    .attr('transform', g.metrictransform(convert(metrics[metric])));
             }
             activeController.register(update, metric, `${g.name}-indicate-pointer`);
         }
-        pointer.rescale = function(_) {
-            return arguments.length ? (rescale = _, pointer) : rescale;
+        pointer.convert = function(_) {
+            return arguments.length ? (convert = _, pointer) : convert;
         };
         pointer.shape = function(_) {
             if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
@@ -6286,11 +6316,11 @@
 
 
     function gauge(_name) {
-        if (!_name) throw "g3.gauge(name) missing required name argument";
         if (_name in gaugeRegistry) return gaugeRegistry[_name];
 
-        var name = _name,
+        var name = _name || appendId('_gauge'),
             metric,
+            convert = identity,
             unit,
             measure = linear().range([0,360]),
             kind = 'circular',
@@ -6315,7 +6345,7 @@
                     if (!(metric in metrics)) return;
 
                     activeController.transition(_)
-                        .attr('transform', gauge.metrictransform(metrics[metric], true));
+                        .attr('transform', gauge.metrictransform(convert(metrics[metric]), true));
                 }
                 activeController.register(update, metric, `${name}-autoindicate`);
             }
@@ -6323,6 +6353,9 @@
 
         gauge.metric = function(_) {
             return arguments.length ? (metric = _, gauge) : metric;
+        };
+        gauge.convert = function(_) {
+            return arguments.length ? (convert = _, gauge) : convert;
         };
         gauge.unit = function(_) {
             return arguments.length ? (unit = _, gauge) : unit;
@@ -6375,7 +6408,8 @@
                     : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
             return path;
         };
-        gaugeRegistry[_name] = gauge;
+
+        if (_name) gaugeRegistry[_name] = gauge;
 
         return stylable(appendable(gauge)).class('g3-gauge');
     }
@@ -6553,13 +6587,13 @@
 
 
     function axisSector(vs) {
-        var values = vs.slice(),
+        var values = vs ? vs.slice(): null,
             size = 5,
             inset = 0;
         function sector(sel, g) {
             let _ = sel
                 .append('path')
-                .attr('d', g.sectorpath(...values, size, inset));
+                .attr('d', g.sectorpath(...(values || g.measure().domain()), size, inset));
             sector.stylable(_);
         }
         sector.size = function(_) {
@@ -6625,19 +6659,10 @@
 
 
     function axisLabels(vs) {
-        const isMap = typeof vs === 'object' && !Array.isArray(vs);
+        const isMap = typeof vs === 'object' && !Array.isArray(vs),
+            orientations = ['fixed', 'relative', 'upward', 'clockwise', 'counterclockwise'];
 
-        /*
-        orientation:
-        - fixed: normal reading orientation independent of axis position
-        - relative: relative to axis orientation at label position, with normal reading orientation when axis is rotated to top
-        - cw / ccw: text is drawn along the axis path in either clockwise or counter-clockwise direction
-
-        - rotate: rotation to apply w.r.t. fixed or relative orientation
-        - upright: choose between rotate and rotate+180 direction based on whichever is pointing up
-        */
-        var orient = 'fixed',  // 'relative', 'cw', 'ccw'
-            upright = true,  //TODO
+        var orient = 'fixed',
             size = 20,
             inset = 25,
             rotate = 0,
@@ -6646,7 +6671,7 @@
             step, start;
         function labels(sel, g) {
             const vs = tickvals(values, step, start, g),
-                circPath = orient.endsWith('cw'),
+                circPath = orient.endsWith('clockwise'),
                 pathId = circPath ? appendId('axis-label-path-') : undefined;
 
             let _ = sel.append('g');
@@ -6656,7 +6681,7 @@
               .enter().append('g');
             if (circPath) {
                 const r = g.r() - inset,
-                    cw = orient == 'cw' ? 1: 0;
+                    cw = orient == 'clockwise' ? 1: 0;
                 _.append('path')
                     .attr('id', (d, i) => `${pathId}-${i}`)
                     .attr('d', `M 0,${r} A ${r},${r},0,1,${cw},0,-${r} A ${r},${r},0,1,${cw},0,${r}`)
@@ -6670,11 +6695,17 @@
                     .attr('startOffset', '50%')
                     .attr('href', (d, i) => `#${pathId}-${i}`);
             } else {
-    //TODO upright text style
                 _.attr('transform', d => {
-                    let xform = g.marktransform(d, inset);
-                    if (orient == 'fixed' && g.kind() == 'circular') xform += ' ' + g.metrictransform(d, true);
-                    if (rotate) xform += ` rotate(${rotate})`;
+                    let xform = g.marktransform(d, inset),
+                        rot = rotate;
+                    if (g.kind() == 'circular') {
+                        if (orient == 'fixed') xform += ' ' + g.metrictransform(d, true);
+                        else if (orient == 'upward') {
+                            const v = ((g.measure()(d + rot) % 360) + 360) % 360;
+                            if (90 < v && v < 270) rot += 180;
+                        }
+                    }
+                    if (rot) xform += ` rotate(${rot})`;
                     return `${xform}`;
                 });
             }
@@ -6687,10 +6718,9 @@
             return arguments.length ? (start = _, labels) : start;
         };
         labels.orient = function(_) {
+            if (_ && !orientations.includes(_))
+                throw `g3.axisLabels().orient() unknown orientation '${_}'`
             return arguments.length ? (orient = _, labels) : orient;
-        };
-        labels.upright = function(_) {
-            return arguments.length ? (upright = _, labels) : upright;
         };
         labels.size = function(_) {
             return arguments.length ? (size = _, labels) : size;
@@ -6764,7 +6794,6 @@ body {
 .g3-bg-stroke {
     stroke:  #181818;
 }
-
 /* semantic styles */
 .g3-no-fill {
     fill: none;
@@ -6809,7 +6838,11 @@ body {
 }
 .g3-pointer-blade {
     fill: #e8e8e8;
-    stroke: #aaa;
+    stroke: #e8e8e8;
+}
+.g3-pointer-luminous {
+    fill: #e0e8d0;
+    stroke: #d0d8c0;
 }
 .g3-gauge-screw {
     fill: #333;
