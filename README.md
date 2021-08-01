@@ -226,6 +226,14 @@ Use `rollup` to package, via
 npm run build
 ```
 
+Publish to npm by bumping version in `package.json`, commit and tag in github with:
+
+    git tag v0.1.2
+
+and finally publish via
+
+    npm publish --access public
+
 See [`TODO.md`](TODO.md) for an open list of issues and ideas.
 
 ## Resources
