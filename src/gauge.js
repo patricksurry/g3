@@ -10,11 +10,11 @@ const DEG2RAD = Math.PI/180;
 
 
 export function gauge(_name) {
-    if (!_name) throw "g3.gauge(name) missing required name argument";
     if (_name in gaugeRegistry) return gaugeRegistry[_name];
 
-    var name = _name,
+    var name = _name || appendId('_gauge'),
         metric,
+        convert = identity,
         unit,
         measure = d3.scaleLinear().range([0,360]),
         kind = 'circular',
@@ -39,7 +39,7 @@ export function gauge(_name) {
                 if (!(metric in metrics)) return;
 
                 activeController.transition(_)
-                    .attr('transform', gauge.metrictransform(metrics[metric], true))
+                    .attr('transform', gauge.metrictransform(convert(metrics[metric]), true))
             }
             activeController.register(update, metric, `${name}-autoindicate`)
         }
@@ -47,6 +47,9 @@ export function gauge(_name) {
 
     gauge.metric = function(_) {
         return arguments.length ? (metric = _, gauge) : metric;
+    }
+    gauge.convert = function(_) {
+        return arguments.length ? (convert = _, gauge) : convert;
     }
     gauge.unit = function(_) {
         return arguments.length ? (unit = _, gauge) : unit;
@@ -100,9 +103,7 @@ export function gauge(_name) {
         return path;
     }
 
-    gauge.metrics
-    gauge.children
-    gaugeRegistry[_name] = gauge;
+    if (_name) gaugeRegistry[_name] = gauge;
 
     return stylable(appendable(gauge)).class('g3-gauge');
 }

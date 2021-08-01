@@ -53,7 +53,6 @@ function jsondates(obj) {
 
 
 export function panel(_name) {
-    if (!_name) throw "g3.panel(name) missing required name argument";
     if (_name in panelRegistry) return panelRegistry[_name];
 
     var width=1024,
@@ -104,6 +103,6 @@ export function panel(_name) {
     panel.defs = element('defs')
     panel.append(panel.defs);
 
-    panelRegistry[_name] = panel;
+    if (_name) panelRegistry[_name] = panel;
     return panel;
 }

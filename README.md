@@ -1,30 +1,16 @@
 # G3: a flexible framework for steam gauge instrument panels
 
-G3&mdash;a tortured backronym for "generic gauge grammar"&mdash;is a flexible Javascript
+[G3](https://github.com/patricksurry/g3) is a flexible Javascript
 framework for designing and running steam gauge style instrument panels
-for flight (or other) simulators, and displaying external metrics.
-Here's an example of some of the pre-defined flight instruments
+for flight (or other) simulators, and displaying live external metrics.
+Here's a screenshot of some of the pre-defined flight instruments
 (you can also see a [live demo](https://patricksurry.github.io/)):
 
 <div align='center'>
     <img src="doc/flightpanel.png" alt='flight panel screenshot'>
 </div>
 
-[G3](https://github.com/patricksurry/g3)
-is part of a quixotic pandemic project to build a
-[DHC-2 Beaver](https://en.wikipedia.org/wiki/De_Havilland_Canada_DHC-2_Beaver) simpit.
-Although there are plenty of [alternatives](#resources)
-for creating instrument panels,
-I decided it would be fun to roll my own based on pure Javascript with SVG using [D3](https://d3js.org/).
-After several iterations, I ended up very close to
-the pattern suggested by
-[Mike Bostock](https://bost.ocks.org/mike/)
-several years ago in
-[Towards reusable charts](https://bost.ocks.org/mike/chart/).
-
-The base G3 package lets you define gauges and assemble them into control panels.
-The G3-examples package also includes a bunch of predefined gauges and a few panels
-that you can use or modify as desired.
+### TL;DR
 
 - [Install G3](#installing)
 - [Get started](#getting-started) by running a panel or designing a new gauge
@@ -32,14 +18,44 @@ that you can use or modify as desired.
 - Explore related [resources](#resources)
 - Dig in to the full [API reference](#api-reference)
 
-**Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments control panel metrics telemetry
+G3's goal is to provide a lightweight, browser-based  solution
+for building steam-gauge control panels using simple hardware atop a
+commodity LCD display, powered by an affordable single-board computer
+like the [Pi](https://www.raspberrypi.org/).
+One of my original inspirations was this
+[awesome Cessna setup](https://cessna172sim.allanglen.com/docs/instrument-panel/).
+It might also be useful for certain interactive data visualizations or dashboards,
+perhaps in conjunction with something like [cubism](https://square.github.io/cubism/)
+for time series visualization.
+
+G3 is a tortured backronym for "generic gauge grammar"
+but mainly an homage to [D3](https://d3js.org/).
+It's part of a quixotic pandemic project to build a
+[DHC-2 Beaver](https://en.wikipedia.org/wiki/De_Havilland_Canada_DHC-2_Beaver) simpit.
+Although there are plenty of [alternatives](#resources)
+for creating instrument panels,
+I decided it would be fun to roll my own based on pure Javascript with SVG using D3.
+After several iterations, I ended up very close to
+the pattern suggested by
+[Mike Bostock](https://bost.ocks.org/mike/)
+several years ago in
+[Towards reusable charts](https://bost.ocks.org/mike/chart/).
+
+The base G3 package lets you define gauges and assemble them into control panels.
+The G3-examples package adds a bunch of predefined gauges and a few panels
+that you can use or modify as desired.
+
+**Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments
+control panel metrics telemetry dashboard visualization dataviz
 
 ## Installing
 
 You can skip installing and just refer to a standalone copy of the module distribution remotely
-(or download locally) using an NPM CDN URL like:
+(or download locally) from an NPM CDN  like these:
 
     https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js
+
+    https://cdn.jsdelivr.net/npm/@patricksurry/g3/dist/g3-examples.min.js
 
 If you prefer, you can download from github by picking a distribution,
 clicking the 'Raw' button, and then right-clicking to "save as":
@@ -105,7 +121,8 @@ as well as a few
 [example panels](src/examples/panels.js).
 You can see them all by modifying `test.html` to display the `DebugPanel` which
 automatically displays every registered gauge,
-including exploded views of all sub-gauges.
+including exploded views of all named sub-gauges.
+(Temporarily naming an anonymous gauge can be a useful trick for debugging.)
 
 Let's make a panel that shows a clock and a heading gauge side by side.
 Create a new HTML file called `panel.html` that looks like this:
@@ -140,14 +157,14 @@ and you should see something like this:
 
 ### Display real metrics
 
-We've built a panel, but it's displaying fake metrics.
+We've built a panel, but by default it displays fake metrics generated in the browser.
 G3 normally polls an external URL for metrics,
 and expects a response containing
 a [JSON](https://www.json.org/json-en.html) dictionary
 with an entry for each metric.
 Unless we specify a polling interval,
 it will check four times per second (an interval of 250ms).
- Let's add that to `panel.html`, replacing `panel('body');` with:
+Let's add that to `panel.html`, replacing `panel('body');` with:
 
 ```js
 ...
@@ -155,17 +172,31 @@ panel.interval(500).url('/metrics/fake.json')('body');
 ...
 ```
 
-Now we just need our server to provide metrics at the endpoint.
-First we'll create an endpoint that serves fake metrics:
-the behavior will look similar at first but we can hook it up to whatever we want.
+Now we just need our server to provide metrics at the `/metrics/fake.json` endpoint.
+First we'll create an endpoint that also serves fake metrics:
+so the behavior will look similar but we can then hook it up to whatever source we want.
+Grab this sample python server based on [FastAPI](https://fastapi.tiangolo.com/) from github:
 
-TODO - include python fastapi example
+    https://github.com/patricksurry/g3py
 
-TODO - show how we can change a specific metric
+Copy your `panel.html` to the `g3py/panels/` folder,
+and follow the [directions](https://github.com/patricksurry/g3py)
+to launch the server and browse to your control panel:
+
+    http://localhost:8000/panels/panel.html
+
+You should see your panel working again,
+but the console log should show that it's fetching
+metrics from the server.
 
 More usefully, we'd have our server collect metrics from our simulation,
 for example via [SimConnect](https://github.com/odwdinc/Python-SimConnect),
 and provide those in our endpoint.
+
+
+TODO - expose a way to register more fake metrics
+
+TODO - show how we can change a specific metric
 
 TODO - example of SimConnnect
 
@@ -180,6 +211,8 @@ and investigate its implementation in the
 
 TODO - simple example
 
+TODO - register or reuse a fake metric for testing
+
 
 ## Contributing
 
@@ -192,6 +225,8 @@ Use `rollup` to package, via
 ```sh
 npm run build
 ```
+
+See [`TODO.md`](TODO.md) for an open list of issues and ideas.
 
 ## Resources
 
@@ -254,12 +289,13 @@ Gauges are often decorated with a [*gaugeFace()*](#g3-gaugeFace),
 
 
 <a name="g3-gauge" href="#g3-gauge">#</a>
-g3.**gauge**(*identifier*: string) · [source](src/gauge.js)
+g3.**gauge**([*identifier*: string]) · [source](src/gauge.js)
 
-Create a configurable gauge rendering function, registered with the required *identifier*,
-or return an existing gauge renderer if the identifier has already been registered.
-Use its getter/setter methods (below) to configure it, like *gauge*.r(100),
-then call it to draw it within an SVG document like *gauge*(d3.select('svg.mygauge')).
+If *identifier* is specified, creates or returns an existing
+gauge renderer.
+If *identifier* is not specified, creates an anonymous gauge renderer.
+The *gauge* getter/setter methods (below) are used to configure it, e.g. *gauge*.r(100),
+and then the object is called to draw it within an SVG document, e.g. *gauge*(d3.select('svg.mygauge')).
 Typically *gauge* is not drawn directly
 but instead appended to a [panel](#panel) which will draw it and manage metric updates.
 A *gauge* is also [stylable](#stylable) and [appendable](#appendable) via [mixins](#mixins).
@@ -293,6 +329,15 @@ For example, on a gauge with a circular axis,
 *gauge*.measure(d3.scaleLinear().domain([0,10]).range([-90, 90]))
 would map a metric expected to take values between 0 and 10 to a semi-circular axis on the top half of the gauge face.
 
+*gauge*.**convert**([*convert*: any &rArr; any]) · [source](src/gauge.js)
+
+If *convert* is defined, specifies a function that
+converts the current metric value before applying the *measure()* scale,
+thus changing the domain of the metric before it's transformed to the gauge axis range.
+Otherwise, returns the current conversion, which defaults to the identity function.
+For example, a dateTime metric might be converted to the day-of-month domain
+before displaying on a calendar wheel.
+
 *gauge*.**r**([*radius*: number]) · [source](src/gauge.js)
 
 If *radius* is specified it defines the size of the gauge in SVG units,
@@ -309,6 +354,10 @@ A self-indicating gauge transforms itself so that the axis location correspondin
 to the current metric value stays at a fixed position.
 A circular gauge rotates so the correct axis value is shown at the top,
 and a linear gauge slides itself to the correct axis value is shown centered at *x*=0.
+To change the position where the gauge indicates, apply a transformation.
+For example, to indicate in a window at the 3 o'clock position, try:
+
+    g3.put().rotate(90).append(g3.gauge().autoindicate(true)...)
 
 *gauge*.**clip**([*clippath*: function]) · [source](src/gauge.js)
 
@@ -337,7 +386,7 @@ on the gauge face to "cut out" a window.  Otherwise, return the current window d
 <a name="g3-gaugeLabel" href="#g3-gaugeLabel">#</a>
 g3.**gaugeLabel**([*value*: string[, *opts*: object]]) · [source](src/gauge.js)
 
-Create a [stylable](#stylable) *gaugeLabel* function is called to add SVG text to a gauge.
+Create a [stylable](#stylable) *gaugeLabel* function which adds SVG text to a gauge when called.
 If *value* is set, it defines the initial value of the label.
 The optional *opts* can be used as a shortcut for the accessor functions.
 For example `g3.gaugeLabel("hello", {x: 20, y: 20})`
@@ -475,11 +524,11 @@ See also  *axisLabels*.start().
 If *start* is defined, set the first label location in the metric domain.
 Otherwise return the current value, which defaults to *gauge*.metric().domain()[0].
 
-*axisLabels*.**format**([*format*: number => string]) · [source](src/axis.js)
+*axisLabels*.**format**([*format*: number &rArr; string]) · [source](src/axis.js)
 
 If *format* is defined, it is assumed to be a function that converts a
 metric value indicating a label position to the appropriate text label.
-For example *axisLabels*.format(v => Math.round(v/100)) might be used
+For example *axisLabels*.format(v &rArr; Math.round(v/100)) might be used
 to label a gauge in hundreds.
 
 *axisLabels*.**size**([*size*: number]) · [source](src/axis.js)
@@ -495,7 +544,7 @@ Otherwise, return the default value, which defaults to 0.
 *axisLabels*.**orient**([*orient*: string]) · [source](src/axis.js)
 
 If *orient* is defined, it indicates one of the label orientations
-`fixed`, `relative`, `cw`, `ccw`.
+`fixed`, `relative`, `upward`, `clockwise`, or `counterclockwise`.
 Otherwise it returns the current orientation which defaults to `fixed`.
 In `fixed` orientation, labels ignore the local direction of the axis,
 i.e. on a circular gauge with all labels would appear as unrotated text.
@@ -503,29 +552,33 @@ In `relative` orientation, labels are tangent
 to the axis at their position,
 i.e. on a circular gauge all labels would read along the circle.
 Note that *axisLabels*.rotate() applies
-subsequent to this basic orientation.
-In `cw` or `ccw` orientation, text is laid out along the axis path
+after this basic orientation.
+In `upward` orientation, labels behave like `relative`
+but an additional 180° rotation is added if the
+label would otherwise point downward in the labels' container.
+In `clockwise` or `counterclockwise` orientation,
+text is laid out along the axis path
 centered on the label location, so that on a circular gauge
 labels wrap around the circle,
-reading either clockwise (`cw`) or counterclockwise (`ccw`).
+reading in the described direction.
 Additional rotation does not apply in this case.
-
-TODO: support a 'sticky' orientation which is like relative
-but chooses between the actual rotation and an additional half turn
-based on which is more 'upright'.
 
 *axisLabels*.**rotate**([*rotate*: number]) · [source](src/axis.js)
 
 If *rotate* is defined, set the current rotation angle in degrees.
 Otherwise return the current rotation, which defaults to 0.
-See also *orient* and *upright*.
+See also *orient*.
 
 
 <a name="g3-axisSector" href="#g3-axisSector">#</a>
-g3.**axisSector**(*vs*: array<number>) · [source](src/axis.js)
+g3.**axisSector**([*vs*: array<number>]) · [source](src/axis.js)
 
 Returns a [stylable](#stylable) *axisSector* object, which draws part of an
 [annulus](https://en.wikipedia.org/wiki/Annulus_(mathematics)) relative to the gauge's axis line.
+If *vs* is defined it must be a two element array
+giving the starting and ending point for the sector
+in the domain of the gauge measure,
+otherwise the sector spans the full domain.
 This is typically used to highlight important regions of the axis,
 and can also be used to add windows, rings or other annular decorations.
 
@@ -562,11 +615,11 @@ with optional formatting.
 Use [g3-put()](#g3-put) to control the positioning of the text.
 
 
-*indicateText*.**format**([*format*: any => string]) · [source](src/indicate.js)
+*indicateText*.**format**([*format*: any &rArr; string]) · [source](src/indicate.js)
 
 If *format* is defined, it specifies a function that converts metric values to text.
 Otherwise returns the current formatter, which defaults to the identity function.
-For example, *indicateText*.format(v => Math.round(v/100)) would display the
+For example, *indicateText*.format(v &rArr; Math.round(v/100)) would display the
 metric value in hundreds.
 
 *indicateText*.**size**([*size*: number]) · [source](src/indicate.js)
@@ -580,7 +633,7 @@ g3.**indicatePointer**() · [source](src/indicate.js)
 
 Returns a [stylable](#stylable), [appendable](#appendable) *indicatePointer* object,
 which is called to draw a pointer that typically points to the current metric value,
-or a rescaled version, on the gauge axis.
+or some converted version, on the gauge axis.
 
 *indicatePointer*.**shape**([*shape*: string]) · [source](src/indicate.js)
 
@@ -592,13 +645,15 @@ Otherwise, returns the current pointer shape, defaulting to `needle`.
     <img src="doc/pointers.png" alt='G3 pointer shapes'>
 </div>
 
-*indicatePointer*.**rescale**([*rescale*: any => any]) · [source](src/indicate.js)
+*indicatePointer*.**convert**([*convert*: any &rArr; any]) · [source](src/indicate.js)
 
-If *rescale* is defined, specifies a function to rescale the current metric value before
-indicating.
-Otherwise, returns the current transformation, which defaults to the identity function.
+If *convert* is defined, specifies a function that
+converts the current metric value before indicating.
+Conversion happens before the *measure()* is applied,
+effectively modifying the domain of the metric before it's transformed to the gauge axis range.
+Otherwise, returns the current conversion, which defaults to the identity function.
 For example, an altimeter might indicate in hundreds, thousands and ten-thousands
-using pointers with different scalings.
+using pointers with different scales.
 
 
 <a name="g3-indicateStyle" href="#g3-indicateStyle">#</a>
@@ -612,7 +667,7 @@ depending on whether the metric is non-zero.
 See also [statusLight](#g3-statusLight) which provides
 a convenience wrapper for indicator lights.
 
-*indicateStyle*.**trigger**([*trigger*: any => boolean]) · [source](src/indicate.js)
+*indicateStyle*.**trigger**([*trigger*: any &rArr; boolean]) · [source](src/indicate.js)
 
 If *trigger* is defined, specifies a function that decides whether
 the style should be on or off based on the current metric value.
@@ -646,6 +701,11 @@ output is transformed according to a D3 [power scale](https://github.com/d3/d3-s
     d3.scalePow().domain([-w,w]).range([-w,w]).exponent(strength)
 
 where *w* is half the step size, and *strength* determines how strong the pull is.
+
+TODO better to define the percent of the original for 'half-life' of the transformed step,
+e.g. for calendar wheel it should 'tick' over a second or so once per day,
+though another way to do this is just specify the metric as integer values,
+and we'll get a single refresh transform with duration equal to polling interval
 
 *snapScale*.**start**([*start*: number]) · [source](src/common.js)
 
@@ -683,7 +743,7 @@ Roughly equivalent to:
 
 Set or return the [gauge](#g3-gauge)'s metric.
 
-*statusLight*.**trigger**([*trigger*: any => boolean]) · [source](src/gauge.js)
+*statusLight*.**trigger**([*trigger*: any &rArr; boolean]) · [source](src/gauge.js)
 
 Set or return the trigger function for the [indicateStyle](#g3-indicateStyle).
 
@@ -701,10 +761,11 @@ which are polled from an external source.
 
 
 <a name="g3-panel" href="#g3-panel">#</a>
-g3.**panel**(*identifier*: string) · [source](src/panel.js)
+g3.**panel**([*identifier*: string]) · [source](src/panel.js)
 
-Creates a or returns an existing [stylable](#stylable),
-[appendable](#appendable) *panel* object with the unique *identifier*.
+If *identifier* is specified, creates a or returns an existing [stylable](#stylable),
+[appendable](#appendable) *panel* object.
+If *identifier* is not specified, creates an anonymous panel.
 When called, *panel(selector)* appends an SVG element to *selector*,
 renders its children
 (typically [gauges](#g3-gauge) or other [elements](#g3-element))
@@ -719,7 +780,7 @@ Set or return the current width or height of the SVG container.
 
 If defined, *url* sets the URL from which to retrieve metrics,
 otherwise the current URL is returned, defaulting to undefined.
-When URL is undefined, the panel supplies fake metrics for testing.
+When URL is undefined, the panel supplies [fake metrics](src/fake.js) for testing.
 Otherwise, an HTTP GET to the *url* should return a JSON dictionary
 of metrics in the form `{metricName: value, ...}`.
 
@@ -830,31 +891,3 @@ like `{name: value, ...}` which are added to the element.
 
 If *attribute* is defined, adds an attribute to the element,
 otherwise return the full dictionary of current attributes, defaulting to empty.
-
-
-
-## TODO
-
-- indicateSector
-
-- indicateOdometer
-
-- cylindrical axis stye for a magnetic compass, where we're looking at a disc edge on
-can we do a circle scale(1,0) ?
-
-- more throw messages. e.g. for g.measure(2) should be g.measure()(2) type of 2 isn't function
-
-- re-usability is not great, e.g. draw & modify different versions of a gauge, or reuse tick labeling components
-
-- upright axis label style
-
-- custom tick mark shape option for VSI arrows
-
-- fix drop-shadow for window cutout in altitudeDHC2 - apply to mask?
-
-- more pointer shapes, standardize names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
-
-- Omega tachymeter example
-
-- diff on prior metrics + warn on missing metric after first call?
-

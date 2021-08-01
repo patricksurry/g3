@@ -39,13 +39,13 @@ export function axisLine() {
 
 
 export function axisSector(vs) {
-    var values = vs.slice(),
+    var values = vs ? vs.slice(): null,
         size = 5,
         inset = 0;
     function sector(sel, g) {
         let _ = sel
             .append('path')
-            .attr('d', g.sectorpath(...values, size, inset));
+            .attr('d', g.sectorpath(...(values || g.measure().domain()), size, inset));
         sector.stylable(_);
     }
     sector.size = function(_) {
@@ -111,19 +111,10 @@ export function axisTicks(vs) {
 
 
 export function axisLabels(vs) {
-    const isMap = typeof vs === 'object' && !Array.isArray(vs);
+    const isMap = typeof vs === 'object' && !Array.isArray(vs),
+        orientations = ['fixed', 'relative', 'upward', 'clockwise', 'counterclockwise'];
 
-    /*
-    orientation:
-    - fixed: normal reading orientation independent of axis position
-    - relative: relative to axis orientation at label position, with normal reading orientation when axis is rotated to top
-    - cw / ccw: text is drawn along the axis path in either clockwise or counter-clockwise direction
-
-    - rotate: rotation to apply w.r.t. fixed or relative orientation
-    - upright: choose between rotate and rotate+180 direction based on whichever is pointing up
-    */
-    var orient = 'fixed',  // 'relative', 'cw', 'ccw'
-        upright = true,  //TODO
+    var orient = 'fixed',
         size = 20,
         inset = 25,
         rotate = 0,
@@ -132,7 +123,7 @@ export function axisLabels(vs) {
         step, start;
     function labels(sel, g) {
         const vs = tickvals(values, step, start, g),
-            circPath = orient.endsWith('cw'),
+            circPath = orient.endsWith('clockwise'),
             pathId = circPath ? appendId('axis-label-path-') : undefined;
 
         let _ = sel.append('g');
@@ -142,7 +133,7 @@ export function axisLabels(vs) {
           .enter().append('g');
         if (circPath) {
             const r = g.r() - inset,
-                cw = orient == 'cw' ? 1: 0;
+                cw = orient == 'clockwise' ? 1: 0;
             _.append('path')
                 .attr('id', (d, i) => `${pathId}-${i}`)
                 .attr('d', `M 0,${r} A ${r},${r},0,1,${cw},0,-${r} A ${r},${r},0,1,${cw},0,${r}`)
@@ -156,13 +147,19 @@ export function axisLabels(vs) {
                 .attr('startOffset', '50%')
                 .attr('href', (d, i) => `#${pathId}-${i}`);
         } else {
-//TODO upright text style
             _.attr('transform', d => {
-                let xform = g.marktransform(d, inset);
-                if (orient == 'fixed' && g.kind() == 'circular') xform += ' ' + g.metrictransform(d, true);
-                if (rotate) xform += ` rotate(${rotate})`
+                let xform = g.marktransform(d, inset),
+                    rot = rotate;
+                if (g.kind() == 'circular') {
+                    if (orient == 'fixed') xform += ' ' + g.metrictransform(d, true);
+                    else if (orient == 'upward') {
+                        const v = ((g.measure()(d + rot) % 360) + 360) % 360;
+                        if (90 < v && v < 270) rot += 180;
+                    }
+                }
+                if (rot) xform += ` rotate(${rot})`;
                 return `${xform}`;
-            })
+            });
         }
         _.text(format);
     }
@@ -173,10 +170,9 @@ export function axisLabels(vs) {
         return arguments.length ? (start = _, labels) : start;
     }
     labels.orient = function(_) {
+        if (_ && !orientations.includes(_))
+            throw `g3.axisLabels().orient() unknown orientation '${_}'`
         return arguments.length ? (orient = _, labels) : orient;
-    }
-    labels.upright = function(_) {
-        return arguments.length ? (upright = _, labels) : upright;
     }
     labels.size = function(_) {
         return arguments.length ? (size = _, labels) : size;

@@ -62,7 +62,7 @@ g3.gauge('fuelDHC2')
         g3.gaugeFace(),
         g3.gaugeLabel('FUEL').size(15).y(75),
         g3.put().scale(0.4).x(-45).y(30*0.866).append(
-            g3.gauge('fuelFrontDHC2')
+            g3.gauge()
                 .metric('fuelFront').unit('USgal')  // 29 gal capacity
                 .measure(d3.scaleLinear().domain([3,25]).range([180+48,360+180-48]))
                 .append(
@@ -73,14 +73,14 @@ g3.gauge('fuelDHC2')
                     g3.axisLabels({2: 'E', 26: 'F'}).inset(10).size(25),
                     g3.gaugeLabel("FRONT").size(25).y(-30),
                     g3.put().y(40).scale(0.1).append(
-                        g3.statusLight('fuelIndicatorFront')
+                        g3.statusLight()
                             .metric('fuelSelector').trigger(v => v == 'front' ? 1: 0.1).color('orange')
                     ),
                     g3.indicatePointer().shape('rondel'),
                 )
         ),
         g3.put().scale(0.4).x(45).y(30*0.866).append(
-            g3.gauge('fuelCenterDHC2')
+            g3.gauge()
                 .metric('fuelCenter').unit('USgal')  // 29 gal capacity
                 .measure(d3.scaleLinear().domain([3,25]).range([180+48,360+180-48]))
                 .append(
@@ -91,14 +91,14 @@ g3.gauge('fuelDHC2')
                     g3.axisLabels({2: 'E', 26: 'F'}).inset(10).size(25),
                     g3.gaugeLabel("CENTER").size(25).y(-30),
                     g3.put().y(40).scale(0.1).append(
-                        g3.statusLight('fuelIndicatorCenter')
+                        g3.statusLight()
                             .metric('fuelSelector').trigger(v => v == 'center' ? 1: 0.1).color('orange')
                     ),
                     g3.indicatePointer().shape('rondel'),
                 ),
         ),
         g3.put().scale(0.4).y(-60*0.866).append(
-            g3.gauge('fuelRearDHC2')
+            g3.gauge()
                 .metric('fuelRear').unit('USgal')  // 21 gal capacity
                 .measure(d3.scaleLinear().domain([2,19]).range([180+44,360+180-44]))
                 .append(
@@ -109,7 +109,7 @@ g3.gauge('fuelDHC2')
                     g3.axisLabels({1.25: 'E', 19.75: 'F'}).inset(10).size(25),
                     g3.gaugeLabel("REAR").size(25).y(-30),
                     g3.put().y(40).scale(0.1).append(
-                        g3.statusLight('fuelIndicatorRear')
+                        g3.statusLight()
                             .metric('fuelSelector').trigger(v => v == 'rear' ? 1: 0.1).color('orange')
                     ),
                     g3.indicatePointer().shape('rondel'),
@@ -124,7 +124,7 @@ g3.gauge('oilFuelDHC2')
         g3.gaugeLabel('LBS').y(50),
         g3.gaugeLabel('SQ.IN').size(7).y(60),
         g3.put().scale(0.5).x(-15).y(40).append(
-            g3.gauge('oilPressureDHC2').r(90)
+            g3.gauge().r(90)
                 .metric('oilPressure').unit('PSI')
                 .measure(d3.scaleLinear().domain([0,200]).range([180, 360]))
                 .append(
@@ -139,7 +139,7 @@ g3.gauge('oilFuelDHC2')
                 ),
         ),
         g3.put().scale(0.5).x(15).y(40).append(
-            g3.gauge('fuelPressureDHC2').r(90)
+            g3.gauge().r(90)
                 .metric('fuelPressure').unit('PSI')
                 .measure(d3.scaleLinear().domain([0,10]).range([180, 0]))
                 .append(
@@ -153,7 +153,7 @@ g3.gauge('oilFuelDHC2')
                 ),
         ),
         g3.put().scale(0.9).y(-5).append(
-            g3.gauge('oilTemperatureDHC2').r(90)
+            g3.gauge().r(90)
                 .metric('oilTemperature').unit('degreeCelsius')
                 .measure(d3.scaleLinear().domain([0, 100]).range([-90, 90]))
                 .append(

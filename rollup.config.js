@@ -1,5 +1,5 @@
 import {terser} from 'rollup-plugin-terser';
-import resolve from '@rollup/plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import injectProcessEnv from 'rollup-plugin-inject-process-env';
 
 export default [
@@ -19,7 +19,7 @@ export default [
       }
     ],
     plugins: [
-      resolve(),
+      nodeResolve(),
       injectProcessEnv({
           NODE_ENV: process.env.NODE_ENV
       }),
@@ -41,7 +41,7 @@ export default [
       }
     ],
     plugins: [
-      resolve(),
+      nodeResolve(),
       injectProcessEnv({
           NODE_ENV: process.env.NODE_ENV
       }),

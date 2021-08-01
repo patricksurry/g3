@@ -2,9 +2,10 @@ import * as g3 from '../g3.js';
 
 // configure various panels
 
-g3.panel('ClocksPanel').width(640).height(320).append(
+g3.panel('ClocksPanel').width(640).height(720).append(
     g3.put().x(160).y(160).scale(1.28).append(g3.gauge('clockSimple')),
     g3.put().x(480).y(160).scale(1.28).append(g3.gauge('casioF91W')),
+    g3.put().x(320).y(480).scale(1.92).append(g3.gauge('omegaSpeedmaster')),
 );
 
 g3.panel('DHC2FlightPanel').width(320*4).height(320*2).append(

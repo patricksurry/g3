@@ -17,8 +17,9 @@ g3.gauge('altitudeDHC2')
         }).append(g3.element('rect', {width: 10, height: 5}).class('g3-fg-fill')),
     )
     .append(
+        // self-indicating gauge for pressure, to view through window
         g3.put().rotate(90).append(
-            g3.gauge('atmosphericPressureDHC2')
+            g3.gauge()
                 .metric('atmosphericPressure').unit('hPa')
                 .measure(d3.scaleLinear().domain([955,1075]).range([0, 360]))
                 .autoindicate(true)
@@ -35,7 +36,7 @@ g3.gauge('altitudeDHC2')
         // rotating cover for danger stripes, behind the main face
         // see https://www.cfinotebook.net/notebook/avionics-and-instruments/altimeter
         // A striped segment is visible below 10,000', when mask starts to cover, fully covered at 15,000'
-        g3.indicatePointer().rescale(v => 3*v/100).append(
+        g3.indicatePointer().convert(v => 3*v/100).append(
             g3.axisSector([625, 1125]).inset(40).size(60).class('g3-bg-fill')
         ).style('filter: url(#dropShadow1)'),
         // add a face with two see-through windows
@@ -49,13 +50,13 @@ g3.gauge('altitudeDHC2')
         g3.axisLabels().step(100).format(v => v/100).size(25),
         g3.axisLabels({950: '100', 50: 'FEET'}).orient('relative').size(8).inset(16),
         // g3.gaugeLabel("ALTITUDE").y(-10).size(15),
-        g3.axisLabels({0: '1000 FEET'}).orient('cw').inset(50).size(8),
-        g3.axisLabels({0: '10000 FEET'}).orient('cw').inset(62).size(8),
+        g3.axisLabels({0: '1000 FEET'}).orient('clockwise').inset(50).size(8),
+        g3.axisLabels({0: '10000 FEET'}).orient('clockwise').inset(62).size(8),
         g3.gaugeLabel("CALIBRATED").x(-40).y(-8).size(6),
         g3.gaugeLabel("TO").x(-40).y(0).size(6),
         g3.gaugeLabel("20,000 FEET").x(-40).y(8).size(6),
-        g3.indicatePointer().shape('dagger').rescale(v => v/100),
-        g3.indicatePointer().shape('blade').rescale(v => v/10),
+        g3.indicatePointer().shape('dagger').convert(v => v/100),
+        g3.indicatePointer().shape('blade').convert(v => v/10),
         g3.indicatePointer().shape('sword'),
     );
 
@@ -63,7 +64,7 @@ g3.gauge('attitudeDHC2')
     // outer gauge is invisible other than the indicator marks
     .append(
         // the outer dial is a self-indicating roll gauge
-        g3.gauge('rollDHC2')
+        g3.gauge()
             .metric('roll').unit('degree')
             .measure(d3.scaleLinear().domain([-90,90]).range([-90,90]))
             .autoindicate(true)
@@ -71,7 +72,7 @@ g3.gauge('attitudeDHC2')
             .append(
                 // the inner dial is a self-indicating pitch gauge with a linear scale
                 g3.put().rotate(-90).append(
-                    g3.gauge('pitchDHC2')
+                    g3.gauge()
                         .metric('pitch').unit('degree')
                         .measure(d3.scaleLinear().domain([-20, 20]).range([-25,25]))
                         .kind('linear').autoindicate(true)
@@ -143,17 +144,17 @@ g3.gauge('VORDHC2')
         g3.element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
         g3.gaugeLabel('TO').x(35).y(-35).size(8),
         g3.gaugeLabel('FR').x(35).y(35).size(8),
-        // use a single styled gauge to flip direction by styling the 'on' state over the 'off' state
+        // use a single styled gauge to flip to/from dir by styling the 'on' state over the 'off' state
         g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-highlight-fill'),
         g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
-        g3.gauge('VORToFr').metric('toFrVOR').append(
+        g3.gauge().metric('toFrVOR').append(
             g3.indicateStyle().trigger(v => v ? 0.9 : 0.1).append(
                 g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
                 g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-highlight-fill'),
             ),
         ),
         // a similar styled gauge hides both to show the unreliable signal indicator
-        g3.gauge('VORReliability').metric('reliabilityVOR').append(
+        g3.gauge().metric('reliabilityVOR').append(
             g3.indicateStyle().trigger(v => v ? 0 : 1).append(
                 g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
                 g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
@@ -168,7 +169,7 @@ g3.gauge('VORDHC2')
         g3.indicatePointer().append(
             g3.element('path', {d: 'M 0,-100 L 0,100'}).class('g3-fg-stroke').style('stroke-width: 4')
         ),
-        g3.gauge('radialVORDHC2')
+        g3.gauge()
             // the outer ring auto-indicates to show the radial heading
             .metric('radialVOR').unit('degree')
             .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
@@ -189,8 +190,8 @@ g3.gauge('ADFDHC2')
     .metric('relativeADF').unit('degree')
     .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
     .append(
-        // pilot set heading
-        g3.gauge('headingADFDHC2')
+        // pilot set heading gauge
+        g3.gauge()
             .metric('headingADF').unit('degree')
             .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
             .autoindicate(true)
@@ -245,7 +246,8 @@ g3.gauge('turnCoordinatorDHC2')
     .metric('turnrate').unit('degreesPerSecond')
     .measure(d3.scaleLinear().domain([-3, 3]).range([-20, 20]))
     .append(
-        g3.gauge('inclineDHC2')
+        // gaguge for incline ball
+        g3.gauge()
             .metric('incline').unit('degree')
             .measure(d3.scaleLinear().domain([-20,20]).range([170,190]))
             .r(300)

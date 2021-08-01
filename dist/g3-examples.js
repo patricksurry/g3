@@ -7760,6 +7760,16 @@ body {
             ),
         );
 
+
+    [].concat(
+        range(60,95,5),
+        range(100,200,10),
+        range(200,300,25),
+        range(300,400,50),
+        range(400,600,100),
+    );
+
+
     /*
     //TODO
 
@@ -7796,13 +7806,6 @@ body {
     });
 
 
-    const speedMasterTachymetre =  [].concat(
-        d3.range(60,95,5),
-        d3.range(100,200,10),
-        d3.range(200,300,25),
-        d3.range(300,400,50),
-        d3.range(400,600,100),
-    );
 
             // speedmaster-watch
             metric: "tachymetre",
@@ -7969,7 +7972,7 @@ body {
             // add a face with two see-through windows
             gaugeFace().window((_, g) => {
                 axisSector([225, 275]).inset(11).size(24).style('fill: black')(_, g); // pressure window
-                axisSector([425, 575]).inset(40).size(40).style('fill: black')(_, g); // danger window
+                axisSector([425, 575]).inset(40).size(40).style('fill: black')(_, g); // low-altitude danger window
             }).style('filter: url(#dropShadow3)'),  //TODO doesn't drop shadow windows properly?
             axisTicks([250]).shape('wedge').size(10).width(3),
             axisTicks().step(20),

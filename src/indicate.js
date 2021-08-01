@@ -33,7 +33,7 @@ export function indicateText() {
 
 
 export function indicatePointer() {
-    var rescale = identity;
+    var convert = identity;
 
     function pointer(sel, g) {
         const metric = g.metric();
@@ -47,12 +47,12 @@ export function indicatePointer() {
             if (!(metric in metrics)) return;
 
             activeController.transition(_)
-                .attr('transform', g.metrictransform(rescale(metrics[metric])));
+                .attr('transform', g.metrictransform(convert(metrics[metric])));
         }
         activeController.register(update, metric, `${g.name}-indicate-pointer`)
     }
-    pointer.rescale = function(_) {
-        return arguments.length ? (rescale = _, pointer) : rescale;
+    pointer.convert = function(_) {
+        return arguments.length ? (convert = _, pointer) : convert;
     }
     pointer.shape = function(_) {
         if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';

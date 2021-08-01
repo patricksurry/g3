@@ -56,8 +56,18 @@ function midnightSecondsSeries() {
 }
 
 
+function elapsedSecondsSeries() {
+    const dt = new Date();
+    function next() {
+        return (new Date() - dt)/1000;
+    }
+    return next;
+}
+
+
 var metricSeries = {
     time: midnightSecondsSeries(),
+    elapsed: elapsedSecondsSeries(),
     date: datetimeSeries(),
     atmosphericPressure: forceSeries(955, 1075),
     altitude: forceSeries(0, 30000, {fmax: 0.001}),

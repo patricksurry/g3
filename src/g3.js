@@ -69,7 +69,6 @@ body {
 .g3-bg-stroke {
     stroke:  #181818;
 }
-
 /* semantic styles */
 .g3-no-fill {
     fill: none;
@@ -114,7 +113,11 @@ body {
 }
 .g3-pointer-blade {
     fill: #e8e8e8;
-    stroke: #aaa;
+    stroke: #e8e8e8;
+}
+.g3-pointer-luminous {
+    fill: #e0e8d0;
+    stroke: #d0d8c0;
 }
 .g3-gauge-screw {
     fill: #333;
