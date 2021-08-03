@@ -10,6 +10,8 @@ Here's a screenshot of some of the pre-defined flight instruments
     <img src="doc/flightpanel.png" alt='flight panel screenshot'>
 </div>
 
+
+
 ### TL;DR
 
 - [Install G3](#installing)
@@ -40,10 +42,13 @@ the pattern suggested by
 [Mike Bostock](https://bost.ocks.org/mike/)
 several years ago in
 [Towards reusable charts](https://bost.ocks.org/mike/chart/).
+The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
+mimicked as the `omegaSpeedmaster` example gauge shown below,
+is a great example of G3's flexibility to create complex, working gauges that look good.
 
-The base G3 package lets you define gauges and assemble them into control panels.
-The G3-examples package adds a bunch of predefined gauges and a few panels
-that you can use or modify as desired.
+<div align='center'>
+    <img src="doc/speedmaster.png" width='480' alt='speedmaster screenshot'>
+</div>
 
 **Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments
 control panel metrics telemetry dashboard visualization dataviz
@@ -63,8 +68,9 @@ clicking the 'Raw' button, and then right-clicking to "save as":
     https://github.com/patricksurry/g3/tree/master/dist
 
 You can choose any of `g3[-examples][.min].js`:
-The `.min` versions are minified to load slightly faster,
-and the `-examples` versions include example gauges and panels.
+The base `g3` package provides the API to define gauges and assemble them into control panels,
+and the `g3-examples` package adds a bunch of predefined gauges and panels
+that you can use or modify.   The `.min` versions are minified to load slightly faster.
 Choosing `g3-examples.js` is probably a good start.
 
 You can also set up an [npm project](https://docs.npmjs.com/getting-started),

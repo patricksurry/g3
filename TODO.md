@@ -1,5 +1,12 @@
 ## Open issues
 
+- add animated gifs in README
+
+via: https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
+
+ffmpeg -ss 0 -t 5 -i flightdemo.mov -vf "fps=10,scale=630:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 flightdemo.gif
+
+
 - gaugeface window should take a ... of windows, see flight altitude
 
 - cylindrical projection axis style for a magnetic compass, where we're looking at a disc edge on.

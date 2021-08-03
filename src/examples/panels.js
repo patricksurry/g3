@@ -45,17 +45,17 @@ g3.panel('DebugPanel')
 // A panel showing all the pointer shapes
 const ks = Object.keys(g3.pointers);
 g3.panel('PointerGalleryPanel')
-    .width(240*5).height(240*Math.floor((ks.length+4)/5) + 40)
+    .width(240*4).height(240*Math.floor((ks.length+4)/4) + 40)
     .append(
         ...ks.map(
             (k, i) => g3.put()
-                .x(240*(i%5) + 120).y(240*Math.floor(i/5) + 120)
+                .x(240*(i%4) + 120).y(240*Math.floor(i/4) + 120)
                 .append(
                     g3.gauge('pointer-' + k).append(
-                        g3.axisLine(),
+                        g3.axisLine().style('stroke: #333'),
                         g3.indicatePointer().shape(k),
                     ),
-                    g3.gaugeLabel(k).y(120)
+                    g3.gaugeLabel(k).y(110).size(15)
                 )
         )
     );

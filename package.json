@@ -13,7 +13,10 @@
       "instruments",
       "control panel",
       "metrics",
-      "telemetry"
+      "telemetry",
+      "dashboard",
+      "visualization",
+      "dataviz"
    ],
    "license": "ISC",
    "type": "module",
