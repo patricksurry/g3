@@ -1,0 +1,31 @@
+<html>
+  <body>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
+    <script>
+
+var g = g3.gauge('JagETypeTachometer')
+    .metric('engineRPM').unit('RPM')
+    .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
+    .append(
+        g3.gaugeFace(),
+        g3.put().scale(0.95).append(
+            g3.axisSector().style('fill: none; stroke: white'),
+            g3.axisTicks().step(500).style('stroke-width: 6'),
+            g3.axisTicks().step(100).size(5),
+            g3.axisLabels().inset(18).size(15).format(v => v/100),
+            g3.indicatePointer(),
+        ),
+    );
+
+var p = g3.panel()
+    .width(640)
+    .height(640)
+    .append(
+        g3.put().x(320).y(320).scale(2).append(g)
+    );
+
+p('body');
+    </script>
+  </body>
+</html>

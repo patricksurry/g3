@@ -2,6 +2,26 @@ import * as d3 from 'd3';
 import * as g3 from '../g3.js';
 
 
+g3.fakeMetrics.register({
+    atmosphericPressure: g3.forceSeries(955, 1075),
+    altitude: g3.forceSeries(0, 30000, {fmax: 0.001}),
+    pitch: g3.forceSeries(-25, 25),
+    roll: g3.forceSeries(-25, 25),
+    incline: g3.forceSeries(-20,20),
+    heading: g3.forceSeries(0, 360, {wrap: true}),
+    radialDeviation: g3.forceSeries(-10, 10),
+    radialVOR: g3.forceSeries(0, 360, {wrap: true}),
+    toFrVOR: g3.categoricalSeries([true, false]),
+    reliabilityVOR: g3.categoricalSeries([true, false]),
+    headingADF: g3.forceSeries(0, 360, {wrap: true}),
+    relativeADF: g3.forceSeries(0, 360, {wrap: true}),
+    verticalSpeed: g3.forceSeries(-1500, 1500),
+    turnrate: g3.forceSeries(-3, 3),
+    airspeed: g3.forceSeries(40, 200),
+});
+
+
+// format a heading in degrees like 270 => W, 240 => 24
 const headingFormat = (v) => (v%90==0)?'NESW'.charAt(v/90):(v/10);
 
 

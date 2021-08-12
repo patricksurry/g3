@@ -10,8 +10,6 @@ Here's a screenshot of some of the pre-defined flight instruments
     <img src="doc/flightpanel.png" alt='flight panel screenshot'>
 </div>
 
-
-
 ### TL;DR
 
 - [Install G3](#installing)
@@ -19,6 +17,9 @@ Here's a screenshot of some of the pre-defined flight instruments
 - Give back by [contributing](#contributing) new gauges and panels
 - Explore related [resources](#resources)
 - Dig in to the full [API reference](#api-reference)
+
+**Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments
+control panel metrics telemetry dashboard visualization dataviz
 
 G3's goal is to provide a lightweight, browser-based  solution
 for building steam-gauge control panels using simple hardware atop a
@@ -42,16 +43,14 @@ the pattern suggested by
 [Mike Bostock](https://bost.ocks.org/mike/)
 several years ago in
 [Towards reusable charts](https://bost.ocks.org/mike/chart/).
-The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
-mimicked as the `omegaSpeedmaster` example gauge shown below,
-is a great example of G3's flexibility to create complex, working gauges that look good.
 
 <div align='center'>
     <img src="doc/speedmaster.png" width='480' alt='speedmaster screenshot'>
 </div>
 
-**Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments
-control panel metrics telemetry dashboard visualization dataviz
+The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
+mimicked as the `omegaSpeedmaster` example gauge above,
+showcases G3's flexibility to create complex, working gauges that look good.
 
 ## Installing
 
@@ -217,7 +216,146 @@ and investigate its implementation in the
 
 TODO - simple example
 
+Let's simulate a
+[classic Jaguar E-type tachometer](https://www.smiths-instruments.co.uk/blog/new-smiths-digital-tachometer-for-the-classic-jaguar-e-type).
+
+
+<div align='center'>
+    <img src="doc/jagetach-g3.png" width=300 hspace=64 alt='Simulated Jaguar E-type tachometer'>
+    <img src="doc/jagetach.png" width=300 hspace=64 alt='Actual Jaguar E-type tachometer'>
+</div>
+
+
+domain 0-60, range is about 250°
+one method is to draw a line through the gauge center and estimate what span
+of the indicated domain takes 180°
+
+let's create `jagetach.html`
+
+```html
+<html>
+  <body>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
+    <script>
+
+var g = g3.gauge('JagETypeTachometer')
+    .metric('engineRPM').unit('RPM')
+    .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
+    .append(
+        g3.gaugeFace(),
+        g3.axisLine(),
+        g3.axisTicks(),
+        g3.axisLabels()
+    );
+
+var p = g3.panel()
+    .width(640)
+    .height(640)
+    .append(
+        g3.put().x(320).y(320).append(g)
+    );
+
+p('body');
+    </script>
+  </body>
+</html>
+```
+
+Now let's scale the gauge to make it little larger in the panel,
+and then inset and customize the axis marks to look a little more
+like the original:
+
+```js
+    ...
+    .append(
+        g3.gaugeFace(),
+        g3.put().scale(0.95).append(
+            g3.axisSector().style('fill: none; stroke: white'),
+            g3.axisTicks().step(500).style('stroke-width: 6'),
+            g3.axisTicks().step(100).size(5),
+            g3.axisLabels().inset(18).size(15).format(v => v/100),
+            g3.indicatePointer(),
+        ),
+
+    ...
+
+        g3.put().x(320).y(320).scale(2).append(g)
+        ...
+```
+
+Adding a few labels and customizing the pointer gives us a
+reasonable facsimile, though the fonts and logo could use more love.
+The custom pointer is probably the fiddliest part,
+but is not too bad with a basic understanding of
+[SVG paths](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
+It's also possible to extract paths from existing SVG images or created via
+an SVG drawing tool like [Inkscape](https://inkscape.org/).
+
+```js
+var g = g3.gauge('JagETypeTachometer')
+    .metric('engineRPM').unit('RPM')
+    .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
+    .css(`
+text.g3-gauge-label, .g3-axis-labels text {
+    font-stretch: normal;
+    font-weight: 600;
+    fill: #ccc;
+}
+.g3-gauge-face { fill: #282828 }
+`)
+    .append(
+        g3.gaugeFace(),
+        // add an inner face
+        g3.gaugeFace().r(50).style('filter: url(#dropShadow2)'),
+        // add the warning sector
+        g3.axisSector([5000,6000]).inset(50).size(35).style('fill: #800'),
+        g3.gaugeLabel('SMITHS').y(-45).size(7),
+        g3.gaugeLabel('8 CYL').y(40).size(7),
+        // a trick to put a circular label opposite the 3000RPM top of the gauge
+        g3.put().rotate(180).append(
+            g3.axisLabels({3000: 'POSITIVE EARTH'}).orient('counterclockwise').size(3.5).inset(52)
+        ),
+        g3.gaugeLabel('RPM').y(65).size(12),
+        g3.gaugeLabel('X 100').y(75).size(8),
+        // add a couple of screws which get a random orientation
+        g3.gaugeScrew().shape('phillips').r(3).x(-20),
+        g3.gaugeScrew().shape('phillips').r(3).x(20),
+        g3.put().scale(0.95).append(
+            g3.axisSector().style('fill: none; stroke: white'),
+            g3.axisTicks().step(500).style('stroke-width: 5'),
+            g3.axisTicks().step(100).size(5),
+            g3.axisLabels().inset(20).size(15).format(v => v/100),
+            // customize the pointer
+            g3.indicatePointer().append(
+                // the full pointer blade
+                g3.element('path', {d: 'M 3,0 l -1.5,-90 l -1.5,-5 l -1.5,5 l -1.5,90 z'})
+                    .style('fill: #ddd'),
+                // the bottom half of the pointer, drawn over the full blade
+                g3.element('path', {d: 'M 3,0 l -0.75,-45 l -4.5,0 l -0.75,45 z'})
+                    .style('fill: #333'),
+                // a blurred highlight on the blade to give a bit of 3D effect
+                g3.element('path', {d: 'M -1,0 l 0,-90 l 2,0 z'})
+                    .style('fill: white; filter: url(#gaussianBlur1); opacity: 0.5'),
+                // the central hub, with a highlight
+                g3.element('circle', {r: 15}).style('fill: #ccd'),
+                g3.element('circle', {r: 15}).class('g3-highlight'),
+                // the central pin
+                g3.element('circle', {r: 5}).style('fill: #333'),
+            ),
+        ),
+    );
+```
+
+
 TODO - register or reuse a fake metric for testing
+
+
+include original image and gauge side by side
+
+trick with overlaying the image as you build
+
+exercise - add a clock at the bottom
 
 
 ## Contributing
@@ -334,7 +472,7 @@ If *kind* is specified, it must be either the string `circular` or `linear`
 to select how the axis is displayed for this gauge.
 If *kind* is not specified, return the current value, defaulting to `circular`.
 
-*gauge*.**measure**([*measure*: object]) · [source](src/gauge.js)
+*gauge*.**measure**([*measure*: any &rArr; number]) · [source](src/gauge.js)
 
 If *measure* is specified, it defines a [d3.scale](https://github.com/d3/d3-scale)-like
 function which transforms metric values to the axis coordinate system of the gauge,
@@ -342,7 +480,9 @@ and provides *measure*.domain() and *measure*.range() accessors reporting the ex
 range of the source metric and axis coordinates respectively.
 For example, on a gauge with a circular axis,
 *gauge*.measure(d3.scaleLinear().domain([0,10]).range([-90, 90]))
-would map a metric expected to take values between 0 and 10 to a semi-circular axis on the top half of the gauge face.
+would map a metric expected to take values between 0 and 10
+to a semi-circular axis on the top half of the gauge face
+(i.e. between -90° and 90°).
 
 *gauge*.**convert**([*convert*: any &rArr; any]) · [source](src/gauge.js)
 
@@ -410,6 +550,10 @@ is equivalent to `g3.gaugeLabel().value("hello").x(20).y(20)`.
 *gaugeLabel*.**value**([*value*: string]) · [source](src/gauge.js)
 
 Set the label text to *value* if defined, otherwise return the current value.
+
+*gaugeLabel*.**size**([*size*: number]) · [source](src/gauge.js)
+
+Set the label size to *size* SVG units, otherwise return the current value which defaults to 10.
 
 *gaugeLabel*.**x**([*x*: number]) · [source](src/gauge.js)
 
@@ -649,6 +793,8 @@ g3.**indicatePointer**() · [source](src/indicate.js)
 Returns a [stylable](#stylable), [appendable](#appendable) *indicatePointer* object,
 which is called to draw a pointer that typically points to the current metric value,
 or some converted version, on the gauge axis.
+A standard pointer can be configured using *indicatePointer*.shape(),
+or the pointer can be customized with arbitrary elements via *indicatePointer*.append().
 
 *indicatePointer*.**shape**([*shape*: string]) · [source](src/indicate.js)
 
@@ -807,6 +953,72 @@ The panel will query the configured URL (or generate fake metrics)
 once each interval.
 
 
+### Metrics
+
+G3 gauges display the current value of one or more metrics.
+Normally these metrics are fetched from an external source
+by configuring a [panel's](#g3-panel) *url*,
+but for development it's handy to display fake metrics which are generated locally.
+([g3py](https://github.com/patricksurry/g3py) provides similar fake metrics from a server.)
+
+Any gauge can display fake metrics, as long as a suitable metric generator
+has been registered using *g3.fakeMetrics.register()*.
+A simple set of metric generators is provided,
+or you can use any function that produces a next metric value each time it's called.
+
+<a name="g3-fakeMetrics" href="#g3-fakeMetrics">#</a>
+g3.**fakeMetrics** · [source](src/faketimeseries.js)
+
+The *fakeMetrics* generator is an instance of *metricsRegistry()* used
+by the [panel](#g3-panel) to generate metrics when no external source is configured.
+Calling *fakeMetrics()* returns a dictionary of {metricName: metricValue}
+which simulates the current state of all metrics.
+
+*fakeMetrics*.**register**([*metrics*: object]) · [source](src/faketimeseries.js)
+
+If *metrics* is defined, it specifies a dictionary of {metricName: metricGenerator}
+which are merged with the current set of fake metrics.
+Each *metricGenerator* is a function that repeatedly provides the next in a sequence of
+metric values for *metricName*.
+
+<a name="g3-forceSeries" href="#g3-forceSeries">#</a>
+g3.**forceSeries**([*min*: number[, *max*: number[, *options*: object]]]) · [source](src/faketimeseries.js)
+
+Returns a generator for a random time series
+which varies between *min* (default 0) and *max* (default 1),
+configured by the {name: value} object in *options*.
+The force series simulates the position of a particle that is nudged by random forces,
+which modify its velocity, affecting its position.
+Currently three options are recognized:
+*fmax* (default 0.01) controls the maximum force at each step,
+increasing the value will make the series bounce around faster;
+*damping* (default 0.9) introduces a friction effect with 1 being no friction and 0 being fully stuck;
+and *wrap* (default false) is a boolean that controls whether the particle wraps from min to max
+or bounces back when it hits a boundary.
+
+<a name="g3-categoricalSeries" href="#g3-categoricalSeries">#</a>
+g3.**categoricalSeries**(*vs*: array<any>) · [source](src/faketimeseries.js)
+
+Returns a generator for a time series that oscillates between the
+categories listed in *vs*.
+
+<a name="g3-datetimeSeries" href="#g3-datetimeSeries">#</a>
+g3.**datetimeSeries**() · [source](src/faketimeseries.js)
+
+Returns a time series generator which always returns the current Javascript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date).
+
+<a name="g3-midnightSecondsSeries" href="#g3-midnightSecondsSeries">#</a>
+g3.**midnightSecondsSeries**() · [source](src/faketimeseries.js)
+
+Returns a time series generator which returns the number of seconds since midnight (in browser local time).
+
+<a name="g3-elapsedSecondsSeries" href="#g3-elapsedSecondsSeries">#</a>
+g3.**midnightSecondsSeries**() · [source](src/faketimeseries.js)
+
+Returns a time series generator which returns the number of seconds since the panel was launched,
+effectively a timer.
+
+
 ### Mixins
 
 Many G3 object support standard configuration options via mixins.
@@ -831,6 +1043,9 @@ If *css* is defined, interpret as inline CSS rules using [@emotion/css](https://
 which injects the CSS into the HTML doc using a new class name and adds that class to the current list of classes.
 If *css* is not defined, return the current space-separated list of classes.
 This can be helpful to override the default style of child elements that are not directly stylable themselves.
+
+TODO: document the built-in styles that we inject, e.g. in g3.js,
+as well as the global helper defs defined in panel.js for blurs, drop shadows etc
 
 <a name="transformable" href="#transformable">#</a>
 **transformable** objects support

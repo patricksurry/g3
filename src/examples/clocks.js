@@ -2,6 +2,13 @@ import * as d3 from 'd3';
 import * as g3 from '../g3.js';
 
 
+g3.fakeMetrics.register({
+    time: g3.midnightSecondsSeries(),
+    elapsed: g3.elapsedSecondsSeries(),
+    date: g3.datetimeSeries(),
+});
+
+
 g3.gauge('clockSimple')
     .metric('time').unit('second')
     .measure(d3.scaleLinear().domain([0, 60]).range([0, 360]))

@@ -27,17 +27,6 @@ function tickvals(vs, step, start, g) {
 }
 
 
-export function axisLine() {
-    function line(sel, g) {
-        let _ = sel
-            .append('path')
-            .attr('d', g.sectorpath(...g.measure().domain()));
-        line.stylable(_);
-    }
-    return stylable(line).class('g3-axis-line');
-}
-
-
 export function axisSector(vs) {
     var values = vs ? vs.slice(): null,
         size = 5,
@@ -55,6 +44,11 @@ export function axisSector(vs) {
         return arguments.length ? (inset = _, sector) : inset;
     }
     return stylable(sector).class('g3-axis-sector');
+}
+
+
+export function axisLine() {
+    return axisSector().size(0).class('g3-axis-line');
 }
 
 

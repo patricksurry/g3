@@ -208,7 +208,7 @@ export function gaugeLabel(s, opts) {
     }
     stylable(label).class('g3-gauge-label');
     if (typeof opts === 'object') {
-        Object.items(opts).forEach(([k,v]) => {
+        Object.entries(opts).forEach(([k,v]) => {
             if (typeof label[k] !== 'function') throw `label: unknown attribute ${k}`;
             label[k](v);
         });

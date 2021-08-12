@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 import {stylable, appendable, gaugeController} from './mixin.js';
 import {element} from './common.js';
-import {fakeMetrics} from './fake.js';
+import {fakeMetrics} from './faketimeseries.js';
 
 
 export var panelRegistry = {};

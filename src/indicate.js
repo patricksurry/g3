@@ -33,14 +33,17 @@ export function indicateText() {
 
 
 export function indicatePointer() {
-    var convert = identity;
+    var convert = identity,
+        shape = 'needle';
 
     function pointer(sel, g) {
         const metric = g.metric();
         let _ = sel.append('g');
-        if (!pointer.append().length) pointer.append(pointers.needle);
 
         pointer.stylable(_);
+        if (!pointer.append().length) {
+            pointer.append(pointers[shape]);
+        }
         pointer.appendable(_, g);
 
         function update(metrics) {
@@ -56,7 +59,7 @@ export function indicatePointer() {
     }
     pointer.shape = function(_) {
         if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
-        return arguments.length ? pointer.append(pointers[_]) : pointer.append();
+        return arguments.length ? (shape = _, pointer) : shape;
     }
     return stylable(appendable(pointer)).class('g3-indicate-pointer');
 }

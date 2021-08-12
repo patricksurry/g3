@@ -11,6 +11,8 @@ export * from "./indicate.js";
 export * from "./pointers.js";
 export * from "./axis.js";
 export * from './common.js';
+export * from "./faketimeseries.js";
+
 
 injectGlobal`
 /* Declare 7 and 14 segment LCD fonts, many other variants at https://www.keshikan.net/fonts-e.html */

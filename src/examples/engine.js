@@ -2,6 +2,22 @@ import * as d3 from 'd3';
 import * as g3 from '../g3.js';
 
 
+g3.fakeMetrics.register({
+    suctionPressure: g3.forceSeries(0, 10),
+    manifoldPressure: g3.forceSeries(10, 50),
+    fuelFront: g3.forceSeries(0, 26),
+    fuelCenter: g3.forceSeries(0, 26),
+    fuelRear: g3.forceSeries(0, 20),
+    fuelSelector: g3.categoricalSeries(['front', 'center', 'rear']),
+    engineRPM: g3.forceSeries(300, 3500),
+    oilPressure: g3.forceSeries(0, 200),
+    fuelPressure: g3.forceSeries(0, 10),
+    oilTemperature: g3.forceSeries(0, 100),
+    carbMixtureTemp: g3.forceSeries(-50, 50),
+    cylinderHeadTemp: g3.forceSeries(0, 350),
+});
+
+
 g3.gauge('suctionPressureDHC2')
     .metric('suctionPressure').unit('inHg')
     .measure(d3.scaleLinear().domain([0, 10]).range([7*30, 17*30]))
@@ -41,7 +57,7 @@ g3.gauge('manifoldPressureDHC2')
     );
 
 g3.gauge('engineTachometerDHC2')
-    .metric('engineTachometer').unit('RPM')
+    .metric('engineRPM').unit('RPM')
     .measure(d3.scaleLinear().domain([300, 3500]).range([225, 495]))
     .append(
         g3.gaugeFace(),

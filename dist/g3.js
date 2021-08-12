@@ -6041,7 +6041,7 @@
         fuelCenter: forceSeries(0, 26),
         fuelRear: forceSeries(0, 20),
         fuelSelector: categoricalSeries(['front', 'center', 'rear']),
-        engineTachometer: forceSeries(300, 3500),
+        engineRPM: forceSeries(300, 3500),
         oilPressure: forceSeries(0, 200),
         fuelPressure: forceSeries(0, 10),
         oilTemperature: forceSeries(0, 100),
@@ -6250,15 +6250,19 @@
 
 
     function indicatePointer() {
-        var convert = identity;
+        var convert = identity,
+            shape = 'needle';
 
         function pointer(sel, g) {
             const metric = g.metric();
             let _ = sel.append('g');
-            if (!pointer.append().length) pointer.append(pointers.needle);
 
             pointer.stylable(_);
-            pointer.appendable(_, g);
+            if (!pointer.append().length) {
+                pointer.append(pointers[shape]);
+            } else {
+                pointer.appendable(_, g);
+            }
 
             function update(metrics) {
                 if (!(metric in metrics)) return;
@@ -6273,7 +6277,7 @@
         };
         pointer.shape = function(_) {
             if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
-            return arguments.length ? pointer.append(pointers[_]) : pointer.append();
+            return arguments.length ? (shape = _, pointer) : shape;
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
     }
@@ -6514,7 +6518,7 @@
         };
         stylable(label).class('g3-gauge-label');
         if (typeof opts === 'object') {
-            Object.items(opts).forEach(([k,v]) => {
+            Object.entries(opts).forEach(([k,v]) => {
                 if (typeof label[k] !== 'function') throw `label: unknown attribute ${k}`;
                 label[k](v);
             });
@@ -6575,17 +6579,6 @@
     }
 
 
-    function axisLine() {
-        function line(sel, g) {
-            let _ = sel
-                .append('path')
-                .attr('d', g.sectorpath(...g.measure().domain()));
-            line.stylable(_);
-        }
-        return stylable(line).class('g3-axis-line');
-    }
-
-
     function axisSector(vs) {
         var values = vs ? vs.slice(): null,
             size = 5,
@@ -6603,6 +6596,11 @@
             return arguments.length ? (inset = _, sector) : inset;
         };
         return stylable(sector).class('g3-axis-sector');
+    }
+
+
+    function axisLine() {
+        return axisSector().size(0).class('g3-axis-line');
     }
 
 

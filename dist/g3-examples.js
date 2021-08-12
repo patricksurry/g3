@@ -6936,7 +6936,7 @@
         fuelCenter: forceSeries(0, 26),
         fuelRear: forceSeries(0, 20),
         fuelSelector: categoricalSeries(['front', 'center', 'rear']),
-        engineTachometer: forceSeries(300, 3500),
+        engineRPM: forceSeries(300, 3500),
         oilPressure: forceSeries(0, 200),
         fuelPressure: forceSeries(0, 10),
         oilTemperature: forceSeries(0, 100),
@@ -7145,15 +7145,19 @@
 
 
     function indicatePointer() {
-        var convert = identity;
+        var convert = identity,
+            shape = 'needle';
 
         function pointer(sel, g) {
             const metric = g.metric();
             let _ = sel.append('g');
-            if (!pointer.append().length) pointer.append(pointers.needle);
 
             pointer.stylable(_);
-            pointer.appendable(_, g);
+            if (!pointer.append().length) {
+                pointer.append(pointers[shape]);
+            } else {
+                pointer.appendable(_, g);
+            }
 
             function update(metrics) {
                 if (!(metric in metrics)) return;
@@ -7168,7 +7172,7 @@
         };
         pointer.shape = function(_) {
             if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
-            return arguments.length ? pointer.append(pointers[_]) : pointer.append();
+            return arguments.length ? (shape = _, pointer) : shape;
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
     }
@@ -7409,7 +7413,7 @@
         };
         stylable(label).class('g3-gauge-label');
         if (typeof opts === 'object') {
-            Object.items(opts).forEach(([k,v]) => {
+            Object.entries(opts).forEach(([k,v]) => {
                 if (typeof label[k] !== 'function') throw `label: unknown attribute ${k}`;
                 label[k](v);
             });
@@ -7470,17 +7474,6 @@
     }
 
 
-    function axisLine() {
-        function line(sel, g) {
-            let _ = sel
-                .append('path')
-                .attr('d', g.sectorpath(...g.measure().domain()));
-            line.stylable(_);
-        }
-        return stylable(line).class('g3-axis-line');
-    }
-
-
     function axisSector(vs) {
         var values = vs ? vs.slice(): null,
             size = 5,
@@ -7498,6 +7491,11 @@
             return arguments.length ? (inset = _, sector) : inset;
         };
         return stylable(sector).class('g3-axis-sector');
+    }
+
+
+    function axisLine() {
+        return axisSector().size(0).class('g3-axis-line');
     }
 
 
@@ -8248,7 +8246,7 @@ text {fill: #ccc}
         );
 
     gauge('engineTachometerDHC2')
-        .metric('engineTachometer').unit('RPM')
+        .metric('engineRPM').unit('RPM')
         .measure(linear().domain([300, 3500]).range([225, 495]))
         .append(
             gaugeFace(),
@@ -8500,17 +8498,17 @@ text {fill: #ccc}
     // A panel showing all the pointer shapes
     const ks = Object.keys(pointers);
     panel('PointerGalleryPanel')
-        .width(240*5).height(240*Math.floor((ks.length+4)/5) + 40)
+        .width(240*4).height(240*Math.floor((ks.length+4)/4) + 40)
         .append(
             ...ks.map(
                 (k, i) => put()
-                    .x(240*(i%5) + 120).y(240*Math.floor(i/5) + 120)
+                    .x(240*(i%4) + 120).y(240*Math.floor(i/4) + 120)
                     .append(
                         gauge('pointer-' + k).append(
-                            axisLine(),
+                            axisLine().style('stroke: #333'),
                             indicatePointer().shape(k),
                         ),
-                        gaugeLabel(k).y(120)
+                        gaugeLabel(k).y(110).size(15)
                     )
             )
         );

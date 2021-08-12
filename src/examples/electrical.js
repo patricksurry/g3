@@ -2,6 +2,12 @@ import * as d3 from 'd3';
 import * as g3 from '../g3.js';
 
 
+g3.fakeMetrics.register({
+    alternatorLoad: g3.forceSeries(-0.1, 1.25),
+    alternatorVolts: g3.forceSeries(0, 30),
+});
+
+
 g3.gauge('ammeterDHC2')
     .metric('alternatorLoad').unit('percent')
     .measure(d3.scaleLinear().domain([-0.1, 1.2]).range([-45, 45]))
@@ -18,6 +24,7 @@ g3.gauge('ammeterDHC2')
             g3.indicatePointer().shape('rondel'),
         )
     );
+
 
 //TODO these actually have the pointer center offset from the center of the axis,
 // needing some kind of weird transformation to indicate properly
