@@ -203,8 +203,18 @@ TODO - expose a way to register more fake metrics
 
 TODO - show how we can change a specific metric
 
+*Microsoft Flight Simulator (FS2020)*
+
 TODO - example of SimConnnect
 
+
+*XPlane 11*
+
+https://github.com/nasa/XPlaneConnect
+
+
+https://developer.x-plane.com/datarefs/
+mostly sim/cockpit2/{actuators, gauges, engine, clock_timer, electrical}, sim/time/*
 
 ### Create a new gauge
 
@@ -828,10 +838,12 @@ depending on whether the metric is non-zero.
 See also [statusLight](#g3-statusLight) which provides
 a convenience wrapper for indicator lights.
 
-*indicateStyle*.**trigger**([*trigger*: any &rArr; boolean]) · [source](src/indicate.js)
+*indicateStyle*.**trigger**([*trigger*: any &rArr; float]) · [source](src/indicate.js)
 
-If *trigger* is defined, specifies a function that decides whether
-the style should be on or off based on the current metric value.
+If *trigger* is defined, specifies a function
+mapping the current metric value to a
+proportion between 0 and 1
+which tweens between the off (0) and on (1) style.
 Otherwise, returns the current trigger function, which defaults to the identity
 (meaning that the style is on whenever the metric is non-zero).
 

@@ -6911,49 +6911,21 @@
     }
 
 
-    var metricSeries = {
-        time: midnightSecondsSeries(),
-        elapsed: elapsedSecondsSeries(),
-        date: datetimeSeries(),
-        atmosphericPressure: forceSeries(955, 1075),
-        altitude: forceSeries(0, 30000, {fmax: 0.001}),
-        pitch: forceSeries(-25, 25),
-        roll: forceSeries(-25, 25),
-        incline: forceSeries(-20,20),
-        heading: forceSeries(0, 360, {wrap: true}),
-        radialDeviation: forceSeries(-10, 10),
-        radialVOR: forceSeries(0, 360, {wrap: true}),
-        toFrVOR: categoricalSeries([true, false]),
-        reliabilityVOR: categoricalSeries([true, false]),
-        headingADF: forceSeries(0, 360, {wrap: true}),
-        relativeADF: forceSeries(0, 360, {wrap: true}),
-        verticalSpeed: forceSeries(-1500, 1500),
-        turnrate: forceSeries(-3, 3),
-        airspeed: forceSeries(40, 200),
-        suctionPressure: forceSeries(0, 10),
-        manifoldPressure: forceSeries(10, 50),
-        fuelFront: forceSeries(0, 26),
-        fuelCenter: forceSeries(0, 26),
-        fuelRear: forceSeries(0, 20),
-        fuelSelector: categoricalSeries(['front', 'center', 'rear']),
-        engineRPM: forceSeries(300, 3500),
-        oilPressure: forceSeries(0, 200),
-        fuelPressure: forceSeries(0, 10),
-        oilTemperature: forceSeries(0, 100),
-        carbMixtureTemp: forceSeries(-50, 50),
-        cylinderHeadTemp: forceSeries(0, 350),
-        alternatorLoad: forceSeries(-0.1, 1.25),
-        alternatorVolts: forceSeries(0, 30),
-    };
+    function metricsRegistry() {
+        var generators = {};
 
-
-    function fakeMetrics() {
-        let metrics = {};
-        for (var k in metricSeries) {
-            metrics[k] = metricSeries[k]();
+        function metrics() {
+            return Object.fromEntries(
+                Object.entries(generators).map(([k, f]) => [k, f()])
+            );
         }
+        metrics.register = function(obj) {
+            return arguments.length ? (generators = {...obj, ...generators}, metrics): generators;
+        };
         return metrics;
     }
+
+    var fakeMetrics = metricsRegistry();
 
     var panelRegistry = {};
 
@@ -7155,9 +7127,8 @@
             pointer.stylable(_);
             if (!pointer.append().length) {
                 pointer.append(pointers[shape]);
-            } else {
-                pointer.appendable(_, g);
             }
+            pointer.appendable(_, g);
 
             function update(metrics) {
                 if (!(metric in metrics)) return;
@@ -7750,6 +7721,13 @@ body {
 }
 `; // end of CSS injectGlobal
 
+    fakeMetrics.register({
+        time: midnightSecondsSeries(),
+        elapsed: elapsedSecondsSeries(),
+        date: datetimeSeries(),
+    });
+
+
     gauge('clockSimple')
         .metric('time').unit('second')
         .measure(linear().domain([0, 60]).range([0, 360]))
@@ -7910,6 +7888,26 @@ text {fill: #ccc}
             ),
         );
 
+    fakeMetrics.register({
+        pressureSetting: forceSeries(955, 1075),
+        altitude: forceSeries(0, 30000, {fmax: 0.001}),
+        pitch: forceSeries(-25, 25),
+        roll: forceSeries(-25, 25),
+        slip: forceSeries(-20,20),
+        heading: forceSeries(0, 360, {wrap: true}),
+        radialDeviation: forceSeries(-10, 10),
+        radialVOR: forceSeries(0, 360, {wrap: true}),
+        toFrVOR: categoricalSeries([true, false]),
+        reliabilityVOR: categoricalSeries([true, false]),
+        headingADF: forceSeries(0, 360, {wrap: true}),
+        relativeADF: forceSeries(0, 360, {wrap: true}),
+        verticalSpeed: forceSeries(-1500, 1500),
+        turnrate: forceSeries(-3, 3),
+        airspeed: forceSeries(40, 200),
+    });
+
+
+    // format a heading in degrees like 270 => W, 240 => 24
     const headingFormat = (v) => (v%90==0)?'NESW'.charAt(v/90):(v/10);
 
 
@@ -7928,7 +7926,7 @@ text {fill: #ccc}
             // self-indicating gauge for pressure, to view through window
             put().rotate(90).append(
                 gauge()
-                    .metric('atmosphericPressure').unit('hPa')
+                    .metric('pressureSetting').unit('hPa')
                     .measure(linear().domain([955,1075]).range([0, 360]))
                     .autoindicate(true)
                     .append(
@@ -8154,9 +8152,9 @@ text {fill: #ccc}
         .metric('turnrate').unit('degreesPerSecond')
         .measure(linear().domain([-3, 3]).range([-20, 20]))
         .append(
-            // gaguge for incline ball
+            // gaguge for slip, degress of ball deflection
             gauge()
-                .metric('incline').unit('degree')
+                .metric('slip').unit('degree')
                 .measure(linear().domain([-20,20]).range([170,190]))
                 .r(300)
                 .append(
@@ -8206,6 +8204,22 @@ text {fill: #ccc}
             gaugeLabel("MPH").y(33),
             indicatePointer().shape('sword'),
         );
+
+    fakeMetrics.register({
+        suctionPressure: forceSeries(0, 10),
+        manifoldPressure: forceSeries(10, 50),
+        fuelFront: forceSeries(0, 26),
+        fuelCenter: forceSeries(0, 26),
+        fuelRear: forceSeries(0, 20),
+        fuelSelector: categoricalSeries(['front', 'center', 'rear']),
+        engineRPM: forceSeries(300, 3500),
+        oilPressure: forceSeries(0, 200),
+        fuelPressure: forceSeries(0, 10),
+        oilTemperature: forceSeries(0, 100),
+        carbMixtureTemp: forceSeries(-50, 50),
+        cylinderHeadTemp: forceSeries(0, 350),
+    });
+
 
     gauge('suctionPressureDHC2')
         .metric('suctionPressure').unit('inHg')
@@ -8416,6 +8430,12 @@ text {fill: #ccc}
             ),
         );
 
+    fakeMetrics.register({
+        alternatorLoad: forceSeries(-0.1, 1.25),
+        alternatorVolts: forceSeries(0, 30),
+    });
+
+
     gauge('ammeterDHC2')
         .metric('alternatorLoad').unit('percent')
         .measure(linear().domain([-0.1, 1.2]).range([-45, 45]))
@@ -8432,6 +8452,7 @@ text {fill: #ccc}
                 indicatePointer().shape('rondel'),
             )
         );
+
 
     //TODO these actually have the pointer center offset from the center of the axis,
     // needing some kind of weird transformation to indicate properly
@@ -8517,7 +8538,12 @@ text {fill: #ccc}
     exports.axisLine = axisLine;
     exports.axisSector = axisSector;
     exports.axisTicks = axisTicks;
+    exports.categoricalSeries = categoricalSeries;
+    exports.datetimeSeries = datetimeSeries;
+    exports.elapsedSecondsSeries = elapsedSecondsSeries;
     exports.element = element;
+    exports.fakeMetrics = fakeMetrics;
+    exports.forceSeries = forceSeries;
     exports.gauge = gauge;
     exports.gaugeFace = gaugeFace;
     exports.gaugeLabel = gaugeLabel;
@@ -8526,6 +8552,7 @@ text {fill: #ccc}
     exports.indicatePointer = indicatePointer;
     exports.indicateStyle = indicateStyle;
     exports.indicateText = indicateText;
+    exports.midnightSecondsSeries = midnightSecondsSeries;
     exports.panel = panel;
     exports.panelRegistry = panelRegistry;
     exports.pointers = pointers;

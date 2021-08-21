@@ -3,11 +3,11 @@ import * as g3 from '../g3.js';
 
 
 g3.fakeMetrics.register({
-    atmosphericPressure: g3.forceSeries(955, 1075),
+    pressureSetting: g3.forceSeries(955, 1075),
     altitude: g3.forceSeries(0, 30000, {fmax: 0.001}),
     pitch: g3.forceSeries(-25, 25),
     roll: g3.forceSeries(-25, 25),
-    incline: g3.forceSeries(-20,20),
+    slip: g3.forceSeries(-20,20),
     heading: g3.forceSeries(0, 360, {wrap: true}),
     radialDeviation: g3.forceSeries(-10, 10),
     radialVOR: g3.forceSeries(0, 360, {wrap: true}),
@@ -40,7 +40,7 @@ g3.gauge('altitudeDHC2')
         // self-indicating gauge for pressure, to view through window
         g3.put().rotate(90).append(
             g3.gauge()
-                .metric('atmosphericPressure').unit('hPa')
+                .metric('pressureSetting').unit('hPa')
                 .measure(d3.scaleLinear().domain([955,1075]).range([0, 360]))
                 .autoindicate(true)
                 .append(
@@ -164,7 +164,7 @@ g3.gauge('VORDHC2')
         g3.element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
         g3.gaugeLabel('TO').x(35).y(-35).size(8),
         g3.gaugeLabel('FR').x(35).y(35).size(8),
-        // use a single styled gauge to flip to/from dir by styling the 'on' state over the 'off' state
+        // use a single styled gauge to flip to=0/from=1 dir by styling the 'on' state over the 'off' state
         g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-highlight-fill'),
         g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
         g3.gauge().metric('toFrVOR').append(
@@ -266,9 +266,9 @@ g3.gauge('turnCoordinatorDHC2')
     .metric('turnrate').unit('degreesPerSecond')
     .measure(d3.scaleLinear().domain([-3, 3]).range([-20, 20]))
     .append(
-        // gaguge for incline ball
+        // gaguge for slip, degress of ball deflection
         g3.gauge()
-            .metric('incline').unit('degree')
+            .metric('slip').unit('degree')
             .measure(d3.scaleLinear().domain([-20,20]).range([170,190]))
             .r(300)
             .append(

@@ -1,5 +1,7 @@
 ## Open issues
 
+- clamp limits but not for labels
+
 - more throw messages. e.g. for g.measure(2) should be g.measure()(2) type of 2 isn't function
 
 - fix drop-shadow for window cutout in altitudeDHC2 - apply to mask?
@@ -16,6 +18,8 @@
   or a collection of cylindrical self-indicators with a form of snapscale
 
 - how can we reuse common patterns, e.g. subdial formatting in speedmaster
+
+- similar, what if I want several copies of same gauge driven by different metrics, like left & right engine
 
 - re-usability is not great, e.g. draw & modify different versions of a gauge, or reuse tick labeling components
 
