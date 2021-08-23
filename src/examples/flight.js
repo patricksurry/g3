@@ -7,7 +7,7 @@ g3.fakeMetrics.register({
     altitude: g3.forceSeries(0, 30000, {fmax: 0.001}),
     pitch: g3.forceSeries(-25, 25),
     roll: g3.forceSeries(-25, 25),
-    slip: g3.forceSeries(-20,20),
+    slip: g3.forceSeries(-25, 25),
     heading: g3.forceSeries(0, 360, {wrap: true}),
     radialDeviation: g3.forceSeries(-10, 10),
     radialVOR: g3.forceSeries(0, 360, {wrap: true}),
@@ -15,8 +15,8 @@ g3.fakeMetrics.register({
     reliabilityVOR: g3.categoricalSeries([true, false]),
     headingADF: g3.forceSeries(0, 360, {wrap: true}),
     relativeADF: g3.forceSeries(0, 360, {wrap: true}),
-    verticalSpeed: g3.forceSeries(-1500, 1500),
-    turnrate: g3.forceSeries(-3, 3),
+    verticalSpeed: g3.forceSeries(-2500, 2500),
+    turnrate: g3.forceSeries(-10, 10),
     airspeed: g3.forceSeries(40, 200),
 });
 
@@ -26,7 +26,7 @@ const headingFormat = (v) => (v%90==0)?'NESW'.charAt(v/90):(v/10);
 
 
 g3.gauge('altitudeDHC2')
-    .metric('altitude').unit('feet')
+    .metric('altitude').unit('ft')
     .measure(d3.scaleLinear().domain([0, 1000]).range([0, 360]))
     .defs(
         g3.element('pattern', {
@@ -56,7 +56,7 @@ g3.gauge('altitudeDHC2')
         // rotating cover for danger stripes, behind the main face
         // see https://www.cfinotebook.net/notebook/avionics-and-instruments/altimeter
         // A striped segment is visible below 10,000', when mask starts to cover, fully covered at 15,000'
-        g3.indicatePointer().convert(v => 3*v/100).append(
+        g3.indicatePointer().rescale(v => 3*v/100).append(
             g3.axisSector([625, 1125]).inset(40).size(60).class('g3-bg-fill')
         ).style('filter: url(#dropShadow1)'),
         // add a face with two see-through windows
@@ -75,8 +75,8 @@ g3.gauge('altitudeDHC2')
         g3.gaugeLabel("CALIBRATED").x(-40).y(-8).size(6),
         g3.gaugeLabel("TO").x(-40).y(0).size(6),
         g3.gaugeLabel("20,000 FEET").x(-40).y(8).size(6),
-        g3.indicatePointer().shape('dagger').convert(v => v/100),
-        g3.indicatePointer().shape('blade').convert(v => v/10),
+        g3.indicatePointer().shape('dagger').rescale(v => v/100),
+        g3.indicatePointer().shape('blade').rescale(v => v/10),
         g3.indicatePointer().shape('sword'),
     );
 
@@ -85,7 +85,7 @@ g3.gauge('attitudeDHC2')
     .append(
         // the outer dial is a self-indicating roll gauge
         g3.gauge()
-            .metric('roll').unit('degree')
+            .metric('roll').unit('deg')
             .measure(d3.scaleLinear().domain([-90,90]).range([-90,90]))
             .autoindicate(true)
             .clip(g3.gaugeFace())
@@ -93,7 +93,7 @@ g3.gauge('attitudeDHC2')
                 // the inner dial is a self-indicating pitch gauge with a linear scale
                 g3.put().rotate(-90).append(
                     g3.gauge()
-                        .metric('pitch').unit('degree')
+                        .metric('pitch').unit('deg')
                         .measure(d3.scaleLinear().domain([-20, 20]).range([-25,25]))
                         .kind('linear').autoindicate(true)
                         .css('text {fill: #ddd}')
@@ -138,7 +138,7 @@ g3.gauge('attitudeDHC2')
 
 
 g3.gauge('headingDHC2')
-    .metric('heading').unit('degree')
+    .metric('heading').unit('deg')
     .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
     .autoindicate(true)
     .append(
@@ -154,7 +154,7 @@ let deviationScale = d3.scaleLinear().domain([-10,10]).range([-50,50]);
 
 g3.gauge('VORDHC2')
     // the inner part of the VOR gauge measures the deviation from selected radial
-    .metric('radialDeviation').unit('degree')
+    .metric('radialDeviation').unit('deg')
     .measure(deviationScale)
     .kind('linear')
     .clip(g3.gaugeFace())
@@ -191,7 +191,7 @@ g3.gauge('VORDHC2')
         ),
         g3.gauge()
             // the outer ring auto-indicates to show the radial heading
-            .metric('radialVOR').unit('degree')
+            .metric('radialVOR').unit('deg')
             .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
             .autoindicate(true)
             .append(
@@ -207,12 +207,12 @@ g3.gauge('VORDHC2')
     );
 
 g3.gauge('ADFDHC2')
-    .metric('relativeADF').unit('degree')
+    .metric('relativeADF').unit('deg')
     .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
     .append(
         // pilot set heading gauge
         g3.gauge()
-            .metric('headingADF').unit('degree')
+            .metric('headingADF').unit('deg')
             .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
             .autoindicate(true)
             .append(
@@ -236,7 +236,7 @@ g3.gauge('ADFDHC2')
     );
 
 g3.gauge('vsiDHC2')
-    .metric('verticalSpeed').unit('feetPerMinute')
+    .metric('verticalSpeed').unit('ft/min')
     .measure(d3.scaleLinear().domain([-2000, 2000]).range([90, 90+360]))
     .append(
         g3.gaugeFace(),
@@ -259,16 +259,16 @@ g3.gauge('vsiDHC2')
         },
         g3.gaugeLabel("UP").x(-57).y(-37).size(8).style('text-anchor: start'),
         g3.gaugeLabel("DOWN").x(-57).y(37).size(8).style('text-anchor: start'),
-        g3.indicatePointer().shape('sword'),
+        g3.indicatePointer().shape('sword').clamp([-1950, 1950]),
     );
 
 g3.gauge('turnCoordinatorDHC2')
-    .metric('turnrate').unit('degreesPerSecond')
+    .metric('turnrate').unit('deg/s')
     .measure(d3.scaleLinear().domain([-3, 3]).range([-20, 20]))
     .append(
-        // gaguge for slip, degress of ball deflection
+        // gaguge for slip, degrees of ball deflection
         g3.gauge()
-            .metric('slip').unit('degree')
+            .metric('slip').unit('deg')
             .measure(d3.scaleLinear().domain([-20,20]).range([170,190]))
             .r(300)
             .append(
@@ -279,7 +279,7 @@ g3.gauge('turnCoordinatorDHC2')
                     // background for the tube
                     g3.axisSector([-30,30]).inset(-9).size(18).style('fill: #c0c0a8; filter: url(#dropShadow3)'),
                     // add ball as pointer
-                    g3.indicatePointer().append(
+                    g3.indicatePointer().clamp([-20,20]).append(
                         g3.put().scale(0.8,1).y(-300).rotate(-180).append(
                             // add ball background plus a highlight, with the rotate(-180) to avoid having
                             // the highlight flipped since the ball is tyipcally indicating near 180 rotation
@@ -299,7 +299,7 @@ g3.gauge('turnCoordinatorDHC2')
         g3.gaugeLabel('ELEC.').y(-82),
         g3.gaugeLabel('NO PITCH').y(80).size(8),
         g3.gaugeLabel('INFORMATION').y(90).size(8),
-        g3.indicatePointer().shape('aircraft-turn'),
+        g3.indicatePointer().clamp([-9,9]).shape('aircraft-turn'),
     );
 
 g3.gauge('airspeedDHC2')

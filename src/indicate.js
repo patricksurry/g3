@@ -16,8 +16,8 @@ export function indicateText() {
 
         function update(metrics) {
             if (!(metric in metrics)) return;
-
-            _.text(format(metrics[metric]));
+            const v = g.maybeConvert(metrics[metric]);
+            _.text(format(v));
         }
 
         activeController.register(update, metric, `${g.name}-indicate-text`)
@@ -33,7 +33,8 @@ export function indicateText() {
 
 
 export function indicatePointer() {
-    var convert = identity,
+    var rescale = identity,
+        clamp = [undefined, undefined],
         shape = 'needle';
 
     function pointer(sel, g) {
@@ -49,13 +50,19 @@ export function indicatePointer() {
         function update(metrics) {
             if (!(metric in metrics)) return;
 
-            activeController.transition(_)
-                .attr('transform', g.metrictransform(convert(metrics[metric])));
+            const v = g.maybeConvert(metrics[metric]);
+            let z = rescale(v);
+            if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+            if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+            activeController.transition(_).attr('transform', g.metrictransform(z));
         }
         activeController.register(update, metric, `${g.name}-indicate-pointer`)
     }
-    pointer.convert = function(_) {
-        return arguments.length ? (convert = _, pointer) : convert;
+    pointer.rescale = function(_) {
+        return arguments.length ? (rescale = _, pointer) : rescale;
+    }
+    pointer.clamp = function(_) {
+        return arguments.length ? (clamp = _, pointer) : clamp;
     }
     pointer.shape = function(_) {
         if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
@@ -78,7 +85,8 @@ export function indicateStyle() {
         function update(metrics) {
             if (!(metric in metrics)) return;
 
-            let style = tween(trigger(metrics[metric]));
+            const v = g.maybeConvert(metrics[metric]);
+            let style = tween(trigger(v));
             // Nb. no transition for style updates, looks weird for light on/off
             for (let k in style) _.style(k, style[k]);
         }

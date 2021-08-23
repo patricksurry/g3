@@ -5151,7 +5151,7 @@
       return +x;
     }
 
-    var unit = [0, 1];
+    var unit$1 = [0, 1];
 
     function identity$1(x) {
       return x;
@@ -5211,8 +5211,8 @@
     }
 
     function transformer() {
-      var domain = unit,
-          range = unit,
+      var domain = unit$1,
+          range = unit$1,
           interpolate = interpolate$1,
           transform,
           untransform,
@@ -6134,6 +6134,2253 @@
         return panel;
     }
 
+    var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from) {
+        for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+            to[j] = from[i];
+        return to;
+    };
+    /**
+     * Represents a conversion path
+     */
+    var Converter = /** @class */ (function () {
+        function Converter(measures, value) {
+            this.val = 0;
+            this.destination = null;
+            this.origin = null;
+            if (typeof value === 'number') {
+                this.val = value;
+            }
+            if (typeof measures !== 'object') {
+                throw new Error('Measures cannot be blank');
+            }
+            this.measureData = measures;
+        }
+        /**
+         * Lets the converter know the source unit abbreviation
+         */
+        Converter.prototype.from = function (from) {
+            if (this.destination != null)
+                throw new Error('.from must be called before .to');
+            this.origin = this.getUnit(from);
+            if (this.origin == null) {
+                this.throwUnsupportedUnitError(from);
+            }
+            return this;
+        };
+        /**
+         * Converts the unit and returns the value
+         */
+        Converter.prototype.to = function (to) {
+            var _a, _b;
+            if (this.origin == null)
+                throw new Error('.to must be called after .from');
+            this.destination = this.getUnit(to);
+            if (this.destination == null) {
+                this.throwUnsupportedUnitError(to);
+            }
+            var destination = this.destination;
+            var origin = this.origin;
+            // Don't change the value if origin and destination are the same
+            if (origin.abbr === destination.abbr) {
+                return this.val;
+            }
+            // You can't go from liquid to mass, for example
+            if (destination.measure != origin.measure) {
+                throw new Error("Cannot convert incompatible measures of " + destination.measure + " and " + origin.measure);
+            }
+            /**
+             * Convert from the source value to its anchor inside the system
+             */
+            var result = this.val * origin.unit.to_anchor;
+            /**
+             * For some changes it's a simple shift (C to K)
+             * So we'll add it when convering into the unit (later)
+             * and subtract it when converting from the unit
+             */
+            if (origin.unit.anchor_shift) {
+                result -= origin.unit.anchor_shift;
+            }
+            /**
+             * Convert from one system to another through the anchor ratio. Some conversions
+             * aren't ratio based or require more than a simple shift. We can provide a custom
+             * transform here to provide the direct result
+             */
+            if (origin.system != destination.system) {
+                var measure = this.measureData[origin.measure];
+                var anchors = measure.anchors;
+                if (anchors == null) {
+                    throw new Error("Unable to convert units. Anchors are missing for \"" + origin.measure + "\" and \"" + destination.measure + "\" measures.");
+                }
+                var anchor = anchors[origin.system];
+                if (anchor == null) {
+                    throw new Error("Unable to find anchor for \"" + origin.measure + "\" to \"" + destination.measure + "\". Please make sure it is defined.");
+                }
+                var transform = (_a = anchor[destination.system]) === null || _a === void 0 ? void 0 : _a.transform;
+                var ratio = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
+                if (typeof transform === 'function') {
+                    result = transform(result);
+                }
+                else if (typeof ratio === 'number') {
+                    result *= ratio;
+                }
+                else {
+                    throw new Error('A system anchor needs to either have a defined ratio number or a transform function.');
+                }
+            }
+            /**
+             * This shift has to be done after the system conversion business
+             */
+            if (destination.unit.anchor_shift) {
+                result += destination.unit.anchor_shift;
+            }
+            /**
+             * Convert to another unit inside the destination system
+             */
+            return result / destination.unit.to_anchor;
+        };
+        /**
+         * Converts the unit to the best available unit.
+         */
+        Converter.prototype.toBest = function (options) {
+            var _a, _b;
+            if (this.origin == null)
+                throw new Error('.toBest must be called after .from');
+            var exclude = [];
+            var cutOffNumber = 1;
+            if (typeof options === 'object') {
+                exclude = (_a = options.exclude) !== null && _a !== void 0 ? _a : [];
+                cutOffNumber = (_b = options.cutOffNumber) !== null && _b !== void 0 ? _b : 1;
+            }
+            var best = null;
+            /**
+              Looks through every possibility for the 'best' available unit.
+              i.e. Where the value has the fewest numbers before the decimal point,
+              but is still higher than 1.
+            */
+            for (var _i = 0, _c = this.possibilities(); _i < _c.length; _i++) {
+                var possibility = _c[_i];
+                var unit = this.describe(possibility);
+                var isIncluded = exclude.indexOf(possibility) === -1;
+                if (isIncluded && unit.system === this.origin.system) {
+                    var result = this.to(possibility);
+                    if (best == null || (result >= cutOffNumber && result < best.val)) {
+                        best = {
+                            val: result,
+                            unit: possibility,
+                            singular: unit.singular,
+                            plural: unit.plural,
+                        };
+                    }
+                }
+            }
+            return best;
+        };
+        /**
+         * Finds the unit
+         */
+        Converter.prototype.getUnit = function (abbr) {
+            var found = null;
+            for (var _i = 0, _a = Object.entries(this.measureData); _i < _a.length; _i++) {
+                var _b = _a[_i], measureName = _b[0], measure = _b[1];
+                for (var _c = 0, _d = Object.entries(measure.systems); _c < _d.length; _c++) {
+                    var _e = _d[_c], systemName = _e[0], system = _e[1];
+                    for (var _f = 0, _g = Object.entries(system); _f < _g.length; _f++) {
+                        var _h = _g[_f], testAbbr = _h[0], unit = _h[1];
+                        if (testAbbr == abbr) {
+                            return {
+                                abbr: abbr,
+                                measure: measureName,
+                                system: systemName,
+                                unit: unit,
+                            };
+                        }
+                    }
+                }
+            }
+            return found;
+        };
+        /**
+         * An alias for getUnit
+         */
+        Converter.prototype.describe = function (abbr) {
+            var result = this.getUnit(abbr);
+            if (result != null) {
+                return this.describeUnit(result);
+            }
+            this.throwUnsupportedUnitError(abbr);
+        };
+        Converter.prototype.describeUnit = function (unit) {
+            return {
+                abbr: unit.abbr,
+                measure: unit.measure,
+                system: unit.system,
+                singular: unit.unit.name.singular,
+                plural: unit.unit.name.plural,
+            };
+        };
+        /**
+         * Detailed list of all supported units
+         *
+         * If a measure is supplied the list will only contain
+         * details about that measure. Otherwise the list will contain
+         * details abaout all measures.
+         *
+         * However, if the measure doesn't exist, an empty array will be
+         * returned
+         *
+         */
+        Converter.prototype.list = function (measureName) {
+            var list = [];
+            if (measureName == null) {
+                for (var _i = 0, _a = Object.entries(this.measureData); _i < _a.length; _i++) {
+                    var _b = _a[_i], name_1 = _b[0], measure = _b[1];
+                    for (var _c = 0, _d = Object.entries(measure.systems); _c < _d.length; _c++) {
+                        var _e = _d[_c], systemName = _e[0], units = _e[1];
+                        for (var _f = 0, _g = Object.entries(units); _f < _g.length; _f++) {
+                            var _h = _g[_f], abbr = _h[0], unit = _h[1];
+                            list.push(this.describeUnit({
+                                abbr: abbr,
+                                measure: name_1,
+                                system: systemName,
+                                unit: unit,
+                            }));
+                        }
+                    }
+                }
+            }
+            else if (!(measureName in this.measureData)) {
+                throw new Error("Meausre \"" + measureName + "\" not found.");
+            }
+            else {
+                var measure = this.measureData[measureName];
+                for (var _j = 0, _k = Object.entries(measure.systems); _j < _k.length; _j++) {
+                    var _l = _k[_j], systemName = _l[0], units = _l[1];
+                    for (var _m = 0, _o = Object.entries(units); _m < _o.length; _m++) {
+                        var _p = _o[_m], abbr = _p[0], unit = _p[1];
+                        list.push(this.describeUnit({
+                            abbr: abbr,
+                            measure: measureName,
+                            system: systemName,
+                            unit: unit,
+                        }));
+                    }
+                }
+            }
+            return list;
+        };
+        Converter.prototype.throwUnsupportedUnitError = function (what) {
+            var validUnits = [];
+            for (var _i = 0, _a = Object.values(this.measureData); _i < _a.length; _i++) {
+                var measure = _a[_i];
+                for (var _b = 0, _c = Object.values(measure.systems); _b < _c.length; _b++) {
+                    var systems = _c[_b];
+                    validUnits = validUnits.concat(Object.keys(systems));
+                }
+            }
+            throw new Error("Unsupported unit " + what + ", use one of: " + validUnits.join(', '));
+        };
+        /**
+         * Returns the abbreviated measures that the value can be
+         * converted to.
+         */
+        Converter.prototype.possibilities = function (forMeasure) {
+            var possibilities = [];
+            var list_measures = [];
+            if (typeof forMeasure == 'string') {
+                list_measures.push(forMeasure);
+            }
+            else if (this.origin != null) {
+                list_measures.push(this.origin.measure);
+            }
+            else {
+                list_measures = Object.keys(this.measureData);
+            }
+            for (var _i = 0, list_measures_1 = list_measures; _i < list_measures_1.length; _i++) {
+                var measure = list_measures_1[_i];
+                var systems = this.measureData[measure].systems;
+                for (var _a = 0, _b = Object.values(systems); _a < _b.length; _a++) {
+                    var system = _b[_a];
+                    possibilities = __spreadArray(__spreadArray([], possibilities), Object.keys(system));
+                }
+            }
+            return possibilities;
+        };
+        /**
+         * Returns the abbreviated measures that the value can be
+         * converted to.
+         */
+        Converter.prototype.measures = function () {
+            return Object.keys(this.measureData);
+        };
+        return Converter;
+    }());
+    function configMeasurements (measures) {
+        return function (value) {
+            return new Converter(measures, value);
+        };
+    }
+
+    var metric$c = {
+        'g-force': {
+            name: {
+                singular: 'g-force',
+                plural: 'g-forces',
+            },
+            to_anchor: 9.80665,
+        },
+        'm/s2': {
+            name: {
+                singular: 'Metre per second squared',
+                plural: 'Metres per second squared',
+            },
+            to_anchor: 1,
+        },
+    };
+    var measure$q = {
+        systems: {
+            metric: metric$c,
+        },
+    };
+
+    var SI$b = {
+        rad: {
+            name: {
+                singular: 'radian',
+                plural: 'radians',
+            },
+            to_anchor: 180 / Math.PI,
+        },
+        deg: {
+            name: {
+                singular: 'degree',
+                plural: 'degrees',
+            },
+            to_anchor: 1,
+        },
+        grad: {
+            name: {
+                singular: 'gradian',
+                plural: 'gradians',
+            },
+            to_anchor: 9 / 10,
+        },
+        arcmin: {
+            name: {
+                singular: 'arcminute',
+                plural: 'arcminutes',
+            },
+            to_anchor: 1 / 60,
+        },
+        arcsec: {
+            name: {
+                singular: 'arcsecond',
+                plural: 'arcseconds',
+            },
+            to_anchor: 1 / 3600,
+        },
+    };
+    var measure$p = {
+        systems: {
+            SI: SI$b,
+        },
+    };
+
+    var SI$a = {
+        VA: {
+            name: {
+                singular: 'Volt-Ampere',
+                plural: 'Volt-Amperes',
+            },
+            to_anchor: 1,
+        },
+        mVA: {
+            name: {
+                singular: 'Millivolt-Ampere',
+                plural: 'Millivolt-Amperes',
+            },
+            to_anchor: 0.001,
+        },
+        kVA: {
+            name: {
+                singular: 'Kilovolt-Ampere',
+                plural: 'Kilovolt-Amperes',
+            },
+            to_anchor: 1000,
+        },
+        MVA: {
+            name: {
+                singular: 'Megavolt-Ampere',
+                plural: 'Megavolt-Amperes',
+            },
+            to_anchor: 1000000,
+        },
+        GVA: {
+            name: {
+                singular: 'Gigavolt-Ampere',
+                plural: 'Gigavolt-Amperes',
+            },
+            to_anchor: 1000000000,
+        },
+    };
+    var measure$o = {
+        systems: {
+            SI: SI$a,
+        },
+    };
+
+    var metric$b = {
+        mm2: {
+            name: {
+                singular: 'Square Millimeter',
+                plural: 'Square Millimeters',
+            },
+            to_anchor: 1 / 1000000,
+        },
+        cm2: {
+            name: {
+                singular: 'Square Centimeter',
+                plural: 'Square Centimeters',
+            },
+            to_anchor: 1 / 10000,
+        },
+        m2: {
+            name: {
+                singular: 'Square Meter',
+                plural: 'Square Meters',
+            },
+            to_anchor: 1,
+        },
+        ha: {
+            name: {
+                singular: 'Hectare',
+                plural: 'Hectares',
+            },
+            to_anchor: 10000,
+        },
+        km2: {
+            name: {
+                singular: 'Square Kilometer',
+                plural: 'Square Kilometers',
+            },
+            to_anchor: 1000000,
+        },
+    };
+    var imperial$a = {
+        in2: {
+            name: {
+                singular: 'Square Inch',
+                plural: 'Square Inches',
+            },
+            to_anchor: 1 / 144,
+        },
+        yd2: {
+            name: {
+                singular: 'Square Yard',
+                plural: 'Square Yards',
+            },
+            to_anchor: 9,
+        },
+        ft2: {
+            name: {
+                singular: 'Square Foot',
+                plural: 'Square Feet',
+            },
+            to_anchor: 1,
+        },
+        ac: {
+            name: {
+                singular: 'Acre',
+                plural: 'Acres',
+            },
+            to_anchor: 43560,
+        },
+        mi2: {
+            name: {
+                singular: 'Square Mile',
+                plural: 'Square Miles',
+            },
+            to_anchor: 27878400,
+        },
+    };
+    var measure$n = {
+        systems: {
+            metric: metric$b,
+            imperial: imperial$a,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 10.7639,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 10.7639,
+                },
+            },
+        },
+    };
+
+    var SI$9 = {
+        c: {
+            name: {
+                singular: 'Coulomb',
+                plural: 'Coulombs',
+            },
+            to_anchor: 1,
+        },
+        mC: {
+            name: {
+                singular: 'Millicoulomb',
+                plural: 'Millicoulombs',
+            },
+            to_anchor: 1 / 1000,
+        },
+        μC: {
+            name: {
+                singular: 'Microcoulomb',
+                plural: 'Microcoulombs',
+            },
+            to_anchor: 1 / 1000000,
+        },
+        nC: {
+            name: {
+                singular: 'Nanocoulomb',
+                plural: 'Nanocoulombs',
+            },
+            to_anchor: 1e-9,
+        },
+        pC: {
+            name: {
+                singular: 'Picocoulomb',
+                plural: 'Picocoulombs',
+            },
+            to_anchor: 1e-12,
+        },
+    };
+    var measure$m = {
+        systems: {
+            SI: SI$9,
+        },
+    };
+
+    var SI$8 = {
+        A: {
+            name: {
+                singular: 'Ampere',
+                plural: 'Amperes',
+            },
+            to_anchor: 1,
+        },
+        mA: {
+            name: {
+                singular: 'Milliampere',
+                plural: 'Milliamperes',
+            },
+            to_anchor: 0.001,
+        },
+        kA: {
+            name: {
+                singular: 'Kiloampere',
+                plural: 'Kiloamperes',
+            },
+            to_anchor: 1000,
+        },
+    };
+    var measure$l = {
+        systems: {
+            SI: SI$8,
+        },
+    };
+
+    var bits = {
+        b: {
+            name: {
+                singular: 'Bit',
+                plural: 'Bits',
+            },
+            to_anchor: 1,
+        },
+        Kb: {
+            name: {
+                singular: 'Kilobit',
+                plural: 'Kilobits',
+            },
+            to_anchor: 1024,
+        },
+        Mb: {
+            name: {
+                singular: 'Megabit',
+                plural: 'Megabits',
+            },
+            to_anchor: 1048576,
+        },
+        Gb: {
+            name: {
+                singular: 'Gigabit',
+                plural: 'Gigabits',
+            },
+            to_anchor: 1073741824,
+        },
+        Tb: {
+            name: {
+                singular: 'Terabit',
+                plural: 'Terabits',
+            },
+            to_anchor: 1099511627776,
+        },
+    };
+    var bytes = {
+        B: {
+            name: {
+                singular: 'Byte',
+                plural: 'Bytes',
+            },
+            to_anchor: 1,
+        },
+        KB: {
+            name: {
+                singular: 'Kilobyte',
+                plural: 'Kilobytes',
+            },
+            to_anchor: 1024,
+        },
+        MB: {
+            name: {
+                singular: 'Megabyte',
+                plural: 'Megabytes',
+            },
+            to_anchor: 1048576,
+        },
+        GB: {
+            name: {
+                singular: 'Gigabyte',
+                plural: 'Gigabytes',
+            },
+            to_anchor: 1073741824,
+        },
+        TB: {
+            name: {
+                singular: 'Terabyte',
+                plural: 'Terabytes',
+            },
+            to_anchor: 1099511627776,
+        },
+    };
+    var measure$k = {
+        systems: {
+            bits: bits,
+            bytes: bytes,
+        },
+        anchors: {
+            bits: {
+                bytes: {
+                    ratio: 1 / 8,
+                },
+            },
+            bytes: {
+                bits: {
+                    ratio: 8,
+                },
+            },
+        },
+    };
+
+    var metric$a = {
+        ea: {
+            name: {
+                singular: 'Each',
+                plural: 'Each',
+            },
+            to_anchor: 1,
+        },
+        dz: {
+            name: {
+                singular: 'Dozen',
+                plural: 'Dozens',
+            },
+            to_anchor: 12,
+        },
+    };
+    var measure$j = {
+        systems: {
+            metric: metric$a,
+        },
+    };
+
+    var SI$7 = {
+        Wh: {
+            name: {
+                singular: 'Watt-hour',
+                plural: 'Watt-hours',
+            },
+            to_anchor: 3600,
+        },
+        mWh: {
+            name: {
+                singular: 'Milliwatt-hour',
+                plural: 'Milliwatt-hours',
+            },
+            to_anchor: 3.6,
+        },
+        kWh: {
+            name: {
+                singular: 'Kilowatt-hour',
+                plural: 'Kilowatt-hours',
+            },
+            to_anchor: 3600000,
+        },
+        MWh: {
+            name: {
+                singular: 'Megawatt-hour',
+                plural: 'Megawatt-hours',
+            },
+            to_anchor: 3600000000,
+        },
+        GWh: {
+            name: {
+                singular: 'Gigawatt-hour',
+                plural: 'Gigawatt-hours',
+            },
+            to_anchor: 3600000000000,
+        },
+        J: {
+            name: {
+                singular: 'Joule',
+                plural: 'Joules',
+            },
+            to_anchor: 1,
+        },
+        kJ: {
+            name: {
+                singular: 'Kilojoule',
+                plural: 'Kilojoules',
+            },
+            to_anchor: 1000,
+        },
+    };
+    var measure$i = {
+        systems: {
+            SI: SI$7,
+        },
+    };
+
+    var SI$6 = {
+        N: {
+            name: {
+                singular: 'Newton',
+                plural: 'Newtons',
+            },
+            to_anchor: 1,
+        },
+        kN: {
+            name: {
+                singular: 'Kilonewton',
+                plural: 'Kilonewtons',
+            },
+            to_anchor: 1000,
+        },
+        lbf: {
+            name: {
+                singular: 'Pound-force',
+                plural: 'Pound-forces',
+            },
+            to_anchor: 4.44822,
+        },
+    };
+    var measure$h = {
+        systems: {
+            SI: SI$6,
+        },
+    };
+
+    var SI$5 = {
+        mHz: {
+            name: {
+                singular: 'millihertz',
+                plural: 'millihertz',
+            },
+            to_anchor: 1 / 1000,
+        },
+        Hz: {
+            name: {
+                singular: 'hertz',
+                plural: 'hertz',
+            },
+            to_anchor: 1,
+        },
+        kHz: {
+            name: {
+                singular: 'kilohertz',
+                plural: 'kilohertz',
+            },
+            to_anchor: 1000,
+        },
+        MHz: {
+            name: {
+                singular: 'megahertz',
+                plural: 'megahertz',
+            },
+            to_anchor: 1000 * 1000,
+        },
+        GHz: {
+            name: {
+                singular: 'gigahertz',
+                plural: 'gigahertz',
+            },
+            to_anchor: 1000 * 1000 * 1000,
+        },
+        THz: {
+            name: {
+                singular: 'terahertz',
+                plural: 'terahertz',
+            },
+            to_anchor: 1000 * 1000 * 1000 * 1000,
+        },
+        rpm: {
+            name: {
+                singular: 'rotation per minute',
+                plural: 'rotations per minute',
+            },
+            to_anchor: 1 / 60,
+        },
+        'deg/s': {
+            name: {
+                singular: 'degree per second',
+                plural: 'degrees per second',
+            },
+            to_anchor: 1 / 360,
+        },
+        'rad/s': {
+            name: {
+                singular: 'radian per second',
+                plural: 'radians per second',
+            },
+            to_anchor: 1 / (Math.PI * 2),
+        },
+    };
+    var measure$g = {
+        systems: {
+            SI: SI$5,
+        },
+    };
+
+    var metric$9 = {
+        lx: {
+            name: {
+                singular: 'Lux',
+                plural: 'Lux',
+            },
+            to_anchor: 1,
+        },
+    };
+    var imperial$9 = {
+        'ft-cd': {
+            name: {
+                singular: 'Foot-candle',
+                plural: 'Foot-candles',
+            },
+            to_anchor: 1,
+        },
+    };
+    var measure$f = {
+        systems: {
+            metric: metric$9,
+            imperial: imperial$9,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 1 / 10.76391,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 10.76391,
+                },
+            },
+        },
+    };
+
+    var metric$8 = {
+        nm: {
+            name: {
+                singular: 'Nanometer',
+                plural: 'Nanometers',
+            },
+            to_anchor: 1e-9,
+        },
+        μm: {
+            name: {
+                singular: 'Micrometer',
+                plural: 'Micrometers',
+            },
+            to_anchor: 1e-6,
+        },
+        mm: {
+            name: {
+                singular: 'Millimeter',
+                plural: 'Millimeters',
+            },
+            to_anchor: 1e-3,
+        },
+        cm: {
+            name: {
+                singular: 'Centimeter',
+                plural: 'Centimeters',
+            },
+            to_anchor: 1e-2,
+        },
+        m: {
+            name: {
+                singular: 'Meter',
+                plural: 'Meters',
+            },
+            to_anchor: 1,
+        },
+        km: {
+            name: {
+                singular: 'Kilometer',
+                plural: 'Kilometers',
+            },
+            to_anchor: 1e3,
+        },
+    };
+    var imperial$8 = {
+        in: {
+            name: {
+                singular: 'Inch',
+                plural: 'Inches',
+            },
+            to_anchor: 1 / 12,
+        },
+        yd: {
+            name: {
+                singular: 'Yard',
+                plural: 'Yards',
+            },
+            to_anchor: 3,
+        },
+        'ft-us': {
+            name: {
+                singular: 'US Survey Foot',
+                plural: 'US Survey Feet',
+            },
+            to_anchor: 1.000002,
+        },
+        ft: {
+            name: {
+                singular: 'Foot',
+                plural: 'Feet',
+            },
+            to_anchor: 1,
+        },
+        fathom: {
+            name: {
+                singular: 'Fathom',
+                plural: 'Fathoms',
+            },
+            to_anchor: 6,
+        },
+        mi: {
+            name: {
+                singular: 'Mile',
+                plural: 'Miles',
+            },
+            to_anchor: 5280,
+        },
+        nMi: {
+            name: {
+                singular: 'Nautical Mile',
+                plural: 'Nautical Miles',
+            },
+            to_anchor: 6076.12,
+        },
+    };
+    var measure$e = {
+        systems: {
+            metric: metric$8,
+            imperial: imperial$8,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 3.28084,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 3.28084,
+                },
+            },
+        },
+    };
+
+    var metric$7 = {
+        mcg: {
+            name: {
+                singular: 'Microgram',
+                plural: 'Micrograms',
+            },
+            to_anchor: 1 / 1000000,
+        },
+        mg: {
+            name: {
+                singular: 'Milligram',
+                plural: 'Milligrams',
+            },
+            to_anchor: 1 / 1000,
+        },
+        g: {
+            name: {
+                singular: 'Gram',
+                plural: 'Grams',
+            },
+            to_anchor: 1,
+        },
+        kg: {
+            name: {
+                singular: 'Kilogram',
+                plural: 'Kilograms',
+            },
+            to_anchor: 1000,
+        },
+        mt: {
+            name: {
+                singular: 'Metric Tonne',
+                plural: 'Metric Tonnes',
+            },
+            to_anchor: 1000000,
+        },
+    };
+    var imperial$7 = {
+        oz: {
+            name: {
+                singular: 'Ounce',
+                plural: 'Ounces',
+            },
+            to_anchor: 1 / 16,
+        },
+        lb: {
+            name: {
+                singular: 'Pound',
+                plural: 'Pounds',
+            },
+            to_anchor: 1,
+        },
+        t: {
+            name: {
+                singular: 'Ton',
+                plural: 'Tons',
+            },
+            to_anchor: 2000,
+        },
+    };
+    var measure$d = {
+        systems: {
+            metric: metric$7,
+            imperial: imperial$7,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 1 / 453.592,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 453.592,
+                },
+            },
+        },
+    };
+
+    var metric$6 = {
+        'min/km': {
+            name: {
+                singular: 'Minute per kilometre',
+                plural: 'Minutes per kilometre',
+            },
+            to_anchor: 0.06,
+        },
+        's/m': {
+            name: {
+                singular: 'Second per metre',
+                plural: 'Seconds per metre',
+            },
+            to_anchor: 1,
+        },
+    };
+    var imperial$6 = {
+        'min/mi': {
+            name: {
+                singular: 'Minute per mile',
+                plural: 'Minutes per mile',
+            },
+            to_anchor: 0.0113636,
+        },
+        's/ft': {
+            name: {
+                singular: 'Second per foot',
+                plural: 'Seconds per foot',
+            },
+            to_anchor: 1,
+        },
+    };
+    var measure$c = {
+        systems: {
+            metric: metric$6,
+            imperial: imperial$6,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 0.3048,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 0.3048,
+                },
+            },
+        },
+    };
+
+    var SI$4 = {
+        ppm: {
+            name: {
+                singular: 'Part-per Million',
+                plural: 'Parts-per Million',
+            },
+            to_anchor: 1,
+        },
+        ppb: {
+            name: {
+                singular: 'Part-per Billion',
+                plural: 'Parts-per Billion',
+            },
+            to_anchor: 0.001,
+        },
+        ppt: {
+            name: {
+                singular: 'Part-per Trillion',
+                plural: 'Parts-per Trillion',
+            },
+            to_anchor: 0.000001,
+        },
+        ppq: {
+            name: {
+                singular: 'Part-per Quadrillion',
+                plural: 'Parts-per Quadrillion',
+            },
+            to_anchor: 0.000000001,
+        },
+    };
+    var measure$b = {
+        systems: {
+            SI: SI$4,
+        },
+    };
+
+    var unit = {
+        pcs: {
+            name: {
+                singular: 'Piece',
+                plural: 'Pieces',
+            },
+            to_anchor: 1,
+        },
+        'bk-doz': {
+            name: {
+                singular: 'Bakers Dozen',
+                plural: 'Bakers Dozen',
+            },
+            to_anchor: 13,
+        },
+        cp: {
+            name: {
+                singular: 'Couple',
+                plural: 'Couples',
+            },
+            to_anchor: 2,
+        },
+        'doz-doz': {
+            name: {
+                singular: 'Dozen Dozen',
+                plural: 'Dozen Dozen',
+            },
+            to_anchor: 144,
+        },
+        doz: {
+            name: {
+                singular: 'Dozen',
+                plural: 'Dozens',
+            },
+            to_anchor: 12,
+        },
+        'gr-gr': {
+            name: {
+                singular: 'Great Gross',
+                plural: 'Great Gross',
+            },
+            to_anchor: 1728,
+        },
+        gros: {
+            name: {
+                singular: 'Gross',
+                plural: 'Gross',
+            },
+            to_anchor: 144,
+        },
+        'half-dozen': {
+            name: {
+                singular: 'Half Dozen',
+                plural: 'Half Dozen',
+            },
+            to_anchor: 6,
+        },
+        'long-hundred': {
+            name: {
+                singular: 'Long Hundred',
+                plural: 'Long Hundred',
+            },
+            to_anchor: 120,
+        },
+        ream: {
+            name: {
+                singular: 'Reams',
+                plural: 'Reams',
+            },
+            to_anchor: 500,
+        },
+        scores: {
+            name: {
+                singular: 'Scores',
+                plural: 'Scores',
+            },
+            to_anchor: 20,
+        },
+        'sm-gr': {
+            name: {
+                singular: 'Small Gross',
+                plural: 'Small Gross',
+            },
+            to_anchor: 120,
+        },
+        trio: {
+            name: {
+                singular: 'Trio',
+                plural: 'Trio',
+            },
+            to_anchor: 3,
+        },
+    };
+    var measure$a = {
+        systems: {
+            unit: unit,
+        },
+    };
+
+    var metric$5 = {
+        W: {
+            name: {
+                singular: 'Watt',
+                plural: 'Watts',
+            },
+            to_anchor: 1,
+        },
+        mW: {
+            name: {
+                singular: 'Milliwatt',
+                plural: 'Milliwatts',
+            },
+            to_anchor: 0.001,
+        },
+        kW: {
+            name: {
+                singular: 'Kilowatt',
+                plural: 'Kilowatts',
+            },
+            to_anchor: 1000,
+        },
+        MW: {
+            name: {
+                singular: 'Megawatt',
+                plural: 'Megawatts',
+            },
+            to_anchor: 1000000,
+        },
+        GW: {
+            name: {
+                singular: 'Gigawatt',
+                plural: 'Gigawatts',
+            },
+            to_anchor: 1000000000,
+        },
+        PS: {
+            name: {
+                singular: 'Horsepower (metric)',
+                plural: 'Horsepower (metric)',
+            },
+            to_anchor: 735.49875,
+        },
+    };
+    var imperial$5 = {
+        'Btu/s': {
+            name: {
+                singular: 'British thermal unit per second',
+                plural: 'British thermal units per second',
+            },
+            to_anchor: 778.16937,
+        },
+        'ft-lb/s': {
+            name: {
+                singular: 'Foot-pound per second',
+                plural: 'Foot-pounds per second',
+            },
+            to_anchor: 1,
+        },
+        hp: {
+            name: {
+                singular: 'Horsepower (British)',
+                plural: 'Horsepower (British)',
+            },
+            to_anchor: 550,
+        },
+    };
+    var measure$9 = {
+        systems: {
+            metric: metric$5,
+            imperial: imperial$5,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 0.737562149,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 0.737562149,
+                },
+            },
+        },
+    };
+
+    var metric$4 = {
+        Pa: {
+            name: {
+                singular: 'pascal',
+                plural: 'pascals',
+            },
+            to_anchor: 1 / 1000,
+        },
+        kPa: {
+            name: {
+                singular: 'kilopascal',
+                plural: 'kilopascals',
+            },
+            to_anchor: 1,
+        },
+        MPa: {
+            name: {
+                singular: 'megapascal',
+                plural: 'megapascals',
+            },
+            to_anchor: 1000,
+        },
+        hPa: {
+            name: {
+                singular: 'hectopascal',
+                plural: 'hectopascals',
+            },
+            to_anchor: 1 / 10,
+        },
+        bar: {
+            name: {
+                singular: 'bar',
+                plural: 'bar',
+            },
+            to_anchor: 100,
+        },
+        torr: {
+            name: {
+                singular: 'torr',
+                plural: 'torr',
+            },
+            to_anchor: 101325 / 760000,
+        },
+    };
+    var imperial$4 = {
+        psi: {
+            name: {
+                singular: 'pound per square inch',
+                plural: 'pounds per square inch',
+            },
+            to_anchor: 1 / 1000,
+        },
+        ksi: {
+            name: {
+                singular: 'kilopound per square inch',
+                plural: 'kilopound per square inch',
+            },
+            to_anchor: 1,
+        },
+        inHg: {
+            name: {
+                singular: 'inch of mercury',
+                plural: 'inches of mercury',
+            },
+            to_anchor: 0.000491154,
+        },
+    };
+    var measure$8 = {
+        systems: {
+            metric: metric$4,
+            imperial: imperial$4,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 0.00014503768078,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 0.00014503768078,
+                },
+            },
+        },
+    };
+
+    var SI$3 = {
+        VARh: {
+            name: {
+                singular: 'Volt-Ampere Reactive Hour',
+                plural: 'Volt-Amperes Reactive Hour',
+            },
+            to_anchor: 1,
+        },
+        mVARh: {
+            name: {
+                singular: 'Millivolt-Ampere Reactive Hour',
+                plural: 'Millivolt-Amperes Reactive Hour',
+            },
+            to_anchor: 0.001,
+        },
+        kVARh: {
+            name: {
+                singular: 'Kilovolt-Ampere Reactive Hour',
+                plural: 'Kilovolt-Amperes Reactive Hour',
+            },
+            to_anchor: 1000,
+        },
+        MVARh: {
+            name: {
+                singular: 'Megavolt-Ampere Reactive Hour',
+                plural: 'Megavolt-Amperes Reactive Hour',
+            },
+            to_anchor: 1000000,
+        },
+        GVARh: {
+            name: {
+                singular: 'Gigavolt-Ampere Reactive Hour',
+                plural: 'Gigavolt-Amperes Reactive Hour',
+            },
+            to_anchor: 1000000000,
+        },
+    };
+    var measure$7 = {
+        systems: {
+            SI: SI$3,
+        },
+    };
+
+    var SI$2 = {
+        VAR: {
+            name: {
+                singular: 'Volt-Ampere Reactive',
+                plural: 'Volt-Amperes Reactive',
+            },
+            to_anchor: 1,
+        },
+        mVAR: {
+            name: {
+                singular: 'Millivolt-Ampere Reactive',
+                plural: 'Millivolt-Amperes Reactive',
+            },
+            to_anchor: 0.001,
+        },
+        kVAR: {
+            name: {
+                singular: 'Kilovolt-Ampere Reactive',
+                plural: 'Kilovolt-Amperes Reactive',
+            },
+            to_anchor: 1000,
+        },
+        MVAR: {
+            name: {
+                singular: 'Megavolt-Ampere Reactive',
+                plural: 'Megavolt-Amperes Reactive',
+            },
+            to_anchor: 1000000,
+        },
+        GVAR: {
+            name: {
+                singular: 'Gigavolt-Ampere Reactive',
+                plural: 'Gigavolt-Amperes Reactive',
+            },
+            to_anchor: 1000000000,
+        },
+    };
+    var measure$6 = {
+        systems: {
+            SI: SI$2,
+        },
+    };
+
+    var metric$3 = {
+        'm/s': {
+            name: {
+                singular: 'Metre per second',
+                plural: 'Metres per second',
+            },
+            to_anchor: 3.6,
+        },
+        'km/h': {
+            name: {
+                singular: 'Kilometre per hour',
+                plural: 'Kilometres per hour',
+            },
+            to_anchor: 1,
+        },
+    };
+    var imperial$3 = {
+        mph: {
+            name: {
+                singular: 'Mile per hour',
+                plural: 'Miles per hour',
+            },
+            to_anchor: 1,
+        },
+        knot: {
+            name: {
+                singular: 'Knot',
+                plural: 'Knots',
+            },
+            to_anchor: 1.150779,
+        },
+        'ft/s': {
+            name: {
+                singular: 'Foot per second',
+                plural: 'Feet per second',
+            },
+            to_anchor: 0.681818,
+        },
+        'ft/min': {
+            name: {
+                singular: 'Foot per minute',
+                plural: 'Feet per minute',
+            },
+            to_anchor: 0.0113636,
+        },
+    };
+    var measure$5 = {
+        systems: {
+            metric: metric$3,
+            imperial: imperial$3,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 1 / 1.609344,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1.609344,
+                },
+            },
+        },
+    };
+
+    var metric$2 = {
+        C: {
+            name: {
+                singular: 'degree Celsius',
+                plural: 'degrees Celsius',
+            },
+            to_anchor: 1,
+            anchor_shift: 0,
+        },
+        K: {
+            name: {
+                singular: 'degree Kelvin',
+                plural: 'degrees Kelvin',
+            },
+            to_anchor: 1,
+            anchor_shift: 273.15,
+        },
+    };
+    var imperial$2 = {
+        F: {
+            name: {
+                singular: 'degree Fahrenheit',
+                plural: 'degrees Fahrenheit',
+            },
+            to_anchor: 1,
+        },
+        R: {
+            name: {
+                singular: 'degree Rankine',
+                plural: 'degrees Rankine',
+            },
+            to_anchor: 1,
+            anchor_shift: 459.67,
+        },
+    };
+    var measure$4 = {
+        systems: {
+            metric: metric$2,
+            imperial: imperial$2,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    transform: function (C) {
+                        return C / (5 / 9) + 32;
+                    },
+                },
+            },
+            imperial: {
+                metric: {
+                    transform: function (F) {
+                        return (F - 32) * (5 / 9);
+                    },
+                },
+            },
+        },
+    };
+
+    var daysInYear = 365.25;
+    var SI$1 = {
+        ns: {
+            name: {
+                singular: 'Nanosecond',
+                plural: 'Nanoseconds',
+            },
+            to_anchor: 1 / 1000000000,
+        },
+        mu: {
+            name: {
+                singular: 'Microsecond',
+                plural: 'Microseconds',
+            },
+            to_anchor: 1 / 1000000,
+        },
+        ms: {
+            name: {
+                singular: 'Millisecond',
+                plural: 'Milliseconds',
+            },
+            to_anchor: 1 / 1000,
+        },
+        s: {
+            name: {
+                singular: 'Second',
+                plural: 'Seconds',
+            },
+            to_anchor: 1,
+        },
+        min: {
+            name: {
+                singular: 'Minute',
+                plural: 'Minutes',
+            },
+            to_anchor: 60,
+        },
+        h: {
+            name: {
+                singular: 'Hour',
+                plural: 'Hours',
+            },
+            to_anchor: 60 * 60,
+        },
+        d: {
+            name: {
+                singular: 'Day',
+                plural: 'Days',
+            },
+            to_anchor: 60 * 60 * 24,
+        },
+        week: {
+            name: {
+                singular: 'Week',
+                plural: 'Weeks',
+            },
+            to_anchor: 60 * 60 * 24 * 7,
+        },
+        month: {
+            name: {
+                singular: 'Month',
+                plural: 'Months',
+            },
+            to_anchor: (60 * 60 * 24 * daysInYear) / 12,
+        },
+        year: {
+            name: {
+                singular: 'Year',
+                plural: 'Years',
+            },
+            to_anchor: 60 * 60 * 24 * daysInYear,
+        },
+    };
+    var measure$3 = {
+        systems: {
+            SI: SI$1,
+        },
+    };
+
+    var SI = {
+        V: {
+            name: {
+                singular: 'Volt',
+                plural: 'Volts',
+            },
+            to_anchor: 1,
+        },
+        mV: {
+            name: {
+                singular: 'Millivolt',
+                plural: 'Millivolts',
+            },
+            to_anchor: 0.001,
+        },
+        kV: {
+            name: {
+                singular: 'Kilovolt',
+                plural: 'Kilovolts',
+            },
+            to_anchor: 1000,
+        },
+    };
+    var measure$2 = {
+        systems: {
+            SI: SI,
+        },
+    };
+
+    var metric$1 = {
+        mm3: {
+            name: {
+                singular: 'Cubic Millimeter',
+                plural: 'Cubic Millimeters',
+            },
+            to_anchor: 1 / 1000000,
+        },
+        cm3: {
+            name: {
+                singular: 'Cubic Centimeter',
+                plural: 'Cubic Centimeters',
+            },
+            to_anchor: 1 / 1000,
+        },
+        ml: {
+            name: {
+                singular: 'Millilitre',
+                plural: 'Millilitres',
+            },
+            to_anchor: 1 / 1000,
+        },
+        cl: {
+            name: {
+                singular: 'Centilitre',
+                plural: 'Centilitres',
+            },
+            to_anchor: 1 / 100,
+        },
+        dl: {
+            name: {
+                singular: 'Decilitre',
+                plural: 'Decilitres',
+            },
+            to_anchor: 1 / 10,
+        },
+        l: {
+            name: {
+                singular: 'Litre',
+                plural: 'Litres',
+            },
+            to_anchor: 1,
+        },
+        kl: {
+            name: {
+                singular: 'Kilolitre',
+                plural: 'Kilolitres',
+            },
+            to_anchor: 1000,
+        },
+        m3: {
+            name: {
+                singular: 'Cubic meter',
+                plural: 'Cubic meters',
+            },
+            to_anchor: 1000,
+        },
+        km3: {
+            name: {
+                singular: 'Cubic kilometer',
+                plural: 'Cubic kilometers',
+            },
+            to_anchor: 1000000000000,
+        },
+        // Swedish units
+        krm: {
+            name: {
+                singular: 'Matsked',
+                plural: 'Matskedar',
+            },
+            to_anchor: 1 / 1000,
+        },
+        tsk: {
+            name: {
+                singular: 'Tesked',
+                plural: 'Teskedar',
+            },
+            to_anchor: 5 / 1000,
+        },
+        msk: {
+            name: {
+                singular: 'Matsked',
+                plural: 'Matskedar',
+            },
+            to_anchor: 15 / 1000,
+        },
+        kkp: {
+            name: {
+                singular: 'Kaffekopp',
+                plural: 'Kaffekoppar',
+            },
+            to_anchor: 150 / 1000,
+        },
+        glas: {
+            name: {
+                singular: 'Glas',
+                plural: 'Glas',
+            },
+            to_anchor: 200 / 1000,
+        },
+        kanna: {
+            name: {
+                singular: 'Kanna',
+                plural: 'Kannor',
+            },
+            to_anchor: 2.617,
+        },
+    };
+    var imperial$1 = {
+        tsp: {
+            name: {
+                singular: 'Teaspoon',
+                plural: 'Teaspoons',
+            },
+            to_anchor: 1 / 6,
+        },
+        Tbs: {
+            name: {
+                singular: 'Tablespoon',
+                plural: 'Tablespoons',
+            },
+            to_anchor: 1 / 2,
+        },
+        in3: {
+            name: {
+                singular: 'Cubic inch',
+                plural: 'Cubic inches',
+            },
+            to_anchor: 0.55411,
+        },
+        'fl-oz': {
+            name: {
+                singular: 'Fluid Ounce',
+                plural: 'Fluid Ounces',
+            },
+            to_anchor: 1,
+        },
+        cup: {
+            name: {
+                singular: 'Cup',
+                plural: 'Cups',
+            },
+            to_anchor: 8,
+        },
+        pnt: {
+            name: {
+                singular: 'Pint',
+                plural: 'Pints',
+            },
+            to_anchor: 16,
+        },
+        qt: {
+            name: {
+                singular: 'Quart',
+                plural: 'Quarts',
+            },
+            to_anchor: 32,
+        },
+        gal: {
+            name: {
+                singular: 'Gallon',
+                plural: 'Gallons',
+            },
+            to_anchor: 128,
+        },
+        ft3: {
+            name: {
+                singular: 'Cubic foot',
+                plural: 'Cubic feet',
+            },
+            to_anchor: 957.506,
+        },
+        yd3: {
+            name: {
+                singular: 'Cubic yard',
+                plural: 'Cubic yards',
+            },
+            to_anchor: 25852.7,
+        },
+    };
+    var measure$1 = {
+        systems: {
+            metric: metric$1,
+            imperial: imperial$1,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 33.8140226,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 33.8140226,
+                },
+            },
+        },
+    };
+
+    var metric = {
+        'mm3/s': {
+            name: {
+                singular: 'Cubic Millimeter per second',
+                plural: 'Cubic Millimeters per second',
+            },
+            to_anchor: 1 / 1000000,
+        },
+        'cm3/s': {
+            name: {
+                singular: 'Cubic Centimeter per second',
+                plural: 'Cubic Centimeters per second',
+            },
+            to_anchor: 1 / 1000,
+        },
+        'ml/s': {
+            name: {
+                singular: 'Millilitre per second',
+                plural: 'Millilitres per second',
+            },
+            to_anchor: 1 / 1000,
+        },
+        'cl/s': {
+            name: {
+                singular: 'Centilitre per second',
+                plural: 'Centilitres per second',
+            },
+            to_anchor: 1 / 100,
+        },
+        'dl/s': {
+            name: {
+                singular: 'Decilitre per second',
+                plural: 'Decilitres per second',
+            },
+            to_anchor: 1 / 10,
+        },
+        'l/s': {
+            name: {
+                singular: 'Litre per second',
+                plural: 'Litres per second',
+            },
+            to_anchor: 1,
+        },
+        'l/min': {
+            name: {
+                singular: 'Litre per minute',
+                plural: 'Litres per minute',
+            },
+            to_anchor: 1 / 60,
+        },
+        'l/h': {
+            name: {
+                singular: 'Litre per hour',
+                plural: 'Litres per hour',
+            },
+            to_anchor: 1 / 3600,
+        },
+        'kl/s': {
+            name: {
+                singular: 'Kilolitre per second',
+                plural: 'Kilolitres per second',
+            },
+            to_anchor: 1000,
+        },
+        'kl/min': {
+            name: {
+                singular: 'Kilolitre per minute',
+                plural: 'Kilolitres per minute',
+            },
+            to_anchor: 50 / 3,
+        },
+        'kl/h': {
+            name: {
+                singular: 'Kilolitre per hour',
+                plural: 'Kilolitres per hour',
+            },
+            to_anchor: 5 / 18,
+        },
+        'm3/s': {
+            name: {
+                singular: 'Cubic meter per second',
+                plural: 'Cubic meters per second',
+            },
+            to_anchor: 1000,
+        },
+        'm3/min': {
+            name: {
+                singular: 'Cubic meter per minute',
+                plural: 'Cubic meters per minute',
+            },
+            to_anchor: 50 / 3,
+        },
+        'm3/h': {
+            name: {
+                singular: 'Cubic meter per hour',
+                plural: 'Cubic meters per hour',
+            },
+            to_anchor: 5 / 18,
+        },
+        'km3/s': {
+            name: {
+                singular: 'Cubic kilometer per second',
+                plural: 'Cubic kilometers per second',
+            },
+            to_anchor: 1000000000000,
+        },
+    };
+    var imperial = {
+        'tsp/s': {
+            name: {
+                singular: 'Teaspoon per second',
+                plural: 'Teaspoons per second',
+            },
+            to_anchor: 1 / 6,
+        },
+        'Tbs/s': {
+            name: {
+                singular: 'Tablespoon per second',
+                plural: 'Tablespoons per second',
+            },
+            to_anchor: 1 / 2,
+        },
+        'in3/s': {
+            name: {
+                singular: 'Cubic inch per second',
+                plural: 'Cubic inches per second',
+            },
+            to_anchor: 0.55411,
+        },
+        'in3/min': {
+            name: {
+                singular: 'Cubic inch per minute',
+                plural: 'Cubic inches per minute',
+            },
+            to_anchor: 0.55411 / 60,
+        },
+        'in3/h': {
+            name: {
+                singular: 'Cubic inch per hour',
+                plural: 'Cubic inches per hour',
+            },
+            to_anchor: 0.55411 / 3600,
+        },
+        'fl-oz/s': {
+            name: {
+                singular: 'Fluid Ounce per second',
+                plural: 'Fluid Ounces per second',
+            },
+            to_anchor: 1,
+        },
+        'fl-oz/min': {
+            name: {
+                singular: 'Fluid Ounce per minute',
+                plural: 'Fluid Ounces per minute',
+            },
+            to_anchor: 1 / 60,
+        },
+        'fl-oz/h': {
+            name: {
+                singular: 'Fluid Ounce per hour',
+                plural: 'Fluid Ounces per hour',
+            },
+            to_anchor: 1 / 3600,
+        },
+        'cup/s': {
+            name: {
+                singular: 'Cup per second',
+                plural: 'Cups per second',
+            },
+            to_anchor: 8,
+        },
+        'pnt/s': {
+            name: {
+                singular: 'Pint per second',
+                plural: 'Pints per second',
+            },
+            to_anchor: 16,
+        },
+        'pnt/min': {
+            name: {
+                singular: 'Pint per minute',
+                plural: 'Pints per minute',
+            },
+            to_anchor: 4 / 15,
+        },
+        'pnt/h': {
+            name: {
+                singular: 'Pint per hour',
+                plural: 'Pints per hour',
+            },
+            to_anchor: 1 / 225,
+        },
+        'qt/s': {
+            name: {
+                singular: 'Quart per second',
+                plural: 'Quarts per second',
+            },
+            to_anchor: 32,
+        },
+        'gal/s': {
+            name: {
+                singular: 'Gallon per second',
+                plural: 'Gallons per second',
+            },
+            to_anchor: 128,
+        },
+        'gal/min': {
+            name: {
+                singular: 'Gallon per minute',
+                plural: 'Gallons per minute',
+            },
+            to_anchor: 32 / 15,
+        },
+        'gal/h': {
+            name: {
+                singular: 'Gallon per hour',
+                plural: 'Gallons per hour',
+            },
+            to_anchor: 8 / 225,
+        },
+        'ft3/s': {
+            name: {
+                singular: 'Cubic foot per second',
+                plural: 'Cubic feet per second',
+            },
+            to_anchor: 957.506,
+        },
+        'ft3/min': {
+            name: {
+                singular: 'Cubic foot per minute',
+                plural: 'Cubic feet per minute',
+            },
+            to_anchor: 957.506 / 60,
+        },
+        'ft3/h': {
+            name: {
+                singular: 'Cubic foot per hour',
+                plural: 'Cubic feet per hour',
+            },
+            to_anchor: 957.506 / 3600,
+        },
+        'yd3/s': {
+            name: {
+                singular: 'Cubic yard per second',
+                plural: 'Cubic yards per second',
+            },
+            to_anchor: 25852.7,
+        },
+        'yd3/min': {
+            name: {
+                singular: 'Cubic yard per minute',
+                plural: 'Cubic yards per minute',
+            },
+            to_anchor: 25852.7 / 60,
+        },
+        'yd3/h': {
+            name: {
+                singular: 'Cubic yard per hour',
+                plural: 'Cubic yards per hour',
+            },
+            to_anchor: 25852.7 / 3600,
+        },
+    };
+    var measure = {
+        systems: {
+            metric: metric,
+            imperial: imperial,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: 33.8140227,
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1 / 33.8140227,
+                },
+            },
+        },
+    };
+
+    var allMeasures = {
+        acceleration: measure$q,
+        angle: measure$p,
+        apparentPower: measure$o,
+        area: measure$n,
+        charge: measure$m,
+        current: measure$l,
+        digital: measure$k,
+        each: measure$j,
+        energy: measure$i,
+        force: measure$h,
+        frequency: measure$g,
+        illuminance: measure$f,
+        length: measure$e,
+        mass: measure$d,
+        pace: measure$c,
+        partsPer: measure$b,
+        pieces: measure$a,
+        power: measure$9,
+        pressure: measure$8,
+        reactiveEnergy: measure$7,
+        reactivePower: measure$6,
+        speed: measure$5,
+        temperature: measure$4,
+        time: measure$3,
+        voltage: measure$2,
+        volume: measure$1,
+        volumeFlowRate: measure,
+    };
+
     //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
 
 
@@ -6205,8 +8452,8 @@
 
             function update(metrics) {
                 if (!(metric in metrics)) return;
-
-                _.text(format(metrics[metric]));
+                const v = g.maybeConvert(metrics[metric]);
+                _.text(format(v));
             }
 
             activeController.register(update, metric, `${g.name}-indicate-text`);
@@ -6222,7 +8469,8 @@
 
 
     function indicatePointer() {
-        var convert = identity,
+        var rescale = identity,
+            clamp = [undefined, undefined],
             shape = 'needle';
 
         function pointer(sel, g) {
@@ -6238,13 +8486,19 @@
             function update(metrics) {
                 if (!(metric in metrics)) return;
 
-                activeController.transition(_)
-                    .attr('transform', g.metrictransform(convert(metrics[metric])));
+                const v = g.maybeConvert(metrics[metric]);
+                let z = rescale(v);
+                if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+                if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+                activeController.transition(_).attr('transform', g.metrictransform(z));
             }
             activeController.register(update, metric, `${g.name}-indicate-pointer`);
         }
-        pointer.convert = function(_) {
-            return arguments.length ? (convert = _, pointer) : convert;
+        pointer.rescale = function(_) {
+            return arguments.length ? (rescale = _, pointer) : rescale;
+        };
+        pointer.clamp = function(_) {
+            return arguments.length ? (clamp = _, pointer) : clamp;
         };
         pointer.shape = function(_) {
             if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
@@ -6267,7 +8521,8 @@
             function update(metrics) {
                 if (!(metric in metrics)) return;
 
-                let style = tween(trigger(metrics[metric]));
+                const v = g.maybeConvert(metrics[metric]);
+                let style = tween(trigger(v));
                 // Nb. no transition for style updates, looks weird for light on/off
                 for (let k in style) _.style(k, style[k]);
             }
@@ -6285,17 +8540,17 @@
         return appendable(style);
     }
 
-    var gaugeRegistry = {};  // for debugging
+    var gaugeRegistry = {};
 
-    const DEG2RAD = Math.PI/180;
-
+    const convertUnits = configMeasurements(allMeasures),
+        knownUnits = convertUnits().possibilities();
 
     function gauge(_name) {
         if (_name in gaugeRegistry) return gaugeRegistry[_name];
 
         var name = _name || appendId('_gauge'),
             metric,
-            convert = identity,
+            rescale = identity,
             unit,
             measure = linear().range([0,360]),
             kind = 'circular',
@@ -6319,8 +8574,9 @@
                 function update(metrics) {
                     if (!(metric in metrics)) return;
 
+                    const v = gauge.maybeConvert(metrics[metric]);
                     activeController.transition(_)
-                        .attr('transform', gauge.metrictransform(convert(metrics[metric]), true));
+                        .attr('transform', gauge.metrictransform(rescale(v), true));
                 }
                 activeController.register(update, metric, `${name}-autoindicate`);
             }
@@ -6329,10 +8585,13 @@
         gauge.metric = function(_) {
             return arguments.length ? (metric = _, gauge) : metric;
         };
-        gauge.convert = function(_) {
-            return arguments.length ? (convert = _, gauge) : convert;
+        gauge.rescale = function(_) {
+            return arguments.length ? (rescale = _, gauge) : rescale;
         };
         gauge.unit = function(_) {
+            if (_ && !knownUnits.includes(_)) {
+                console.log(`WARNING: gauge.unit ${_} not a known unit, see https://github.com/convert-units/convert-units`);
+            }
             return arguments.length ? (unit = _, gauge) : unit;
         };
         gauge.kind = function(_) {
@@ -6351,7 +8610,17 @@
             return arguments.length ? (autoindicate = _, gauge) : autoindicate;
         };
 
-
+        gauge.maybeConvert = function(v) {
+            if (unit && v.hasOwnProperty('unit') && v.hasOwnProperty('value')) {
+                try {
+                    v = convertUnits(v.value).from(v.unit).to(unit);
+                } catch(err) {
+                    console.log('Unit conversion error: ' + err.message);
+                    v = v.value;
+                }
+            }
+            return v;
+        };
         gauge.metrictransform = function(v, invert) {
             const
                 circular = kind == 'circular',
@@ -6377,8 +8646,8 @@
                     ? arc()({
                         innerRadius: r - inset - size,
                         outerRadius: r - inset,
-                        startAngle: z0*DEG2RAD,
-                        endAngle: z1*DEG2RAD
+                        startAngle: convertUnits(z0).from('deg').to('rad'),
+                        endAngle: convertUnits(z1).from('deg').to('rad'),
                     })
                     : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
             return path;

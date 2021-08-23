@@ -250,7 +250,7 @@ let's create `jagetach.html`
     <script>
 
 var g = g3.gauge('JagETypeTachometer')
-    .metric('engineRPM').unit('RPM')
+    .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
     .append(
         g3.gaugeFace(),
@@ -304,7 +304,7 @@ an SVG drawing tool like [Inkscape](https://inkscape.org/).
 
 ```js
 var g = g3.gauge('JagETypeTachometer')
-    .metric('engineRPM').unit('RPM')
+    .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
     .css(`
 text.g3-gauge-label, .g3-axis-labels text {
@@ -470,11 +470,14 @@ If *metric* is not specified, return the name of the current metric, defaulting 
 
 *gauge*.**unit**([*unit*: string]) · [source](src/gauge.js)
 
-*(Currently unused.)*
 If *unit* is specified, set the unit of measurement for the current metric,
 otherwise return the current unit, defaulting to *undefined*.
-In future this is intended to support better discovery of metric units and potentially
-conversion between compatible units (feet ⟷ meters, inches of mercury ⟷ hectopascals, etc)
+G3 will convert input data to the target unit,
+provided that both the gauge and external metric source define explicit units,
+and those units are known and compatible in the
+[convert-units](https://github.com/convert-units/convert-units) module.
+For example, a gauge designed to show miles/hour (mph)
+could then correctly display  speeds provided in km/hour (kph).
 
 *gauge*.**kind**([*kind*: string]) · [source](src/gauge.js)
 
@@ -494,13 +497,13 @@ would map a metric expected to take values between 0 and 10
 to a semi-circular axis on the top half of the gauge face
 (i.e. between -90° and 90°).
 
-*gauge*.**convert**([*convert*: any &rArr; any]) · [source](src/gauge.js)
+*gauge*.**rescale**([*rescale*: any &rArr; any]) · [source](src/gauge.js)
 
-If *convert* is defined, specifies a function that
-converts the current metric value before applying the *measure()* scale,
+If *rescale* is defined, specifies a function that
+rescales the current metric value before applying the *measure()* scale,
 thus changing the domain of the metric before it's transformed to the gauge axis range.
-Otherwise, returns the current conversion, which defaults to the identity function.
-For example, a dateTime metric might be converted to the day-of-month domain
+Otherwise, returns the current rescaling, which defaults to the identity function.
+For example, a dateTime metric might be rescaled to the day-of-month domain
 before displaying on a calendar wheel.
 
 *gauge*.**r**([*radius*: number]) · [source](src/gauge.js)
@@ -816,16 +819,27 @@ Otherwise, returns the current pointer shape, defaulting to `needle`.
     <img src="doc/pointers.png" alt='G3 pointer shapes'>
 </div>
 
-*indicatePointer*.**convert**([*convert*: any &rArr; any]) · [source](src/indicate.js)
+*indicatePointer*.**rescale**([*rescale*: any &rArr; any]) · [source](src/indicate.js)
 
-If *convert* is defined, specifies a function that
-converts the current metric value before indicating.
-Conversion happens before the *measure()* is applied,
+If *rescale* is defined, specifies a function that
+rescales the current metric value before indicating.
+This scaling happens before the *measure()* is applied,
 effectively modifying the domain of the metric before it's transformed to the gauge axis range.
-Otherwise, returns the current conversion, which defaults to the identity function.
+Otherwise, return the current conversion, which defaults to the identity function.
 For example, an altimeter might indicate in hundreds, thousands and ten-thousands
 using pointers with different scales.
 
+*indicatePointer*.**clamp**([*extents*: array<number>]) · [source](src/indicate.js)
+
+If *extents* is defined, it provides a two-element array defining
+the minimum and maximum extent of the pointer domain, after any rescaling.
+For one-sided clamping, pass null or undefined as one of the values.
+Otherwise, return the current limits which default to [undefined, undefined].
+For example, the vertical speed indicator shouldn't wrap around if the speed exceeds
+the axis scale, so would typically be clamped slightly within the maximum extent of the axis.
+A similar effect could be achieved by enabling
+[clamping](https://github.com/d3/d3-scale#continuous_clamp) on the gauge's measure,
+but this would also prevent any axis decorations beyond the clamped extent.
 
 <a name="g3-indicateStyle" href="#g3-indicateStyle">#</a>
 g3.**indicateStyle**() · [source](src/indicate.js)

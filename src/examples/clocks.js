@@ -10,16 +10,16 @@ g3.fakeMetrics.register({
 
 
 g3.gauge('clockSimple')
-    .metric('time').unit('second')
+    .metric('time').unit('s')
     .measure(d3.scaleLinear().domain([0, 60]).range([0, 360]))
     .append(
         g3.gaugeFace(),
         g3.axisTicks().step(5).size(10),
         g3.axisTicks(d3.range(0, 60).filter(v => v % 5)).shape('dot').size(1).inset(2).style('stroke: none; fill: white'),
         g3.axisLabels().step(5).start(5).format(v => v/5).inset(20),
-        g3.indicatePointer().shape('blade').convert(v => v/60/12),
-        g3.indicatePointer().shape('sword').convert(v => v/60),
-        g3.indicatePointer().convert(g3.snapScale()),
+        g3.indicatePointer().shape('blade').rescale(v => v/60/12),
+        g3.indicatePointer().shape('sword').rescale(v => v/60),
+        g3.indicatePointer().rescale(g3.snapScale()),
     );
 
 const dowFormat = v => d3.timeFormat('%a')(v).slice(0,2).toUpperCase();
@@ -64,7 +64,7 @@ const
 
 // See https://en.wikipedia.org/wiki/Omega_Speedmaster tho this is a date variant
 g3.gauge('omegaSpeedmaster')
-    .metric('time').unit('second')
+    .metric('time').unit('s')
     .measure(d3.scaleLinear().domain([0,60]).range([0, 360]))
     .css(`
 .g3-pointer-hub, .g3-pointer-blade {fill: #ddd; stroke: #ddd}
@@ -76,7 +76,7 @@ text {fill: #ccc}
         g3.put().rotate(90).append(
             g3.gauge().autoindicate(true)
                 .metric('date').unit('dateTime')
-                .convert(dt => dt.getDate())
+                .rescale(dt => dt.getDate())
                 .measure(d3.scaleLinear().domain([1,32]).range([0,360]))
                 .append(
                     g3.axisLabels().step(1).orient('relative').rotate(-90).size(13).inset(45)
@@ -124,11 +124,11 @@ text {fill: #ccc}
             g3.axisSector().size(50).style('fill: #282828'),
             g3.axisTicks(d3.range(5,60,5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'),
             g3.axisLabels().step(15).start(15).size(40),
-            g3.indicatePointer().shape('wedge').convert(g3.snapScale()),
+            g3.indicatePointer().shape('wedge').rescale(g3.snapScale()),
         ),
         // gauge for chrono hour and minute
         g3.gauge()
-            .metric('elapsed').unit('second')
+            .metric('elapsed').unit('s')
             .measure(d3.scaleLinear().domain([0,60]).range([0, 360]))
             .append(
                 // 30-minute counter at the 12 o'clock position
@@ -143,7 +143,7 @@ text {fill: #ccc}
                     ).step(2).inset(5).size(10),
                     g3.axisTicks().start(10).step(20).inset(5).size(20).style('stroke-width: 2'),
                     g3.axisLabels().start(20).step(20).size(40).format(v => v/2),
-                    g3.indicatePointer().shape('wedge').convert(v => v/30),
+                    g3.indicatePointer().shape('wedge').rescale(v => v/30),
                 ),
                 // 12-hour counter at the 6 o'clock position
                 g3.put().y(42).scale(0.25).append(
@@ -152,16 +152,16 @@ text {fill: #ccc}
                     g3.axisSector().size(50).style('fill: #282828'),
                     g3.axisTicks(d3.range(5,60,5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'),
                     g3.axisLabels().step(15).start(15).size(40).format(v => v/5),
-                    g3.indicatePointer().shape('wedge').convert(v => v/60/12),
+                    g3.indicatePointer().shape('wedge').rescale(v => v/60/12),
                 ),
         ),
         // time hours and minutes indicator
         g3.put().scale(0.75).append(
-            g3.indicatePointer().shape('omega-baton-short').convert(v => v/60/12),
-            g3.indicatePointer().shape('omega-baton-long').convert(v => v/60),
+            g3.indicatePointer().shape('omega-baton-short').rescale(v => v/60/12),
+            g3.indicatePointer().shape('omega-baton-long').rescale(v => v/60),
             // indicator for chrono seconds
             g3.gauge()
-                .metric('elapsed').unit('second')
+                .metric('elapsed').unit('s')
                 .measure(d3.scaleLinear().domain([0,60]).range([0, 360]))
                 .append(
                     g3.indicatePointer().shape('omega-second')

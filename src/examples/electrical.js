@@ -9,7 +9,7 @@ g3.fakeMetrics.register({
 
 
 g3.gauge('ammeterDHC2')
-    .metric('alternatorLoad').unit('percent')
+    .metric('alternatorLoad').unit('proportion')
     .measure(d3.scaleLinear().domain([-0.1, 1.2]).range([-45, 45]))
     .append(
         g3.gaugeFace(),
@@ -29,7 +29,7 @@ g3.gauge('ammeterDHC2')
 //TODO these actually have the pointer center offset from the center of the axis,
 // needing some kind of weird transformation to indicate properly
 g3.gauge('voltmeterDHC2')
-    .metric('alternatorVolts').unit('volt')
+    .metric('alternatorVolts').unit('V')
     .measure(d3.scaleLinear().domain([0,30]).range([-45,45]))
     .append(
         g3.gaugeFace(),

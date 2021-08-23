@@ -5,7 +5,7 @@
     <script>
 
 var g = g3.gauge('JagETypeTachometer')
-    .metric('engineRPM').unit('RPM')
+    .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
     .css(`
 text.g3-gauge-label, .g3-axis-labels text {

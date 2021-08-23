@@ -1,20 +1,23 @@
 import * as d3 from 'd3';
 
+import configureMeasurements, {allMeasures} from 'convert-units';
+
 import { stylable, transformable, appendable, identity, appendId, activeController } from './mixin.js';
 import { element } from './common.js';
 import { indicateStyle } from './indicate.js';
 
-export var gaugeRegistry = {};  // for debugging
+export var gaugeRegistry = {};
 
-const DEG2RAD = Math.PI/180;
-
+const DEG2RAD = Math.PI/180,
+    convertUnits = configureMeasurements(allMeasures),
+    knownUnits = convertUnits().possibilities();
 
 export function gauge(_name) {
     if (_name in gaugeRegistry) return gaugeRegistry[_name];
 
     var name = _name || appendId('_gauge'),
         metric,
-        convert = identity,
+        rescale = identity,
         unit,
         measure = d3.scaleLinear().range([0,360]),
         kind = 'circular',
@@ -38,8 +41,9 @@ export function gauge(_name) {
             function update(metrics) {
                 if (!(metric in metrics)) return;
 
+                const v = gauge.maybeConvert(metrics[metric]);
                 activeController.transition(_)
-                    .attr('transform', gauge.metrictransform(convert(metrics[metric]), true))
+                    .attr('transform', gauge.metrictransform(rescale(v), true))
             }
             activeController.register(update, metric, `${name}-autoindicate`)
         }
@@ -48,10 +52,13 @@ export function gauge(_name) {
     gauge.metric = function(_) {
         return arguments.length ? (metric = _, gauge) : metric;
     }
-    gauge.convert = function(_) {
-        return arguments.length ? (convert = _, gauge) : convert;
+    gauge.rescale = function(_) {
+        return arguments.length ? (rescale = _, gauge) : rescale;
     }
     gauge.unit = function(_) {
+        if (_ && !knownUnits.includes(_)) {
+            console.log(`WARNING: gauge.unit ${_} not a known unit, see https://github.com/convert-units/convert-units`);
+        }
         return arguments.length ? (unit = _, gauge) : unit;
     }
     gauge.kind = function(_) {
@@ -70,7 +77,17 @@ export function gauge(_name) {
         return arguments.length ? (autoindicate = _, gauge) : autoindicate;
     }
 
-
+    gauge.maybeConvert = function(v) {
+        if (unit && v.hasOwnProperty('unit') && v.hasOwnProperty('value')) {
+            try {
+                v = convertUnits(v.value).from(v.unit).to(unit);
+            } catch(err) {
+                console.log('Unit conversion error: ' + err.message);
+                v = v.value;
+            }
+        }
+        return v;
+    }
     gauge.metrictransform = function(v, invert) {
         const
             circular = kind == 'circular',
@@ -96,8 +113,8 @@ export function gauge(_name) {
                 ? d3.arc()({
                     innerRadius: r - inset - size,
                     outerRadius: r - inset,
-                    startAngle: z0*DEG2RAD,
-                    endAngle: z1*DEG2RAD
+                    startAngle: convertUnits(z0).from('deg').to('rad'),
+                    endAngle: convertUnits(z1).from('deg').to('rad'),
                 })
                 : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
         return path;

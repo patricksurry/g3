@@ -57,7 +57,7 @@ g3.gauge('manifoldPressureDHC2')
     );
 
 g3.gauge('engineTachometerDHC2')
-    .metric('engineRPM').unit('RPM')
+    .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([300, 3500]).range([225, 495]))
     .append(
         g3.gaugeFace(),
@@ -79,7 +79,7 @@ g3.gauge('fuelDHC2')
         g3.gaugeLabel('FUEL').size(15).y(75),
         g3.put().scale(0.4).x(-45).y(30*0.866).append(
             g3.gauge()
-                .metric('fuelFront').unit('USgal')  // 29 gal capacity
+                .metric('fuelFront').unit('gal')  // 29 gal capacity
                 .measure(d3.scaleLinear().domain([3,25]).range([180+48,360+180-48]))
                 .append(
                     g3.axisLine(),
@@ -97,7 +97,7 @@ g3.gauge('fuelDHC2')
         ),
         g3.put().scale(0.4).x(45).y(30*0.866).append(
             g3.gauge()
-                .metric('fuelCenter').unit('USgal')  // 29 gal capacity
+                .metric('fuelCenter').unit('gal')  // 29 gal capacity
                 .measure(d3.scaleLinear().domain([3,25]).range([180+48,360+180-48]))
                 .append(
                     g3.axisLine(),
@@ -115,7 +115,7 @@ g3.gauge('fuelDHC2')
         ),
         g3.put().scale(0.4).y(-60*0.866).append(
             g3.gauge()
-                .metric('fuelRear').unit('USgal')  // 21 gal capacity
+                .metric('fuelRear').unit('gal')  // 21 gal capacity
                 .measure(d3.scaleLinear().domain([2,19]).range([180+44,360+180-44]))
                 .append(
                     g3.axisLine(),
@@ -141,7 +141,7 @@ g3.gauge('oilFuelDHC2')
         g3.gaugeLabel('SQ.IN').size(7).y(60),
         g3.put().scale(0.5).x(-15).y(40).append(
             g3.gauge().r(90)
-                .metric('oilPressure').unit('PSI')
+                .metric('oilPressure').unit('psi')
                 .measure(d3.scaleLinear().domain([0,200]).range([180, 360]))
                 .append(
                     g3.axisLine(),
@@ -156,7 +156,7 @@ g3.gauge('oilFuelDHC2')
         ),
         g3.put().scale(0.5).x(15).y(40).append(
             g3.gauge().r(90)
-                .metric('fuelPressure').unit('PSI')
+                .metric('fuelPressure').unit('psi')
                 .measure(d3.scaleLinear().domain([0,10]).range([180, 0]))
                 .append(
                     g3.axisLine(),
@@ -170,7 +170,7 @@ g3.gauge('oilFuelDHC2')
         ),
         g3.put().scale(0.9).y(-5).append(
             g3.gauge().r(90)
-                .metric('oilTemperature').unit('degreeCelsius')
+                .metric('oilTemperature').unit('C')
                 .measure(d3.scaleLinear().domain([0, 100]).range([-90, 90]))
                 .append(
                     g3.axisLine(),
@@ -186,7 +186,7 @@ g3.gauge('oilFuelDHC2')
     );
 
 g3.gauge('carbMixtureTempDHC2')
-    .metric('carbMixtureTemp').unit('degreeCelsius')
+    .metric('carbMixtureTemp').unit('C')
     .measure(d3.scaleLinear().domain([-50,50]).range([225,315]))
     .append(
         g3.gaugeFace(),
@@ -205,7 +205,7 @@ g3.gauge('carbMixtureTempDHC2')
     );
 
 g3.gauge('cylinderHeadTempDHC2')
-    .metric('cylinderHeadTemp').unit('degreeCelsius')
+    .metric('cylinderHeadTemp').unit('C')
     .measure(d3.scaleLinear().domain([0,350]).range([-70,70]))
     .r(90)
     .append(
