@@ -10315,6 +10315,7 @@ text {fill: #ccc}
         .clip(gaugeFace())
         .append(
             gaugeFace(),
+            // dots show every two degrees of deviation, with an extra central dot
             axisTicks([-10,-8,-6,-4,0,4,6,8,10]).shape('dot').size(3),
             element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
             gaugeLabel('TO').x(35).y(-35).size(8),
