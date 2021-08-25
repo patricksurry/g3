@@ -160,6 +160,7 @@ g3.gauge('VORDHC2')
     .clip(g3.gaugeFace())
     .append(
         g3.gaugeFace(),
+        // dots show every two degrees of deviation, with an extra central dot
         g3.axisTicks([-10,-8,-6,-4,0,4,6,8,10]).shape('dot').size(3),
         g3.element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
         g3.gaugeLabel('TO').x(35).y(-35).size(8),

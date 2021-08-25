@@ -1,10 +1,11 @@
 # G3: a flexible framework for steam gauge instrument panels
 
 [G3](https://github.com/patricksurry/g3) is a flexible Javascript
-framework for designing and running steam gauge style instrument panels
-for flight (or other) simulators, and displaying live external metrics.
-Here's a screenshot of some of the pre-defined flight instruments
-(you can also see a [live demo](https://patricksurry.github.io/)):
+framework for building steam gauge instrument panels
+that display live external metrics from flight (or other) simulators
+like [X-Plane](https://www.x-plane.com/) and [Microsoft FS2020](https://www.flightsimulator.com/).
+Here's a screenshot with some of the included flight gauges
+(or try this [live demo](https://patricksurry.github.io/)):
 
 <div align='center'>
     <img src="doc/flightpanel.png" alt='flight panel screenshot'>
@@ -14,25 +15,25 @@ Here's a screenshot of some of the pre-defined flight instruments
 
 - [Install G3](#installing)
 - [Get started](#getting-started) by running a panel or designing a new gauge
+- Browse the complete [API reference](#api-reference)
 - Give back by [contributing](#contributing) new gauges and panels
 - Explore related [resources](#resources)
-- Dig in to the full [API reference](#api-reference)
 
 **Keywords**: G3 D3 Javascript SVG flight simulator gauges instruments
 control panel metrics telemetry dashboard visualization dataviz
+XPlane FS2020
 
-G3's goal is to provide a lightweight, browser-based  solution
+G3's goal is to provide a lightweight, browser-based solution
 for building steam-gauge control panels using simple hardware atop a
 commodity LCD display, powered by an affordable single-board computer
 like the [Pi](https://www.raspberrypi.org/).
 One of my original inspirations was this
 [awesome Cessna setup](https://cessna172sim.allanglen.com/docs/instrument-panel/).
-It might also be useful for certain interactive data visualizations or dashboards,
-perhaps in conjunction with something like [cubism](https://square.github.io/cubism/)
-for time series visualization.
+G3 could also be useful for interactive data visualizations and dashboards.
 
-G3 is a tortured backronym for "generic gauge grammar"
-but mainly an homage to [D3](https://d3js.org/).
+The name G3 is a tortured backronym for "generic gauge grammar"&mdash;and
+has an [aircraft connection](https://en.wikipedia.org/wiki/Gulfstream_III)&mdash;but
+was mainly chosen in homage to [D3](https://d3js.org/).
 It's part of a quixotic pandemic project to build a
 [DHC-2 Beaver](https://en.wikipedia.org/wiki/De_Havilland_Canada_DHC-2_Beaver) simpit.
 Although there are plenty of [alternatives](#resources)
@@ -44,47 +45,45 @@ the pattern suggested by
 several years ago in
 [Towards reusable charts](https://bost.ocks.org/mike/chart/).
 
+The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
+mimicked by the example `omegaSpeedmaster` gauge below,
+showcases G3's flexibility to create complex, working gauges that look good:
+
 <div align='center'>
     <img src="doc/speedmaster.png" width='480' alt='speedmaster screenshot'>
 </div>
 
-The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
-mimicked as the `omegaSpeedmaster` example gauge above,
-showcases G3's flexibility to create complex, working gauges that look good.
 
 ## Installing
 
-You can skip installing and just refer to a standalone copy of the module distribution remotely
-(or download locally) from an NPM CDN  like these:
+You can skip installing altogether and just refer to a standalone copy of the
+module distribution from an NPM CDN like these:
 
     https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js
 
     https://cdn.jsdelivr.net/npm/@patricksurry/g3/dist/g3-examples.min.js
-
-If you prefer, you can download from github by picking a distribution,
-clicking the 'Raw' button, and then right-clicking to "save as":
-
-    https://github.com/patricksurry/g3/tree/master/dist
-
-You can choose any of `g3[-examples][.min].js`:
-The base `g3` package provides the API to define gauges and assemble them into control panels,
-and the `g3-examples` package adds a bunch of predefined gauges and panels
-that you can use or modify.   The `.min` versions are minified to load slightly faster.
-Choosing `g3-examples.js` is probably a good start.
 
 You can also set up an [npm project](https://docs.npmjs.com/getting-started),
 by creating a project directory and installing G3:
 
     npm install @patricksurry/g3
 
-Also see [Contributing](#contributing) if you want to hack on G3.
+If you prefer, you can download a
+[bundled distribution from github](https://github.com/patricksurry/g3/tree/master/dist),
+by picking any of `g3[-examples][.min].js`,
+clicking the 'Raw' button, and then right-clicking to "save as".
+The base `g3` package provides the API to define gauges and assemble them into control panels,
+and the `g3-examples` package adds a bunch of predefined gauges and panels
+that you can use or modify.   The `.min` versions are minified to load slightly faster,
+but harder to debug.  Choosing `g3-examples.js` is probably a good start.
+See [Contributing](#contributing) if you want to hack on G3.
 
 ## Getting started
 
 ### Display an existing panel
 
 Check things are working by creating a minimal HTML file that displays an existing panel with fake metrics.
-Create a new file called `test.html` containing:
+Create a new file called `test.html` that looks like this:
 
 ```html
 <html>
@@ -97,12 +96,12 @@ g3.panel('DHC2FlightPanel')('body');
 </html>
 ```
 
-This tells G3 to retrieve the pre-defined `DHC2FlightPanel` example panel,
-and draw it as a new SVG object into the HTML `<body>` element.
+This tells G3 to fetch the pre-defined `DHC2FlightPanel` example panel,
+and draw it as a new SVG object appended to the HTML `<body>` element.
 By default the panel provides fake metrics so you can see your gauges moving
 in a somewhat realistic but random way.
 Save the file and use a terminal window to serve it locally using your favorite HTTP server.
-For example
+For example try:
 ```shell
 python -m http.server
 ```
@@ -110,9 +109,9 @@ or
 ```shell
 npx http-server -p 8000
 ```
-and point your browser at http://localhost:8000/test.html.
+and then point your browser at http://localhost:8000/test.html.
 You should see something that looks like the [live demo](https://patricksurry.github.io/)
-screenshot above.
+above.
 
 ### Create a panel with existing gauges
 
@@ -124,13 +123,13 @@ included with `g3-examples.js` contains a number of predefined gauges including
 and [electrical gauges](src/examples/electrical.js);
 as well as a few
 [example panels](src/examples/panels.js).
-You can see them all by modifying `test.html` to display the `DebugPanel` which
-automatically displays every registered gauge,
+You can see them all at once by modifying `test.html` to display the `DebugPanel` which
+displays every registered gauge,
 including exploded views of all named sub-gauges.
-(Temporarily naming an anonymous gauge can be a useful trick for debugging.)
+(Temporarily naming an anonymous sub-gauge is a useful debugging technique.)
 
-Let's make a panel that shows a clock and a heading gauge side by side.
-Create a new HTML file called `panel.html` that looks like this:
+Let's create a new panel that shows a clock and a heading gauge side by side.
+Create a new HTML file called `panel.html`:
 ```html
 <html>
   <body>
@@ -147,11 +146,11 @@ panel('body');
   </body>
 </html>
 ```
-This defines a new panel, `SimplePanel`, which&mdash;when called via `panel('body')`&mdash;creates a 600x300
-SVG container with the document `<body>`, retrieves existing gauge definitions,
-and places them with centers at (150,150) and (450,150).
-By convention gauges are drawn with a radius of 100 units,
-but you could simply add `.scale(1.5)` to the `put()` if you prefer a radius 150.
+This defines our `SimplePanel` which&mdash;when called via `panel('body')`&mdash;creates a 600x300
+SVG container within the document `<body>`, retrieves existing gauge definitions,
+and centers them at (150,150) and (450,150).
+By convention gauges are drawn with a radius of 100 SVG units,
+but you could simply add `.scale(1.5)` to the `put()` if, say, you prefer a radius 150.
 Serve locally as before and browse to http://localhost:8000/panel.html
 and you should see something like this:
 
@@ -162,14 +161,14 @@ and you should see something like this:
 
 ### Display real metrics
 
-We've built a panel, but by default it displays fake metrics generated in the browser.
+We've built a panel, but by default it displays [fake metrics](#metrics) generated in the browser.
 G3 normally polls an external URL for metrics,
 and expects a response containing
 a [JSON](https://www.json.org/json-en.html) dictionary
 with an entry for each metric.
 Unless we specify a polling interval,
 it will check four times per second (an interval of 250ms).
-Let's add that to `panel.html`, replacing `panel('body');` with:
+Let's modify `panel.html`, replacing `panel('body');` with:
 
 ```js
 ...
@@ -177,70 +176,78 @@ panel.interval(500).url('/metrics/fake.json')('body');
 ...
 ```
 
-Now we just need our server to provide metrics at the `/metrics/fake.json` endpoint.
-First we'll create an endpoint that also serves fake metrics:
-so the behavior will look similar but we can then hook it up to whatever source we want.
-Grab this sample python server based on [FastAPI](https://fastapi.tiangolo.com/) from github:
-
-    https://github.com/patricksurry/g3py
-
+Now we need a server that provides metrics at the `/metrics/fake.json` endpoint.
+To start with we'll run a server that also provides fake metrics,
+so the behavior will look similar but gives us the stubs to hook it up to whatever source we want.
+Grab this sample [G3 python server](https://github.com/patricksurry/g3py)
+based on [FastAPI](https://fastapi.tiangolo.com/) from github.
 Copy your `panel.html` to the `g3py/panels/` folder,
-and follow the [directions](https://github.com/patricksurry/g3py)
-to launch the server and browse to your control panel:
+and follow the README to launch the server and browse to your control panel:
 
     http://localhost:8000/panels/panel.html
 
 You should see your panel working again,
-but the console log should show that it's fetching
-metrics from the server.
+but the browser console log should show that it's fetching
+metrics from the server.  More usefully, our server would fetch metrics from our simulation,
+for example via [SimConnect](https://github.com/odwdinc/Python-SimConnect)
+for FS2020, or [XPlaneConnect](https://github.com/nasa/XPlaneConnect/)
+for X-Plane, and deliver those to our endpoint.
 
-More usefully, we'd have our server collect metrics from our simulation,
-for example via [SimConnect](https://github.com/odwdinc/Python-SimConnect),
-and provide those in our endpoint.
+**XPlane 11**
 
+Let's hook up our flight panel to
+[XPlane 11](https://www.x-plane.com/).
+Once you've got XPlane installed (the demo version works fine),
+install NASA's [XPlaneConnect plugin](https://github.com/nasa/XPlaneConnect).
+Assuming you've already grabbed the
+[G3 python server](https://github.com/patricksurry/g3py)
+you can just modify `panel.html` to point at the demo XPlane endpoint:
 
-TODO - expose a way to register more fake metrics
+```js
+g3.panel('DHC2FlightPanel').interval(250).url('/metrics/xplane.json')('body');
+```
 
-TODO - show how we can change a specific metric
+Now start up a flight in XPlane and open your panel in the browser as above.
+You should see our flight panel mimicking the live XPlane display.
+You can see how the server maps XPlane metrics via datarefs
+in mapping.yml [here](https://github.com/patricksurry/g3py/tree/master/xplane).
+It will even automatically convert between compatible units to match your gauges!
 
-*Microsoft Flight Simulator (FS2020)*
+**Microsoft Flight Simulator (FS2020)**
 
-TODO - example of SimConnnect
+TODO: include an example based on FS2020 SimConnnect
 
-
-*XPlane 11*
-
-https://github.com/nasa/XPlaneConnect
-
-
-https://developer.x-plane.com/datarefs/
-mostly sim/cockpit2/{actuators, gauges, engine, clock_timer, electrical}, sim/time/*
 
 ### Create a new gauge
 
-Perhaps the easiest way to get started is to find an example gauge
-in the provided `DebugPanel` similar to what you're trying to make,
-and investigate its implementation in the
-[examples source code](https://github.com/patricksurry/g3/tree/master/src/examples).
-
-
-TODO - simple example
-
-Let's simulate a
-[classic Jaguar E-type tachometer](https://www.smiths-instruments.co.uk/blog/new-smiths-digital-tachometer-for-the-classic-jaguar-e-type).
-
+The easiest way to get started with gauge design is to find a
+similar example gauge in the `DebugPanel`,
+and experiment with its
+[implementation](https://github.com/patricksurry/g3/tree/master/src/examples).
+As a simple example of building a gauge from scratch, let's build a
+[classic Jaguar E-type tachometer](https://www.smiths-instruments.co.uk/blog/new-smiths-digital-tachometer-for-the-classic-jaguar-e-type) (photo, below left).
+With a few lines of code, we'll end up with a credible facsimile (below right).
 
 <div align='center'>
-    <img src="doc/jagetach-g3.png" width=300 hspace=64 alt='Simulated Jaguar E-type tachometer'>
     <img src="doc/jagetach.png" width=300 hspace=64 alt='Actual Jaguar E-type tachometer'>
+    <img src="doc/jagetach-g3.png" width=300 hspace=64 alt='Simulated Jaguar E-type tachometer'>
 </div>
 
-
-domain 0-60, range is about 250°
-one method is to draw a line through the gauge center and estimate what span
-of the indicated domain takes 180°
-
-let's create `jagetach.html`
+Let's get started by creating a new HTML file called `jagetach.html`,
+and build a skeleton for our gauge.
+We'll choose a name for the gauge, specify the external metric it should display
+(with explicit units if possible), then define a measure which
+translates the metric values to the scale on our gauge.
+The trickiest part is to estimate the angular range of the tachometer scale.
+We can guesstimate by eye (it looks like it occupies about 2/3 of the circle,
+so a range of -120° to +120°), we could measure with a protractor,
+or we can draw a line through the center point of the original image
+and see what range of metric values span 180°.
+In our example, 180° represents a range of about 43(00) RPM so we want a
+total span of 60/43\*180 or about 250° in total, ranging from -125° to +125°.
+After defining the measure, we'll add a default face (dark-shaded circle)
+along with an axis line, ticks and labels, and then draw it to the screen.
+Here's what we have so far (see result below left):
 
 ```html
 <html>
@@ -272,9 +279,15 @@ p('body');
 </html>
 ```
 
+<div align='center'>
+    <img src="doc/jagetach0.png" width=300 hspace=64 alt='Jaguar tachometer skeleton'>
+    <img src="doc/jagetach1.png" width=300 hspace=64 alt='Jaguar tachometer custom'>
+</div>
+
 Now let's scale the gauge to make it little larger in the panel,
 and then inset and customize the axis marks to look a little more
-like the original:
+like the original.  We'll also add a default pointer so we can
+actually see our RPM measurement (result above right):
 
 ```js
     ...
@@ -294,12 +307,13 @@ like the original:
         ...
 ```
 
-Adding a few labels and customizing the pointer gives us a
-reasonable facsimile, though the fonts and logo could use more love.
+Finally, we'll add a few labels and customize the pointer to look closer to the source,
+though the fonts and logo could certainly use more love (result top right of this section).
 The custom pointer is probably the fiddliest part,
 but is not too bad with a basic understanding of
 [SVG paths](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
-It's also possible to extract paths from existing SVG images or created via
+It's also possible to extract path definitions using a text editor,
+either from existing SVG images or files created via
 an SVG drawing tool like [Inkscape](https://inkscape.org/).
 
 ```js
@@ -357,39 +371,69 @@ text.g3-gauge-label, .g3-axis-labels text {
     );
 ```
 
+If you're obsessed with matching your original gauge "perfectly",
+a helpful trick is to temporarily overlay a high quality, partially transparent image of the original
+(or half the original) on top of your gauge.
+For example, modify your panel to look like:
 
-TODO - register or reuse a fake metric for testing
+```js
+var p = g3.panel().width(640).height(640).append(
+            g3.put().x(320).y(320).scale(2).append(
+                g,
+                g3.element('image', {href: 'original.png', x: -100, y: -100, width: 200, opacity: 0.3})
+            )
+        );
+```
 
+In this tutorial we reused the `engineRPM` metric defined with the
+[sample engine gauges](https://github.com/patricksurry/g3/blob/master/src/examples/engine.js),
+but it's easy to add our own.
+Simply choose a name for the metric that matches how it will be provided from the external source,
+and (if desired) register a corresponding [fake metric](#metrics) for testing.
+Note it's often a good idea to test metric values outside the expected range
+(e.g. max of 7000 instead of the max label of 6000)
+to ensure your gauge behaves as expected.  For our tachometer we probably
+want to [clamp](/#g3-indicatePointer) the pointer as if there was a physical stop at 6000:
 
-include original image and gauge side by side
+```js
+g3.fakeMetrics.register({jaguarRPM: g3.forceSeries(0, 7000)});
 
-trick with overlaying the image as you build
+var g = g3.gauge('JagETypeTachometer')
+    .metric('jaguarRPM').unit('rpm')
+    .clamp([0, 6000])
+    ...
+```
 
-exercise - add a clock at the bottom
+**Extra credit** If you want to explore further, try modifying the tachometer to add
+a simple sub-gauge in the bottom quadrant which shows a simple clock with hours and minutes.
 
 
 ## Contributing
 
-TODO - set up a development environment
+If you want to extend G3, improve the documentation,
+or just add your own examples back into the package,
+you should start by forking and cloning the
+[git repo](https://github.com/patricksurry/g3.git)
+followed by `npm install`.
+I'm currently tracking a few open issues and ideas in [`TODO.md`](TODO.md)
+if you're looking for something to play with.
 
-Test locally via `src/index.html` and `npm run start`.
+You can test your changes locally by serving directly from the `src/` tree using
+[Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
+Start it via `npm run start` and you should see the debug panel in your browser,
+served from `src/index.html`.
+(Note this HTML script uses module style imports unlike the production distribution.)
 
-Use `rollup` to package, via
-
-```sh
-npm run build
-```
-
-then publish to npm by bumping version in `package.json`, commit and tag in github
-and finally publish with:
+You can rebuild the bundled package in `dist/` using `rollup` by typing `npm run build`.
+Once you're happy with your changes, make a pull request.
+When I want to publish a new release, I also bump the version in `package.json`,
+then commit and tag in github and finally publish with something like:
 
 ```sh
 git tag v0.1.3
 git push origin --tags
 npm publish --access public
 ```
-
-See [`TODO.md`](TODO.md) for an open list of issues and ideas.
 
 ## Resources
 
@@ -889,10 +933,11 @@ output is transformed according to a D3 [power scale](https://github.com/d3/d3-s
 
 where *w* is half the step size, and *strength* determines how strong the pull is.
 
-TODO better to define the percent of the original for 'half-life' of the transformed step,
-e.g. for calendar wheel it should 'tick' over a second or so once per day,
-though another way to do this is just specify the metric as integer values,
-and we'll get a single refresh transform with duration equal to polling interval
+TODO: probably better to define the percent of the original for 'half-life' of the transformed step,
+e.g. for calendar wheel it should 'tick' over a second or so once per day.
+Or maybe this is scale should just be deprecated entirely:
+another way to get a similar effect is to specify (or rescale) the metric as integer values,
+so we'd get a single refresh transform with duration equal to polling interval.
 
 *snapScale*.**start**([*start*: number]) · [source](src/common.js)
 
@@ -985,12 +1030,24 @@ G3 gauges display the current value of one or more metrics.
 Normally these metrics are fetched from an external source
 by configuring a [panel's](#g3-panel) *url*,
 but for development it's handy to display fake metrics which are generated locally.
-([g3py](https://github.com/patricksurry/g3py) provides similar fake metrics from a server.)
+You can use [g3py](https://github.com/patricksurry/g3py)
+to provide the server for your panel.  It offers both fake metrics and
+stubs integrated with X-Plane and FS2020 (coming soon).
 
-Any gauge can display fake metrics, as long as a suitable metric generator
+Simple metrics are provided as a JSON dictionary of {*metricName*: *metricValue*},
+where *metricValue* is either the raw metric value or an object
+of {value: *metricValue*, unit: *unitName*}.
+If *unitName* is a unit recognized by
+[convert-units](https://github.com/convert-units/convert-units),
+and compatible with any gauge(s) that consumes it,
+G3 will automatically convert between them.
+For example, X-Plane provides the barometer setting in `inHg` but
+the panel displays correctly in `hPa`.
+
+Any gauge can display fake metrics, as long as a matching metric generator
 has been registered using *g3.fakeMetrics.register()*.
 A simple set of metric generators is provided,
-or you can use any function that produces a next metric value each time it's called.
+or you can provide your own function that produces a new metric value each time it's called.
 
 <a name="g3-fakeMetrics" href="#g3-fakeMetrics">#</a>
 g3.**fakeMetrics** · [source](src/faketimeseries.js)

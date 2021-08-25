@@ -2,7 +2,7 @@
    "name": "@patricksurry/g3",
    "version": "0.1.3",
    "author": "Patrick Surry <patrick.surry@gmail.com>",
-   "description": "A flexible framework for designing and running steam gauge style instrument panels for flight (or other) simulators, displaying external metrics",
+   "description": "A flexible Javascript framework for building steam gauge instrument panels that display live external metrics from flight (or other) simulators like XPlane or MS FS2020",
    "keywords": [
       "G3",
       "D3",
@@ -16,7 +16,9 @@
       "telemetry",
       "dashboard",
       "visualization",
-      "dataviz"
+      "dataviz",
+      "XPlane",
+      "FS2020"
    ],
    "license": "ISC",
    "type": "module",

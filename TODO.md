@@ -1,6 +1,6 @@
 ## Open issues
 
-- clamp limits but not for labels
+- add unit tests
 
 - more throw messages. e.g. for g.measure(2) should be g.measure()(2) type of 2 isn't function
 
@@ -12,7 +12,7 @@
   an [orthographic globe projection](https://github.com/d3/d3-geo#geoOrthographic)
   would also work better 360 loop/roll attitude indicator
 
-- indicateSector - needs redraw not global xform
+- indicateSector: would need redraw not global xform
 
 - indicateOdometer - maybe indicateText option? - https://github.hubspot.com/odometer/
   or a collection of cylindrical self-indicators with a form of snapscale
@@ -31,10 +31,10 @@
 
 - metric update could warn to console when expected metric(s) are missing in the initial update
 
-- add animated gifs in README
+- could add animated gifs in README via:
 
-via: https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
+    https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
 
-ffmpeg -ss 0 -t 5 -i flightdemo.mov -vf "fps=10,scale=630:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 flightdemo.gif
+    ffmpeg -ss 0 -t 5 -i flightdemo.mov -vf "fps=10,scale=630:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 flightdemo.gif
 
 
