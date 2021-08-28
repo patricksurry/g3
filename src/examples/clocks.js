@@ -79,6 +79,7 @@ text {fill: #ccc}
                 .rescale(dt => dt.getDate())
                 .measure(d3.scaleLinear().domain([1,32]).range([0,360]))
                 .append(
+                    g3.gaugeFace(),
                     g3.axisLabels().step(1).orient('relative').rotate(-90).size(13).inset(45)
                 ),
         ),

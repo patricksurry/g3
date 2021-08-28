@@ -46,11 +46,12 @@ several years ago in
 [Towards reusable charts](https://bost.ocks.org/mike/chart/).
 
 The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
-mimicked by the example `omegaSpeedmaster` gauge below,
+mimicked by the example `omegaSpeedmaster` gauge below
+(see [live demo](https://bl.ocks.org/patricksurry/95f8f76a1dfd3c84e7a31429c7cbddc9)),
 showcases G3's flexibility to create complex, working gauges that look good:
 
 <div align='center'>
-    <img src="doc/speedmaster.png" width='480' alt='speedmaster screenshot'>
+    <img src="doc/speedmaster.png" width='384' alt='speedmaster screenshot'>
 </div>
 
 
@@ -229,9 +230,10 @@ As a simple example of building a gauge from scratch, let's build a
 With a few lines of code, we'll end up with a credible facsimile (below right).
 
 <div align='center'>
-    <img src="doc/jagetach.png" width=300 hspace=64 alt='Actual Jaguar E-type tachometer'>
-    <img src="doc/jagetach-g3.png" width=300 hspace=64 alt='Simulated Jaguar E-type tachometer'>
+    <img src="doc/jagetach.png" width=256 hspace=32 alt='Actual Jaguar E-type tachometer'>
+    <img src="doc/jagetach-g3.png" width=256 hspace=32 alt='Simulated Jaguar E-type tachometer'>
 </div>
+<br />
 
 Let's get started by creating a new HTML file called `jagetach.html`,
 and build a skeleton for our gauge.
@@ -280,9 +282,10 @@ p('body');
 ```
 
 <div align='center'>
-    <img src="doc/jagetach0.png" width=300 hspace=64 alt='Jaguar tachometer skeleton'>
-    <img src="doc/jagetach1.png" width=300 hspace=64 alt='Jaguar tachometer custom'>
+    <img src="doc/jagetach0.png" width=256 hspace=32 alt='Jaguar tachometer skeleton'>
+    <img src="doc/jagetach1.png" width=256 hspace=32 alt='Jaguar tachometer custom'>
 </div>
+<br />
 
 Now let's scale the gauge to make it little larger in the panel,
 and then inset and customize the axis marks to look a little more
@@ -862,6 +865,7 @@ Otherwise, returns the current pointer shape, defaulting to `needle`.
 <div align='center'>
     <img src="doc/pointers.png" alt='G3 pointer shapes'>
 </div>
+<br />
 
 *indicatePointer*.**rescale**([*rescale*: any &rArr; any]) · [source](src/indicate.js)
 
