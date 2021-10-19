@@ -1,11 +1,9 @@
 import * as d3 from 'd3';
 
-import {stylable, appendable, gaugeController} from './mixin.js';
+import {stylable, appendable, transformable} from './mixin.js';
+import {gaugeController} from './controller.js';
 import {element} from './common.js';
-import {fakeMetrics} from './faketimeseries.js';
-
-
-export var panelRegistry = {};
+import {grid} from './grid.js';
 
 
 // global defs we append to panel's svg element
@@ -52,12 +50,11 @@ function jsondates(obj) {
 
 
 
-export function panel(_name) {
-    if (_name in panelRegistry) return panelRegistry[_name];
-
+export function panel() {
     var width=1024,
         height=768,
         interval=250,
+        showgrid=false,
         url;
 
     function panel(sel) {
@@ -70,8 +67,12 @@ export function panel(_name) {
         // insert the global defs now that we know the panel size
         panel.defs.append(...globalDefs(width, height));
 
+        _ = _.append('g');
         panel.stylable(_);
+        panel.transformable(_);
         panel.appendable(_);
+
+        if (showgrid) grid().width(width).height(height)(_);
 
         console.log('Starting panel expecting metrics:', controller.metrics());
 
@@ -81,7 +82,7 @@ export function panel(_name) {
                       .then(response => response.json())
                       .then(metrics => controller(jsondates(metrics)));
                 } else {
-                    controller(fakeMetrics());
+                    controller(controller.fakeMetrics());
                 }
             },
             interval
@@ -93,16 +94,18 @@ export function panel(_name) {
     panel.height = function(_) {
         return arguments.length ? (height = _, panel): height;
     }
+    panel.grid = function(_) {
+        return arguments.length ? (showgrid = !!_, panel): showgrid;
+    }
     panel.url = function(_) {
         return arguments.length ? (url = _, panel): url;
     }
     panel.interval = function(_) {
         return arguments.length ? (interval = _, panel): interval;
     }
-    stylable(appendable(panel)).class('g3-panel')
+    stylable(appendable(transformable(panel))).class('g3-panel')
     panel.defs = element('defs')
     panel.append(panel.defs);
 
-    if (_name) panelRegistry[_name] = panel;
     return panel;
 }

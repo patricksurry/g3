@@ -26,15 +26,15 @@ export default [
     ]
   },
   {
-    input: 'src/g3-examples.js',
+    input: 'src/g3-contrib.js',
     output: [
       {
         name: 'g3',
-        file: 'dist/g3-examples.js',
+        file: 'dist/g3-contrib.js',
         format: 'umd'
       },
       {
-        file: 'dist/g3-examples.min.js',
+        file: 'dist/g3-contrib.min.js',
         format: 'iife',
         name: 'g3',
         plugins: [ terser() ]

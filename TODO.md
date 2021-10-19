@@ -1,5 +1,23 @@
 ## Open issues
 
+- remove examples with named gauges and panels
+
+- doc contrib (should all be function that works with no args and returns a gauge)
+
+- add gauge.instance(qualifier) which returns deferred drawing function setting local qualifiers []
+
+- doc g3.grid(), panel.grid(), gauge.grid(), g3.config.test.alignment
+
+- align tutorial, e.g. g3.panel()...grid(true).append(...)
+
+- common errors - create a panel but not draw it; forget () => in contrib;
+
+- change panel.url() => panel.source() and support a function or URL
+
+- switch to a recursive setTimeout rather than setInterval
+
+- observablehq demo
+
 - add unit tests
 
 - more throw messages. e.g. for g.measure(2) should be g.measure()(2) type of 2 isn't function

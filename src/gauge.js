@@ -1,31 +1,32 @@
 import * as d3 from 'd3';
 
-import configureMeasurements, {allMeasures} from 'convert-units';
 
-import { stylable, transformable, appendable, identity, appendId, activeController } from './mixin.js';
-import { element } from './common.js';
+import { stylable, transformable, appendable, identity, appendId } from './mixin.js';
+import { activeController, convertUnits, knownUnits } from './controller.js';
 import { indicateStyle } from './indicate.js';
+import { grid } from './grid.js';
 
-export var gaugeRegistry = {};
 
-const DEG2RAD = Math.PI/180,
-    convertUnits = configureMeasurements(allMeasures),
-    knownUnits = convertUnits().possibilities();
+export function gauge() {
 
-export function gauge(_name) {
-    if (_name in gaugeRegistry) return gaugeRegistry[_name];
-
-    var name = _name || appendId('_gauge'),
-        metric,
+    var metric,
         rescale = identity,
         unit,
+        instance,
+        fake,
         measure = d3.scaleLinear().range([0,360]),
         kind = 'circular',
         autoindicate = false,
         r = 100,  // the axis radius, when applicable
+        showgrid = false,
         clip;
 
     function gauge(selection, parent) {
+        const m = gauge.metric();
+
+        // we namespace the metric using the instance chain at drawing time
+        gauge._ns = (parent ? parent._ns : []).concat(instance ? [instance]: []);
+
         let _ = selection.append('g');
         gauge.stylable(_);
         _ = _.append('g');
@@ -37,20 +38,28 @@ export function gauge(_name) {
         }
         gauge.appendable(_, gauge);
 
-        if (autoindicate) {
-            function update(metrics) {
-                if (!(metric in metrics)) return;
+        if (showgrid) grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2*r).height(2*r)(_);
 
-                const v = gauge.maybeConvert(metrics[metric]);
+        if (fake && m) activeController.fake(m, fake);
+
+        if (autoindicate) {
+            function update(fetch) {
+                const v = fetch(m, unit);
+                if (typeof v == 'undefined') return;
                 activeController.transition(_)
                     .attr('transform', gauge.metrictransform(rescale(v), true))
             }
-            activeController.register(update, metric, `${name}-autoindicate`)
+            activeController.register(update, m, appendId('_gauge') + '-autoindicate')
         }
     }
+    gauge._ns = [];
 
     gauge.metric = function(_) {
-        return arguments.length ? (metric = _, gauge) : metric;
+        // with an argument, sets metric,
+        // with no argument, returns qualified metric, e.g. fuel.copilot.rear
+        return arguments.length
+            ? (metric = _, gauge)
+            : (metric && [metric].concat(gauge._ns).join('.'));
     }
     gauge.rescale = function(_) {
         return arguments.length ? (rescale = _, gauge) : rescale;
@@ -60,6 +69,12 @@ export function gauge(_name) {
             console.log(`WARNING: gauge.unit ${_} not a known unit, see https://github.com/convert-units/convert-units`);
         }
         return arguments.length ? (unit = _, gauge) : unit;
+    }
+    gauge.instance = function(_) {
+        return arguments.length ? (instance = _, gauge): instance;
+    }
+    gauge.fake = function(_) {
+        return arguments.length ? (fake = _, gauge): fake;
     }
     gauge.kind = function(_) {
         return arguments.length ? (kind = _, gauge) : kind;
@@ -76,18 +91,10 @@ export function gauge(_name) {
     gauge.autoindicate = function(_) {
         return arguments.length ? (autoindicate = _, gauge) : autoindicate;
     }
-
-    gauge.maybeConvert = function(v) {
-        if (unit && v.hasOwnProperty('unit') && v.hasOwnProperty('value')) {
-            try {
-                v = convertUnits(v.value).from(v.unit).to(unit);
-            } catch(err) {
-                console.log('Unit conversion error: ' + err.message);
-                v = v.value;
-            }
-        }
-        return v;
+    gauge.grid = function(_) {
+        return arguments.length ? (showgrid = !!_, gauge): showgrid;
     }
+
     gauge.metrictransform = function(v, invert) {
         const
             circular = kind == 'circular',
@@ -119,8 +126,6 @@ export function gauge(_name) {
                 : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
         return path;
     }
-
-    if (_name) gaugeRegistry[_name] = gauge;
 
     return stylable(appendable(gauge)).class('g3-gauge');
 }

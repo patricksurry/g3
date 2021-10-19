@@ -63,20 +63,3 @@ export function elapsedSecondsSeries() {
     }
     return next;
 }
-
-
-function metricsRegistry() {
-    var generators = {};
-
-    function metrics() {
-        return Object.fromEntries(
-            Object.entries(generators).map(([k, f]) => [k, f()])
-        );
-    }
-    metrics.register = function(obj) {
-        return arguments.length ? (generators = {...obj, ...generators}, metrics): generators;
-    }
-    return metrics;
-}
-
-export var fakeMetrics = metricsRegistry();

@@ -6,13 +6,14 @@ import 'dseg/css/dseg.css';
 */
 
 export * from "./panel.js";
+export * from "./controller.js";
 export * from "./gauge.js";
 export * from "./indicate.js";
 export * from "./pointers.js";
 export * from "./axis.js";
-export * from './common.js';
+export * from "./common.js";
+export * from "./grid.js";
 export * from "./faketimeseries.js";
-
 
 injectGlobal`
 /* Declare 7 and 14 segment LCD fonts, many other variants at https://www.keshikan.net/fonts-e.html */
@@ -38,6 +39,8 @@ injectGlobal`
 body {
     margin:  0;
     background-color:  black;
+    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
+    color: #ccc;
 }
 .g3-panel {
     background-color:  black;
@@ -50,7 +53,6 @@ body {
     vector-effect: non-scaling-stroke;
 }
 .g3-panel text {
-    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     text-anchor:  middle;
     dominant-baseline:  central;
     font-stretch: condensed;
@@ -64,6 +66,21 @@ body {
 }
 .g3-axis-ticks .g3-axis-ticks-dot, .g3-axis-ticks .g3-axis-ticks-wedge {
     stroke: none;
+}
+.g3-grid-line line {
+    stroke: #666;
+}
+.g3-grid-hairline {
+    stroke: #333;
+}
+.g3-grid-label text {
+    font-size: 8px;
+    text-anchor:  middle;
+    dominant-baseline:  central;
+    fill: #999;
+}
+.g3-grid-label rect {
+    stroke: none; fill: black; opacity: 0.5;
 }
 .g3-gauge-face, .g3-bg-fill {
     fill: #181818;

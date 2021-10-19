@@ -2,43 +2,13 @@ import * as d3 from 'd3';
 import { css } from '@emotion/css';
 
 
-export const
-    identity = v => v,
-    metricDispatch = d3.dispatch('metric');
+export const identity = v => v;
 
 
 export function appendId(typ) {
     return typ + (++appendId.nextId).toString(36);
 }
 appendId.nextId = 0;
-
-
-export var activeController;  // hack to provide current context for gauges to register with
-
-
-export function gaugeController(interval) {
-    var id = appendId('controller-'),
-        dispatch = d3.dispatch(id),
-        metrics = new Set();
-
-    function gaugeController(values) {
-        dispatch.call(id, null, values)
-    }
-    gaugeController.register = function(updater, metric, name) {
-        let v = appendId(`${id}.${metric}-${name ?? 'anonymous'}`);
-        dispatch.on(v, updater);
-        metrics.add(metric);
-    }
-    gaugeController.metrics = function() {
-        return Array.from(metrics);
-    }
-    gaugeController.transition = function(sel) {
-        return sel.transition().duration(interval).ease(d3.easeLinear);
-    }
-    activeController = gaugeController;
-    return gaugeController;
-}
-gaugeController();
 
 
 export function stylable(f) {
@@ -66,7 +36,7 @@ export function transformable(f) {
     var x=0, y=0, scalex=1, scaley=1, rotate=0;
 
     f.transformable = function(selection) {
-        selection.attr('transform', `translate(${x}, ${y}) scale(${scalex}, ${scaley}) rotate(${rotate})`);
+        selection.attr('transform', `translate(${x}, ${y}) rotate(${rotate}) scale(${scalex}, ${scaley})`);
     }
     f.x = function(_) {
         return arguments.length ? (x = _, f) : x;

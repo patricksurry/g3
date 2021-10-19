@@ -2,9 +2,23 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <style>
+div.header {
+    text-align: center;
+    font-size: 250%;
+    margin: 15px 0;
+}
+svg {
+    display: block;
+    margin: 0 auto;
+}
+    </style>
 </head>
 <body>
-
+    <div class='header'>g3.contrib gallery</div>
+    <div id='gauge-gallery'></div>
+    <div class='header'>g3.pointers gallery</div>
+    <div id='pointer-gallery'></div>
 <script>
 window.process = {
     env: {
@@ -14,15 +28,13 @@ window.process = {
 </script>
 
 <script type='module'>
-import * as g3 from './g3-examples.js';
+import * as g3 from './g3-contrib.js';
 
-// g3.panel('DHC2FlightPanel').interval(250).url('/metrics/fake.json')(d3.select('body'));
-// g3.panel('DHC2FlightPanel')('body');
-g3.panel('ClocksPanel')('body');
-// g3.panel('DHC2EnginePanel')('body');
-// g3.panel('DebugPanel')('body');
-// g3.panel('PointerGalleryPanel')('body');
+// A panel with all contrib gauges
+g3.gallery.contrib('#gauge-gallery');
 
+// A panel showing all the pointer shapes
+g3.gallery.pointers('#pointer-gallery');
 
 </script>
 </body>

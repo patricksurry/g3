@@ -4,7 +4,7 @@
     <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
     <script>
 
-var g = g3.gauge('JagETypeTachometer')
+var g = g3.gauge()
     .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
     .css(`
