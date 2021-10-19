@@ -257,6 +257,10 @@ export function statusLight(_) {
         const v = g.metric(_);
         return arguments.length ? statusLight: v;
     }
+    statusLight.fake = function(_) {
+        const v = g.fake(_);
+        return arguments.length ? statusLight: v;
+    }
     statusLight.trigger = function(_) {
         return arguments.length ? (trigger = _, statusLight): trigger;
     }
