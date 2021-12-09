@@ -1,9 +1,6 @@
-import * as d3 from 'd3';
 import configureMeasurements, {allMeasures} from 'convert-units';
-import { appendId } from './mixin.js';
 
 export const
-    metricDispatch = d3.dispatch('metric'),
     convertUnits = configureMeasurements(allMeasures),
     knownUnits = convertUnits().possibilities();
 
@@ -25,9 +22,7 @@ function maybeConvert(v, fromUnit, toUnit) {
 
 export function gaugeController(interval) {
     // create a gauge controller that we'll use to update values
-    var id = appendId('controller-'),
-        dispatch = d3.dispatch(id),
-        metrics = new Set(),
+    var callbacks = {},
         fakes = {};
 
     // call the controller to display current metric values
@@ -42,8 +37,8 @@ export function gaugeController(interval) {
             units[m] = unit;
             vs[m] = v;
         })
-        // call updaters with an accessor that
-        // will fetch a qualified metric from the input values,
+
+        // for each callback, find a qualified metric from the input values,
         // returning the best match, converted to appropriate units
         // e.g. fuel.copilot.rear will match fuel.copilot.rear
         // then fuel.copilot then fuel but never fuel.pilot
@@ -56,12 +51,20 @@ export function gaugeController(interval) {
                 ks.pop();
             }
         }
-        dispatch.call(id, null, fetch)
+
+        Object.entries(callbacks).map(([m, ufs]) => {
+            Object.entries(ufs).map(([unit, fs]) => {
+                let v = fetch(m, unit);
+                if (typeof v == 'undefined') return;
+                fs.map(f => f(v));
+            })
+        })
     }
-    gaugeController.register = function(updater, metric, name) {
-        let v = appendId(`${id}.${metric}-${name ?? 'anonymous'}`);
-        dispatch.on(v, updater);
-        metrics.add(metric);
+    gaugeController.register = function(updater, metric, unit) {
+        unit = unit || '';
+        if (!(metric in callbacks)) callbacks[metric] = {};
+        if (!(unit in callbacks[metric])) callbacks[metric][unit] = [];
+        callbacks[metric][unit].push(updater);
     }
     gaugeController.fake = function(metric, generator) {
         fakes[metric] = generator;
@@ -72,10 +75,7 @@ export function gaugeController(interval) {
         );
     }
     gaugeController.metrics = function() {
-        return Array.from(metrics);
-    }
-    gaugeController.transition = function(sel) {
-        return sel.transition().duration(interval).ease(d3.easeLinear);
+        return Object.keys(callbacks);
     }
     activeController = gaugeController;
     return gaugeController;

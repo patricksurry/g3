@@ -1886,6 +1886,20 @@
         injectGlobal = _createEmotion.injectGlobal,
         css = _createEmotion.css;
 
+    function range(start, stop, step) {
+      start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
+
+      var i = -1,
+          n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
+          range = new Array(n);
+
+      while (++i < n) {
+        range[i] = start + i * step;
+      }
+
+      return range;
+    }
+
     var noop = {value: () => {}};
 
     function dispatch() {
@@ -2893,6 +2907,12 @@
           : new Selection$1([[selector]], root);
     }
 
+    function selectAll(selector) {
+      return typeof selector === "string"
+          ? new Selection$1([document.querySelectorAll(selector)], [document.documentElement])
+          : new Selection$1([array$1(selector)], root);
+    }
+
     function define(constructor, factory, prototype) {
       constructor.prototype = factory.prototype = prototype;
       prototype.constructor = constructor;
@@ -3276,7 +3296,7 @@
 
     var constant$1 = x => () => x;
 
-    function linear$2(a, d) {
+    function linear$1(a, d) {
       return function(t) {
         return a + t * d;
       };
@@ -3296,7 +3316,7 @@
 
     function nogamma(a, b) {
       var d = b - a;
-      return d ? linear$2(a, d) : constant$1(isNaN(a) ? b : a);
+      return d ? linear$1(a, d) : constant$1(isNaN(a) ? b : a);
     }
 
     var interpolateRgb = (function rgbGamma(y) {
@@ -4516,8 +4536,6 @@
       end: transition_end,
       [Symbol.iterator]: selection_prototype[Symbol.iterator]
     };
-
-    const linear$1 = t => +t;
 
     function cubicInOut(t) {
       return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
@@ -5792,41 +5810,12 @@
     }
 
     const identity = v => v;
-        dispatch('metric');
 
 
     function appendId(typ) {
         return typ + (++appendId.nextId).toString(36);
     }
     appendId.nextId = 0;
-
-
-    var activeController;  // hack to provide current context for gauges to register with
-
-
-    function gaugeController(interval) {
-        var id = appendId('controller-'),
-            dispatch$1 = dispatch(id),
-            metrics = new Set();
-
-        function gaugeController(values) {
-            dispatch$1.call(id, null, values);
-        }
-        gaugeController.register = function(updater, metric, name) {
-            let v = appendId(`${id}.${metric}-${name ?? 'anonymous'}`);
-            dispatch$1.on(v, updater);
-            metrics.add(metric);
-        };
-        gaugeController.metrics = function() {
-            return Array.from(metrics);
-        };
-        gaugeController.transition = function(sel) {
-            return sel.transition().duration(interval).ease(linear$1);
-        };
-        activeController = gaugeController;
-        return gaugeController;
-    }
-    gaugeController();
 
 
     function stylable(f) {
@@ -5854,7 +5843,7 @@
         var x=0, y=0, scalex=1, scaley=1, rotate=0;
 
         f.transformable = function(selection) {
-            selection.attr('transform', `translate(${x}, ${y}) scale(${scalex}, ${scaley}) rotate(${rotate})`);
+            selection.attr('transform', `translate(${x}, ${y}) rotate(${rotate}) scale(${scalex}, ${scaley})`);
         };
         f.x = function(_) {
             return arguments.length ? (x = _, f) : x;
@@ -5895,243 +5884,6 @@
             return arguments.length ? (kids = kids.concat(_), f) : kids;
         };
         return f;
-    }
-
-    function element(elt, attrs) {
-        var attrs = attrs || {};
-
-        function element(sel, g) {
-            var _ = sel.append(elt);
-            Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
-            element.stylable(_);
-            element.appendable(_, g);
-        }
-        element.attr = function(k, _) {
-            return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
-        };
-        return stylable(appendable(element));
-    }
-
-
-    function put() {
-        function put(sel, g) {
-            var _ = sel.append('g');
-            put.transformable(_);
-            put.stylable(_);
-            put.appendable(_, g);
-        }
-        stylable(transformable(appendable(put)));
-        return put;
-    }
-
-
-    function snapScale() {
-        var step = 1,
-            start = 0,
-            strength = 5;
-
-        function snapScale(v) {
-            let v0 = Math.round((v - start)/step)*step + start,
-                w = step/2,
-                dv = pow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
-
-            return v0 + dv;
-        }
-        snapScale.start = function(_) {
-            return arguments.length ? (start = _, snapScale): start;
-        };
-        snapScale.step = function(_) {
-            return arguments.length ? (step = _, snapScale): step;
-        };
-        snapScale.strength = function(_) {
-            return arguments.length ? (strength = _, snapScale): strength;
-        };
-        return snapScale;
-    }
-
-    function forceSeries(min, max, opts) {
-        var min = min ?? 0,
-            max = max ?? 1,
-            opts = opts ?? {},
-            fmax = opts.fmax ?? 0.01,
-            damping = opts.damping ?? 0.9,
-            wrap = opts.wrap ?? false,
-            x = Math.random(),
-            v = 0;
-
-        function next() {
-            x += v;
-            v += (2*Math.random()-1)*fmax;
-            v *= damping;
-            if (x < 0 || x > 1) {
-                if (!wrap) {
-                    v = -v;
-                    x = x < 0 ? -x : 2-x;
-                } else {
-                    x = x > 1 ? x - 1 : x + 1;
-                }
-            }
-            return x * (max - min) + min;
-
-        }
-        return next;
-    }
-
-
-    function categoricalSeries(values) {
-        var n = values.length,
-            vs = forceSeries(0, n, {wrap: true});
-
-        function next() {
-            return values[Math.min(Math.floor(vs()), n-1)];
-        }
-        return next;
-    }
-
-
-    function datetimeSeries() {
-        function next() {
-            return new Date();
-        }
-        return next;
-    }
-
-
-    function midnightSecondsSeries() {
-        function next() {
-            let dt = new Date(),
-                msSinceMidnight = dt.getTime() - dt.setHours(0,0,0,0);
-            return msSinceMidnight/1000;
-        }
-        return next;
-    }
-
-
-    function elapsedSecondsSeries() {
-        const dt = new Date();
-        function next() {
-            return (new Date() - dt)/1000;
-        }
-        return next;
-    }
-
-
-    function metricsRegistry() {
-        var generators = {};
-
-        function metrics() {
-            return Object.fromEntries(
-                Object.entries(generators).map(([k, f]) => [k, f()])
-            );
-        }
-        metrics.register = function(obj) {
-            return arguments.length ? (generators = {...obj, ...generators}, metrics): generators;
-        };
-        return metrics;
-    }
-
-    var fakeMetrics = metricsRegistry();
-
-    var panelRegistry = {};
-
-
-    // global defs we append to panel's svg element
-    const globalDefs = (width, height) => [
-        element('radialGradient', {
-            id: 'highlightGradient',
-            cx: '50%', cy: '50%',
-            fx: '25%', fy: '40%',
-            r: '50%',
-        }).append(
-            ...['white', 'black'].map(
-                d => element('stop', {'stop-color': d, offset: d == 'white' ? '0%': '100%'})
-            )
-        ),
-        ...[1, 2, 3].map(d =>
-            element('filter', {
-                id: 'dropShadow' + d,
-                // need userSpaceOnUse for drop-shadow to work on 0-width items
-                // but then need explicit extent in target units?
-                filterUnits: 'userSpaceOnUse',
-                x: -width, width: 2*width,
-                y: -height, height: 2*height,
-            }).append(element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
-        ),
-        ...[1, 2, 3].map(d =>
-            element('filter', {
-                id: 'gaussianBlur' + d,
-            }).append(element('feGaussianBlur', {in: 'SourceGraphic', stdDeviation: d}))
-        ),
-    ];
-
-
-    // helper function to convert string-serialized date metrics back to JS objects
-    function jsondates(obj) {
-        return Object.fromEntries(Object.entries(obj).map(
-            ([k,v]) => {
-                if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
-                    v = new Date(v);
-                }
-                return [k, v];
-            }
-        ))
-    }
-
-
-
-    function panel(_name) {
-        if (_name in panelRegistry) return panelRegistry[_name];
-
-        var width=1024,
-            height=768,
-            interval=250,
-            url;
-
-        function panel(sel) {
-            if (typeof sel === 'string') sel = select(sel);
-            // draw and start updating panel
-            let controller = gaugeController(interval),  // establish context for gauges
-                _ = sel.append('svg')
-                    .attr('width', width).attr('height', height);
-
-            // insert the global defs now that we know the panel size
-            panel.defs.append(...globalDefs(width, height));
-
-            panel.stylable(_);
-            panel.appendable(_);
-
-            console.log('Starting panel expecting metrics:', controller.metrics());
-
-            setInterval(() => {
-                    if (url) {
-                        fetch(url)
-                          .then(response => response.json())
-                          .then(metrics => controller(jsondates(metrics)));
-                    } else {
-                        controller(fakeMetrics());
-                    }
-                },
-                interval
-            );
-        }
-        panel.width = function(_) {
-            return arguments.length ? (width = _, panel): width;
-        };
-        panel.height = function(_) {
-            return arguments.length ? (height = _, panel): height;
-        };
-        panel.url = function(_) {
-            return arguments.length ? (url = _, panel): url;
-        };
-        panel.interval = function(_) {
-            return arguments.length ? (interval = _, panel): interval;
-        };
-        stylable(appendable(panel)).class('g3-panel');
-        panel.defs = element('defs');
-        panel.append(panel.defs);
-
-        if (_name) panelRegistry[_name] = panel;
-        return panel;
     }
 
     var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from) {
@@ -8381,6 +8133,319 @@
         volumeFlowRate: measure,
     };
 
+    const metricDispatch = dispatch('metric'),
+        convertUnits = configMeasurements(allMeasures),
+        knownUnits = convertUnits().possibilities();
+
+
+    exports.activeController = void 0;  // hack to provide current context for gauges to register with
+
+
+    function maybeConvert(v, fromUnit, toUnit) {
+        if (fromUnit && toUnit) {
+            try {
+                v = convertUnits(v).from(fromUnit).to(toUnit);
+            } catch(err) {
+                console.log('Unit conversion error: ' + err.message);
+            }
+        }
+        return v;
+    }
+
+
+    function gaugeController(interval) {
+        // create a gauge controller that we'll use to update values
+        var id = appendId('controller-'),
+            dispatch$1 = dispatch(id),
+            metrics = new Set(),
+            fakes = {};
+
+        // call the controller to display current metric values
+        function gaugeController(values) {
+
+            var units = {}, vs = {};
+            Object.entries(values).map(([k, v]) => {
+                const
+                    ks = k.split(':'),
+                    unit = (ks.length > 1) ? ks.slice(-1): undefined,
+                    m = (ks.length > 1) ? ks.slice(0, -1).join(':'): k;
+                units[m] = unit;
+                vs[m] = v;
+            });
+            // call updaters with an accessor that
+            // will fetch a qualified metric from the input values,
+            // returning the best match, converted to appropriate units
+            // e.g. fuel.copilot.rear will match fuel.copilot.rear
+            // then fuel.copilot then fuel but never fuel.pilot
+            function fetch(m, unit) {
+                if (!m) return;
+                var ks = m.split('.');
+                while (ks.length) {
+                    let k = ks.join('.');
+                    if (k in vs) return maybeConvert(vs[k], units[k], unit);
+                    ks.pop();
+                }
+            }
+            dispatch$1.call(id, null, fetch);
+        }
+        gaugeController.register = function(updater, metric, name) {
+            let v = appendId(`${id}.${metric}-${name ?? 'anonymous'}`);
+            dispatch$1.on(v, updater);
+            metrics.add(metric);
+        };
+        gaugeController.fake = function(metric, generator) {
+            fakes[metric] = generator;
+        };
+        gaugeController.fakeMetrics = function() {
+            return Object.fromEntries(
+                Object.entries(fakes).map(([m, g]) => [m, g()])
+            );
+        };
+        gaugeController.metrics = function() {
+            return Array.from(metrics);
+        };
+        gaugeController.transition = function(sel) {
+            return sel // .transition().duration(interval).ease(d3.easeLinear);
+        };
+        exports.activeController = gaugeController;
+        return gaugeController;
+    }
+
+    function element(elt, attrs) {
+        var attrs = attrs || {};
+
+        function element(sel, g) {
+            var _ = sel.append(elt);
+            Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
+            element.stylable(_);
+            element.appendable(_, g);
+        }
+        element.attr = function(k, _) {
+            return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
+        };
+        return stylable(appendable(element));
+    }
+
+
+    function put() {
+        function put(sel, g) {
+            var _ = sel.append('g');
+            put.transformable(_);
+            put.stylable(_);
+            put.appendable(_, g);
+        }
+        stylable(transformable(appendable(put)));
+        return put;
+    }
+
+
+    function snapScale() {
+        var step = 1,
+            start = 0,
+            strength = 5;
+
+        function snapScale(v) {
+            let v0 = Math.round((v - start)/step)*step + start,
+                w = step/2,
+                dv = pow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
+
+            return v0 + dv;
+        }
+        snapScale.start = function(_) {
+            return arguments.length ? (start = _, snapScale): start;
+        };
+        snapScale.step = function(_) {
+            return arguments.length ? (step = _, snapScale): step;
+        };
+        snapScale.strength = function(_) {
+            return arguments.length ? (strength = _, snapScale): strength;
+        };
+        return snapScale;
+    }
+
+    const eps = 1e-6;
+
+    function grid() {
+        var x0 = 0, y0 = 0,
+            width = 2000, height = 2000,
+            xmajor=100, ymajor=100, xminor=10, yminor=10;
+
+        function grid(sel) {
+            var _ = sel.append('g').attr('class', 'g3-grid');
+            grid.stylable(_);
+
+            const xs = range(x0, x0 + width + eps, xmajor),
+                  ys = range(y0, y0 + height + eps, ymajor);
+
+            _.selectAll(null)
+                .data(range(x0, x0 + width + eps, xminor).filter(x => !xs.includes(x)))
+              .enter().append('line').attr('class', 'g3-grid-hairline')
+                .attr('transform', x => 'translate(' + x + ',' + y0 + ')')
+                .attr('y2', height);
+            _.selectAll(null)
+                .data(range(y0, y0 + height + eps, yminor).filter(y => !ys.includes(y)))
+              .enter().append('line').attr('class', 'g3-grid-hairline')
+                .attr('transform', y => 'translate(' + x0 + ',' + y + ')')
+                .attr('x2', width);
+
+            var vlines = _.selectAll(null)
+                .data(xs)
+              .enter().append('g').attr('class', 'g3-grid-line')
+                .attr('transform', x => 'translate(' + x + ',' + y0 + ')');
+            var hlines = _.selectAll(null)
+                .data(ys)
+              .enter().append('g').attr('class', 'g3-grid-line')
+                .attr('transform', y => 'translate(' + x0 + ',' + y + ')');
+
+            vlines.append('line').attr('y2', height);
+            hlines.append('line').attr('x2', width);
+
+            vlines.selectAll(null)
+                .data(ys.slice(0, -1))
+              .enter().append('g').attr('class', 'g3-grid-label')
+                .attr('transform', y => 'translate(0,' + (y - y0 + ymajor/2) + ') rotate(-90) ');
+            hlines.selectAll(null)
+                .data(xs.slice(0, -1))
+              .enter().append('g').attr('class', 'g3-grid-label')
+                .attr('transform', x => 'translate(' + (x - x0 + xmajor/2) + ', 0)');
+
+            var labels = selectAll('.g3-grid-label');
+            labels.append('rect').attr('x', -12).attr('width', 24).attr('y', -4).attr('height', 8).attr('rx', 4);
+            labels.append('text').text(function(){ return select(this.parentNode.parentNode).datum()});
+        }
+
+        grid.x = function(_) {
+            return arguments.length ? (x0 = _, grid) : x0;
+        };
+        grid.y = function(_) {
+            return arguments.length ? (y0 = _, grid) : y0;
+        };
+        grid.width = function(_) {
+            return arguments.length ? (width = _, grid) : width;
+        };
+        grid.height = function(_) {
+            return arguments.length ? (height = _, grid) : height;
+        };
+        grid.xmajor = function(_) {
+            return arguments.length ? (xmajor = _, grid) : xmajor;
+        };
+        grid.ymajor = function(_) {
+            return arguments.length ? (ymajor = _, grid) : ymajor;
+        };
+        grid.xminor = function(_) {
+            return arguments.length ? (xminor = _, grid) : xminor;
+        };
+        grid.yminor = function(_) {
+            return arguments.length ? (yminor = _, grid) : yminor;
+        };
+
+        return stylable(grid);
+    }
+
+    // global defs we append to panel's svg element
+    const globalDefs = (width, height) => [
+        element('radialGradient', {
+            id: 'highlightGradient',
+            cx: '50%', cy: '50%',
+            fx: '25%', fy: '40%',
+            r: '50%',
+        }).append(
+            ...['white', 'black'].map(
+                d => element('stop', {'stop-color': d, offset: d == 'white' ? '0%': '100%'})
+            )
+        ),
+        ...[1, 2, 3].map(d =>
+            element('filter', {
+                id: 'dropShadow' + d,
+                // need userSpaceOnUse for drop-shadow to work on 0-width items
+                // but then need explicit extent in target units?
+                filterUnits: 'userSpaceOnUse',
+                x: -width, width: 2*width,
+                y: -height, height: 2*height,
+            }).append(element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
+        ),
+        ...[1, 2, 3].map(d =>
+            element('filter', {
+                id: 'gaussianBlur' + d,
+            }).append(element('feGaussianBlur', {in: 'SourceGraphic', stdDeviation: d}))
+        ),
+    ];
+
+
+    // helper function to convert string-serialized date metrics back to JS objects
+    function jsondates(obj) {
+        return Object.fromEntries(Object.entries(obj).map(
+            ([k,v]) => {
+                if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
+                    v = new Date(v);
+                }
+                return [k, v];
+            }
+        ))
+    }
+
+
+
+    function panel() {
+        var width=1024,
+            height=768,
+            interval=250,
+            showgrid=false,
+            url;
+
+        function panel(sel) {
+            if (typeof sel === 'string') sel = select(sel);
+            // draw and start updating panel
+            let controller = gaugeController(),  // establish context for gauges
+                _ = sel.append('svg')
+                    .attr('width', width).attr('height', height);
+
+            // insert the global defs now that we know the panel size
+            panel.defs.append(...globalDefs(width, height));
+
+            _ = _.append('g');
+            panel.stylable(_);
+            panel.transformable(_);
+            panel.appendable(_);
+
+            if (showgrid) grid().width(width).height(height)(_);
+
+            console.log('Starting panel expecting metrics:', controller.metrics());
+
+            setInterval(() => {
+                    if (url) {
+                        fetch(url)
+                          .then(response => response.json())
+                          .then(metrics => controller(jsondates(metrics)));
+                    } else {
+                        controller(controller.fakeMetrics());
+                    }
+                },
+                interval
+            );
+        }
+        panel.width = function(_) {
+            return arguments.length ? (width = _, panel): width;
+        };
+        panel.height = function(_) {
+            return arguments.length ? (height = _, panel): height;
+        };
+        panel.grid = function(_) {
+            return arguments.length ? (showgrid = !!_, panel): showgrid;
+        };
+        panel.url = function(_) {
+            return arguments.length ? (url = _, panel): url;
+        };
+        panel.interval = function(_) {
+            return arguments.length ? (interval = _, panel): interval;
+        };
+        stylable(appendable(transformable(panel))).class('g3-panel');
+        panel.defs = element('defs');
+        panel.append(panel.defs);
+
+        return panel;
+    }
+
     //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
 
 
@@ -8445,18 +8510,19 @@
             size = 20;
 
         function text(sel, g) {
-            const metric = g.metric();
+            const metric = g.metric(),
+                unit = g.unit();
             let _ = sel.append('text').attr('font-size', size);
             text.stylable(_);
             _ = _.text('');
 
-            function update(metrics) {
-                if (!(metric in metrics)) return;
-                const v = g.maybeConvert(metrics[metric]);
+            function update(fetch) {
+                const v = fetch(metric, unit);
+                if (typeof v == 'undefined') return;
                 _.text(format(v));
             }
 
-            activeController.register(update, metric, `${g.name}-indicate-text`);
+            exports.activeController.register(update, metric, `${g.name}-indicate-text`);
         }
         text.format = function(_) {
             return arguments.length ? (format = _, text) : format;
@@ -8474,8 +8540,9 @@
             shape = 'needle';
 
         function pointer(sel, g) {
-            const metric = g.metric();
-            let _ = sel.append('g');
+            const metric = g.metric(),
+                unit = g.unit();
+            let _ = sel.append('g').classed('will-change-transform', true);
 
             pointer.stylable(_);
             if (!pointer.append().length) {
@@ -8483,16 +8550,15 @@
             }
             pointer.appendable(_, g);
 
-            function update(metrics) {
-                if (!(metric in metrics)) return;
-
-                const v = g.maybeConvert(metrics[metric]);
+            function update(fetch) {
+                const v = fetch(metric, unit);
+                if (typeof v == 'undefined') return;
                 let z = rescale(v);
                 if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                 if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                activeController.transition(_).attr('transform', g.metrictransform(z));
+                exports.activeController.transition(_).attr('transform', g.metrictransform(z));
             }
-            activeController.register(update, metric, `${g.name}-indicate-pointer`);
+            exports.activeController.register(update, metric, `${g.name}-indicate-pointer`);
         }
         pointer.rescale = function(_) {
             return arguments.length ? (rescale = _, pointer) : rescale;
@@ -8514,19 +8580,19 @@
             trigger = identity;
         function style(sel, g) {
             const metric = g.metric(),
+                unit = g.unit(),
                 tween = interpolate$1(styleOff, styleOn);
             let _ = sel.append('g').attr('class', 'g3-indicate-style');
             style.appendable(_, g);
 
-            function update(metrics) {
-                if (!(metric in metrics)) return;
-
-                const v = g.maybeConvert(metrics[metric]);
+            function update(fetch) {
+                const v = fetch(metric, unit);
+                if (typeof v == 'undefined') return;
                 let style = tween(trigger(v));
                 // Nb. no transition for style updates, looks weird for light on/off
                 for (let k in style) _.style(k, style[k]);
             }
-            activeController.register(update, metric, `${g.name}-indicate-style`);
+            exports.activeController.register(update, metric, `${g.name}-indicate-style`);
         }
         style.styleOn = function(_) {
             return arguments.length ? (styleOn = _, style): styleOn;
@@ -8540,25 +8606,26 @@
         return appendable(style);
     }
 
-    var gaugeRegistry = {};
+    function gauge() {
 
-    const convertUnits = configMeasurements(allMeasures),
-        knownUnits = convertUnits().possibilities();
-
-    function gauge(_name) {
-        if (_name in gaugeRegistry) return gaugeRegistry[_name];
-
-        var name = _name || appendId('_gauge'),
-            metric,
+        var metric,
             rescale = identity,
             unit,
+            instance,
+            fake,
             measure = linear().range([0,360]),
             kind = 'circular',
             autoindicate = false,
             r = 100,  // the axis radius, when applicable
+            showgrid = false,
             clip;
 
         function gauge(selection, parent) {
+            const m = gauge.metric();
+
+            // we namespace the metric using the instance chain at drawing time
+            gauge._ns = (parent ? parent._ns : []).concat(instance ? [instance]: []);
+
             let _ = selection.append('g');
             gauge.stylable(_);
             _ = _.append('g');
@@ -8570,20 +8637,29 @@
             }
             gauge.appendable(_, gauge);
 
-            if (autoindicate) {
-                function update(metrics) {
-                    if (!(metric in metrics)) return;
+            if (showgrid) grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2*r).height(2*r)(_);
 
-                    const v = gauge.maybeConvert(metrics[metric]);
-                    activeController.transition(_)
+            if (fake && m) exports.activeController.fake(m, fake);
+
+            if (autoindicate) {
+                _.classed('will-change-transform', true);
+                function update(fetch) {
+                    const v = fetch(m, unit);
+                    if (typeof v == 'undefined') return;
+                    exports.activeController.transition(_)
                         .attr('transform', gauge.metrictransform(rescale(v), true));
                 }
-                activeController.register(update, metric, `${name}-autoindicate`);
+                exports.activeController.register(update, m, appendId('_gauge') + '-autoindicate');
             }
         }
+        gauge._ns = [];
 
         gauge.metric = function(_) {
-            return arguments.length ? (metric = _, gauge) : metric;
+            // with an argument, sets metric,
+            // with no argument, returns qualified metric, e.g. fuel.copilot.rear
+            return arguments.length
+                ? (metric = _, gauge)
+                : (metric && [metric].concat(gauge._ns).join('.'));
         };
         gauge.rescale = function(_) {
             return arguments.length ? (rescale = _, gauge) : rescale;
@@ -8593,6 +8669,12 @@
                 console.log(`WARNING: gauge.unit ${_} not a known unit, see https://github.com/convert-units/convert-units`);
             }
             return arguments.length ? (unit = _, gauge) : unit;
+        };
+        gauge.instance = function(_) {
+            return arguments.length ? (instance = _, gauge): instance;
+        };
+        gauge.fake = function(_) {
+            return arguments.length ? (fake = _, gauge): fake;
         };
         gauge.kind = function(_) {
             return arguments.length ? (kind = _, gauge) : kind;
@@ -8609,18 +8691,10 @@
         gauge.autoindicate = function(_) {
             return arguments.length ? (autoindicate = _, gauge) : autoindicate;
         };
-
-        gauge.maybeConvert = function(v) {
-            if (unit && v.hasOwnProperty('unit') && v.hasOwnProperty('value')) {
-                try {
-                    v = convertUnits(v.value).from(v.unit).to(unit);
-                } catch(err) {
-                    console.log('Unit conversion error: ' + err.message);
-                    v = v.value;
-                }
-            }
-            return v;
+        gauge.grid = function(_) {
+            return arguments.length ? (showgrid = !!_, gauge): showgrid;
         };
+
         gauge.metrictransform = function(v, invert) {
             const
                 circular = kind == 'circular',
@@ -8652,8 +8726,6 @@
                     : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
             return path;
         };
-
-        if (_name) gaugeRegistry[_name] = gauge;
 
         return stylable(appendable(gauge)).class('g3-gauge');
     }
@@ -8769,7 +8841,7 @@
 
     // shorthand to add a status light of given color
     function statusLight(_) {
-        var g = gauge(_),
+        var g = gauge(),
             trigger = identity,
             color = 'red';
         function statusLight(sel, parent) {
@@ -8783,6 +8855,10 @@
         }
         statusLight.metric = function(_) {
             const v = g.metric(_);
+            return arguments.length ? statusLight: v;
+        };
+        statusLight.fake = function(_) {
+            const v = g.fake(_);
             return arguments.length ? statusLight: v;
         };
         statusLight.trigger = function(_) {
@@ -8975,6 +9051,72 @@
         return stylable(labels).class('g3-axis-labels');
     }
 
+    function forceSeries(min, max, opts) {
+        var min = min ?? 0,
+            max = max ?? 1,
+            opts = opts ?? {},
+            fmax = opts.fmax ?? 0.01,
+            damping = opts.damping ?? 0.9,
+            wrap = opts.wrap ?? false,
+            x = Math.random(),
+            v = 0;
+
+        function next() {
+            x += v;
+            v += (2*Math.random()-1)*fmax;
+            v *= damping;
+            if (x < 0 || x > 1) {
+                if (!wrap) {
+                    v = -v;
+                    x = x < 0 ? -x : 2-x;
+                } else {
+                    x = x > 1 ? x - 1 : x + 1;
+                }
+            }
+            return x * (max - min) + min;
+
+        }
+        return next;
+    }
+
+
+    function categoricalSeries(values) {
+        var n = values.length,
+            vs = forceSeries(0, n, {wrap: true});
+
+        function next() {
+            return values[Math.min(Math.floor(vs()), n-1)];
+        }
+        return next;
+    }
+
+
+    function datetimeSeries() {
+        function next() {
+            return new Date();
+        }
+        return next;
+    }
+
+
+    function midnightSecondsSeries() {
+        function next() {
+            let dt = new Date(),
+                msSinceMidnight = dt.getTime() - dt.setHours(0,0,0,0);
+            return msSinceMidnight/1000;
+        }
+        return next;
+    }
+
+
+    function elapsedSecondsSeries() {
+        const dt = new Date();
+        function next() {
+            return (new Date() - dt)/1000;
+        }
+        return next;
+    }
+
     injectGlobal`
 /* Declare 7 and 14 segment LCD fonts, many other variants at https://www.keshikan.net/fonts-e.html */
 
@@ -8999,6 +9141,11 @@
 body {
     margin:  0;
     background-color:  black;
+    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
+    color: #ccc;
+}
+.will-change-transform {
+    will-change: transform;
 }
 .g3-panel {
     background-color:  black;
@@ -9011,7 +9158,6 @@ body {
     vector-effect: non-scaling-stroke;
 }
 .g3-panel text {
-    font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     text-anchor:  middle;
     dominant-baseline:  central;
     font-stretch: condensed;
@@ -9025,6 +9171,21 @@ body {
 }
 .g3-axis-ticks .g3-axis-ticks-dot, .g3-axis-ticks .g3-axis-ticks-wedge {
     stroke: none;
+}
+.g3-grid-line line {
+    stroke: #666;
+}
+.g3-grid-hairline {
+    stroke: #333;
+}
+.g3-grid-label text {
+    font-size: 8px;
+    text-anchor:  middle;
+    dominant-baseline:  central;
+    fill: #999;
+}
+.g3-grid-label rect {
+    stroke: none; fill: black; opacity: 0.5;
 }
 .g3-gauge-face, .g3-bg-fill {
     fill: #181818;
@@ -9100,22 +9261,24 @@ body {
     exports.axisSector = axisSector;
     exports.axisTicks = axisTicks;
     exports.categoricalSeries = categoricalSeries;
+    exports.convertUnits = convertUnits;
     exports.datetimeSeries = datetimeSeries;
     exports.elapsedSecondsSeries = elapsedSecondsSeries;
     exports.element = element;
-    exports.fakeMetrics = fakeMetrics;
     exports.forceSeries = forceSeries;
     exports.gauge = gauge;
+    exports.gaugeController = gaugeController;
     exports.gaugeFace = gaugeFace;
     exports.gaugeLabel = gaugeLabel;
-    exports.gaugeRegistry = gaugeRegistry;
     exports.gaugeScrew = gaugeScrew;
+    exports.grid = grid;
     exports.indicatePointer = indicatePointer;
     exports.indicateStyle = indicateStyle;
     exports.indicateText = indicateText;
+    exports.knownUnits = knownUnits;
+    exports.metricDispatch = metricDispatch;
     exports.midnightSecondsSeries = midnightSecondsSeries;
     exports.panel = panel;
-    exports.panelRegistry = panelRegistry;
     exports.pointers = pointers;
     exports.put = put;
     exports.snapScale = snapScale;

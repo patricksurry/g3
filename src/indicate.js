@@ -10,19 +10,11 @@ export function indicateText() {
         size = 20;
 
     function text(sel, g) {
-        const metric = g.metric(),
-            unit = g.unit();
         let _ = sel.append('text').attr('font-size', size);
         text.stylable(_);
         _ = _.text('');
 
-        function update(fetch) {
-            const v = fetch(metric, unit);
-            if (typeof v == 'undefined') return;
-            _.text(format(v));
-        }
-
-        activeController.register(update, metric, `${g.name}-indicate-text`)
+        activeController.register(v => _.text(format(v)), g.metric(), g.unit())
     }
     text.format = function(_) {
         return arguments.length ? (format = _, text) : format;
@@ -40,9 +32,7 @@ export function indicatePointer() {
         shape = 'needle';
 
     function pointer(sel, g) {
-        const metric = g.metric(),
-            unit = g.unit();
-        let _ = sel.append('g');
+        let _ = sel.append('g').classed('will-change-transform', true);
 
         pointer.stylable(_);
         if (!pointer.append().length) {
@@ -50,15 +40,13 @@ export function indicatePointer() {
         }
         pointer.appendable(_, g);
 
-        function update(fetch) {
-            const v = fetch(metric, unit);
-            if (typeof v == 'undefined') return;
+        function update(v) {
             let z = rescale(v);
             if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
             if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-            activeController.transition(_).attr('transform', g.metrictransform(z));
+            _.attr('transform', g.metrictransform(z));
         }
-        activeController.register(update, metric, `${g.name}-indicate-pointer`)
+        activeController.register(update, g.metric(), g.unit())
     }
     pointer.rescale = function(_) {
         return arguments.length ? (rescale = _, pointer) : rescale;
@@ -79,20 +67,15 @@ export function indicateStyle() {
         styleOff = {opacity: 0},
         trigger = identity;
     function style(sel, g) {
-        const metric = g.metric(),
-            unit = g.unit(),
-            tween = d3.interpolate(styleOff, styleOn);
+        const tween = d3.interpolate(styleOff, styleOn);
         let _ = sel.append('g').attr('class', 'g3-indicate-style');
         style.appendable(_, g);
 
-        function update(fetch) {
-            const v = fetch(metric, unit);
-            if (typeof v == 'undefined') return;
+        function update(v) {
             let style = tween(trigger(v));
-            // Nb. no transition for style updates, looks weird for light on/off
             for (let k in style) _.style(k, style[k]);
         }
-        activeController.register(update, metric, `${g.name}-indicate-style`)
+        activeController.register(update, g.metric(), g.unit());
     }
     style.styleOn = function(_) {
         return arguments.length ? (styleOn = _, style): styleOn;

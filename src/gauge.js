@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 
-
 import { stylable, transformable, appendable, identity, appendId } from './mixin.js';
 import { activeController, convertUnits, knownUnits } from './controller.js';
 import { indicateStyle } from './indicate.js';
@@ -22,10 +21,10 @@ export function gauge() {
         clip;
 
     function gauge(selection, parent) {
-        const m = gauge.metric();
-
         // we namespace the metric using the instance chain at drawing time
         gauge._ns = (parent ? parent._ns : []).concat(instance ? [instance]: []);
+
+        const m = gauge.metric();
 
         let _ = selection.append('g');
         gauge.stylable(_);
@@ -43,13 +42,11 @@ export function gauge() {
         if (fake && m) activeController.fake(m, fake);
 
         if (autoindicate) {
-            function update(fetch) {
-                const v = fetch(m, unit);
-                if (typeof v == 'undefined') return;
-                activeController.transition(_)
-                    .attr('transform', gauge.metrictransform(rescale(v), true))
+            _.classed('will-change-transform', true);
+            function update(v) {
+                _.attr('transform', gauge.metrictransform(rescale(v), true))
             }
-            activeController.register(update, m, appendId('_gauge') + '-autoindicate')
+            activeController.register(update, m, unit)
         }
     }
     gauge._ns = [];

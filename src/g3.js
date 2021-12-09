@@ -42,6 +42,9 @@ body {
     font-family: Gill Sans,Gill Sans MT,Calibri,sans-serif;
     color: #ccc;
 }
+.will-change-transform {
+    will-change: transform;
+}
 .g3-panel {
     background-color:  black;
     display: block;

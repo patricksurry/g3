@@ -82,6 +82,7 @@ export function tank(lo, hi, arc, instance) {
             g3.put().y(40).scale(0.1).append(
                 g3.statusLight()
                     .metric('fuelSelector')
+                    //TODO don't want qualified instance here, just generic
                     .fake(g3.categoricalSeries(['front', 'center', 'rear']))
                     .trigger(v => v == instance ? 1: 0.1)
                     .color('orange')
