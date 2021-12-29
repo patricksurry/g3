@@ -1,6 +1,6 @@
 {
    "name": "@patricksurry/g3",
-   "version": "0.1.5",
+   "version": "0.1.6",
    "author": "Patrick Surry <patrick.surry@gmail.com>",
    "description": "A flexible Javascript framework for building steam gauge instrument panels that display live external metrics from flight (or other) simulators like XPlane or MS FS2020",
    "keywords": [

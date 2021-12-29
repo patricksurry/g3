@@ -8133,8 +8133,7 @@
         volumeFlowRate: measure,
     };
 
-    const metricDispatch = dispatch('metric'),
-        convertUnits = configMeasurements(allMeasures),
+    const convertUnits = configMeasurements(allMeasures),
         knownUnits = convertUnits().possibilities();
 
 
@@ -8155,43 +8154,75 @@
 
     function gaugeController(interval) {
         // create a gauge controller that we'll use to update values
-        var id = appendId('controller-'),
-            dispatch$1 = dispatch(id),
-            metrics = new Set(),
-            fakes = {};
+        var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
+            fakes = {},         // dict of metric => generator
+            updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
 
         // call the controller to display current metric values
-        function gaugeController(values) {
+        function gaugeController(metrics) {
+            /*
+            metrics is a dictionary
+            with keys like: "metric.some.qualification:unit"
+            and corresponding values
+            */
+            if (!updaters) {
+                // Establish the mapping from metric keys => callbacks
+                updaters = {};
+                var sources = {};
+                Object.keys(metrics).map(k => {
+                    const
+                        ks = k.split(':'),
+                        unit = (ks.length > 1) ? ks.slice(-1): '',
+                        // restore any surplus ':' in metric or qualifier
+                        m = (ks.length > 1) ? ks.slice(0, -1).join(':'): k;
+                    updaters[k] = {metric: m, unit: unit, updaters: null};
+                    sources[m] = k;
+                });
 
-            var units = {}, vs = {};
-            Object.entries(values).map(([k, v]) => {
-                const
-                    ks = k.split(':'),
-                    unit = (ks.length > 1) ? ks.slice(-1): undefined,
-                    m = (ks.length > 1) ? ks.slice(0, -1).join(':'): k;
-                units[m] = unit;
-                vs[m] = v;
-            });
-            // call updaters with an accessor that
-            // will fetch a qualified metric from the input values,
-            // returning the best match, converted to appropriate units
-            // e.g. fuel.copilot.rear will match fuel.copilot.rear
-            // then fuel.copilot then fuel but never fuel.pilot
-            function fetch(m, unit) {
-                if (!m) return;
-                var ks = m.split('.');
-                while (ks.length) {
-                    let k = ks.join('.');
-                    if (k in vs) return maybeConvert(vs[k], units[k], unit);
-                    ks.pop();
-                }
+                Object.entries(callbacks).map(([m, ufs]) => {
+                    /*
+                    for each callback, find best qualified metric from the input values,
+                    which we'll convert to appropriate units
+                    e.g. a gauge requesting fuel.copilot.rear will match
+                    a metric called fuel.copilot.rear,
+                    or else fuel.copilot or else simply fuel but never fuel.pilot
+                    */
+
+                    var ks = m.split('.');
+                    while (ks.length) {
+                        let k = ks.join('.');
+                        if (k in sources) {
+                            updaters[sources[k]].updaters = ufs;
+                            break;
+                        }
+                        ks.pop();
+                    }
+                });
+                Object.entries(updaters).map(([k, d]) => {
+                    if (!d.updaters) {
+                        console.log('Warning: unmapped source metric', k);
+                        delete updaters[k];
+                    }
+                });
             }
-            dispatch$1.call(id, null, fetch);
+
+            // Trigger updates for each source metric
+            Object.entries(updaters).map(([k, d]) => {
+                Object.entries(d.updaters).map(([unit, fs]) => {
+                    let v = maybeConvert(metrics[k], d.unit, unit);
+                    if (typeof v == 'undefined') {
+                        console.log(`Warning: failed to convert ${metrics[k]} from ${d.unit} to ${unit}`);
+                    } else {
+                        fs.map(f => f(v));
+                    }
+                });
+            });
         }
-        gaugeController.register = function(updater, metric, name) {
-            let v = appendId(`${id}.${metric}-${name ?? 'anonymous'}`);
-            dispatch$1.on(v, updater);
-            metrics.add(metric);
+        gaugeController.register = function(updater, metric, unit) {
+            unit = unit || '';
+            if (!(metric in callbacks)) callbacks[metric] = {};
+            if (!(unit in callbacks[metric])) callbacks[metric][unit] = [];
+            callbacks[metric][unit].push(updater);
         };
         gaugeController.fake = function(metric, generator) {
             fakes[metric] = generator;
@@ -8201,11 +8232,8 @@
                 Object.entries(fakes).map(([m, g]) => [m, g()])
             );
         };
-        gaugeController.metrics = function() {
-            return Array.from(metrics);
-        };
-        gaugeController.transition = function(sel) {
-            return sel // .transition().duration(interval).ease(d3.easeLinear);
+        gaugeController.indicators = function() {
+            return Object.keys(callbacks);
         };
         exports.activeController = gaugeController;
         return gaugeController;
@@ -8389,7 +8417,7 @@
     function panel() {
         var width=1024,
             height=768,
-            interval=250,
+            interval=100,
             showgrid=false,
             url;
 
@@ -8410,7 +8438,7 @@
 
             if (showgrid) grid().width(width).height(height)(_);
 
-            console.log('Starting panel expecting metrics:', controller.metrics());
+            console.log('Starting panel expecting metrics for:', controller.indicators());
 
             setInterval(() => {
                     if (url) {
@@ -8510,19 +8538,14 @@
             size = 20;
 
         function text(sel, g) {
-            const metric = g.metric(),
-                unit = g.unit();
             let _ = sel.append('text').attr('font-size', size);
             text.stylable(_);
             _ = _.text('');
 
-            function update(fetch) {
-                const v = fetch(metric, unit);
-                if (typeof v == 'undefined') return;
+            function update(v) {
                 _.text(format(v));
             }
-
-            exports.activeController.register(update, metric, `${g.name}-indicate-text`);
+            exports.activeController.register(update, g.metric(), g.unit());
         }
         text.format = function(_) {
             return arguments.length ? (format = _, text) : format;
@@ -8540,8 +8563,6 @@
             shape = 'needle';
 
         function pointer(sel, g) {
-            const metric = g.metric(),
-                unit = g.unit();
             let _ = sel.append('g').classed('will-change-transform', true);
 
             pointer.stylable(_);
@@ -8550,15 +8571,13 @@
             }
             pointer.appendable(_, g);
 
-            function update(fetch) {
-                const v = fetch(metric, unit);
-                if (typeof v == 'undefined') return;
+            function update(v) {
                 let z = rescale(v);
                 if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                 if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                exports.activeController.transition(_).attr('transform', g.metrictransform(z));
+                _.attr('transform', g.metrictransform(z));
             }
-            exports.activeController.register(update, metric, `${g.name}-indicate-pointer`);
+            exports.activeController.register(update, g.metric(), g.unit());
         }
         pointer.rescale = function(_) {
             return arguments.length ? (rescale = _, pointer) : rescale;
@@ -8579,20 +8598,15 @@
             styleOff = {opacity: 0},
             trigger = identity;
         function style(sel, g) {
-            const metric = g.metric(),
-                unit = g.unit(),
-                tween = interpolate$1(styleOff, styleOn);
+            const tween = interpolate$1(styleOff, styleOn);
             let _ = sel.append('g').attr('class', 'g3-indicate-style');
             style.appendable(_, g);
 
-            function update(fetch) {
-                const v = fetch(metric, unit);
-                if (typeof v == 'undefined') return;
-                let style = tween(trigger(v));
-                // Nb. no transition for style updates, looks weird for light on/off
-                for (let k in style) _.style(k, style[k]);
+            function update(v) {
+                let s = tween(trigger(v));
+                for (let k in s) _.style(k, s[k]);
             }
-            exports.activeController.register(update, metric, `${g.name}-indicate-style`);
+            exports.activeController.register(update, g.metric(), g.unit());
         }
         style.styleOn = function(_) {
             return arguments.length ? (styleOn = _, style): styleOn;
@@ -8621,10 +8635,22 @@
             clip;
 
         function gauge(selection, parent) {
-            const m = gauge.metric();
-
             // we namespace the metric using the instance chain at drawing time
-            gauge._ns = (parent ? parent._ns : []).concat(instance ? [instance]: []);
+            let ns = parent ? parent._ns.slice() : [];
+            if (instance) {
+                // instances like '...foo' removes two items from parent chain
+                if (instance.startsWith('.')) {
+                    let m = instance.match(/^\.+(.*)/);
+                    let s = m[1];
+                    ns = ns.slice(0, -(instance.length - s.length - 1));
+                    if (s) ns.push(s);
+                } else {
+                    ns.push(instance);
+                }
+            }
+            gauge._ns = ns;
+
+            const m = gauge.metric();
 
             let _ = selection.append('g');
             gauge.stylable(_);
@@ -8643,13 +8669,10 @@
 
             if (autoindicate) {
                 _.classed('will-change-transform', true);
-                function update(fetch) {
-                    const v = fetch(m, unit);
-                    if (typeof v == 'undefined') return;
-                    exports.activeController.transition(_)
-                        .attr('transform', gauge.metrictransform(rescale(v), true));
+                function update(v) {
+                    _.attr('transform', gauge.metrictransform(rescale(v), true));
                 }
-                exports.activeController.register(update, m, appendId('_gauge') + '-autoindicate');
+                exports.activeController.register(update, m, unit);
             }
         }
         gauge._ns = [];
@@ -8855,6 +8878,10 @@
         }
         statusLight.metric = function(_) {
             const v = g.metric(_);
+            return arguments.length ? statusLight: v;
+        };
+        statusLight.instance = function(_) {
+            const v = g.instance(_);
             return arguments.length ? statusLight: v;
         };
         statusLight.fake = function(_) {
@@ -9276,7 +9303,6 @@ body {
     exports.indicateStyle = indicateStyle;
     exports.indicateText = indicateText;
     exports.knownUnits = knownUnits;
-    exports.metricDispatch = metricDispatch;
     exports.midnightSecondsSeries = midnightSecondsSeries;
     exports.panel = panel;
     exports.pointers = pointers;

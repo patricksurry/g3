@@ -24,7 +24,7 @@ export function gaugeController(interval) {
     // create a gauge controller that we'll use to update values
     var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
         fakes = {},         // dict of metric => generator
-        updaters = null;    // dict mapping input metric keys => {metric: unit: updaters: {unit: fns}}
+        updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
 
     // call the controller to display current metric values
     function gaugeController(metrics) {
