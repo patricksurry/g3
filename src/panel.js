@@ -53,7 +53,7 @@ function jsondates(obj) {
 export function panel() {
     var width=1024,
         height=768,
-        interval=250,
+        interval=100,
         showgrid=false,
         url;
 
@@ -74,7 +74,7 @@ export function panel() {
 
         if (showgrid) grid().width(width).height(height)(_);
 
-        console.log('Starting panel expecting metrics:', controller.metrics());
+        console.log('Starting panel expecting metrics for:', controller.indicators());
 
         setInterval(() => {
                 if (url) {

@@ -14,7 +14,10 @@ export function indicateText() {
         text.stylable(_);
         _ = _.text('');
 
-        activeController.register(v => _.text(format(v)), g.metric(), g.unit())
+        function update(v) {
+            _.text(format(v));
+        }
+        activeController.register(update, g.metric(), g.unit())
     }
     text.format = function(_) {
         return arguments.length ? (format = _, text) : format;
@@ -72,8 +75,8 @@ export function indicateStyle() {
         style.appendable(_, g);
 
         function update(v) {
-            let style = tween(trigger(v));
-            for (let k in style) _.style(k, style[k]);
+            let s = tween(trigger(v));
+            for (let k in s) _.style(k, s[k]);
         }
         activeController.register(update, g.metric(), g.unit());
     }

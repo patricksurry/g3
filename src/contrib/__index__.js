@@ -7,7 +7,7 @@ import * as dhc2engine from './dhc2-engine.js';
 import * as jagetype from './jagetype.js';
 import * as clocks from './clocks.js';
 import * as speedmaster from './speedmaster.js';
-import * as test from './test.js';
+import * as debug from './debug.js';
 
 
 export var contrib = {
@@ -77,7 +77,7 @@ export var contrib = {
         casioF91W: clocks.casioF91W,
         omegaSpeedmaster: speedmaster.omegaSpeedmaster,
     },
-    test: {
-        alignment: test.alignment
+    debug: {
+        alignment: debug.alignment
     },
 };

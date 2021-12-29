@@ -22,7 +22,19 @@ export function gauge() {
 
     function gauge(selection, parent) {
         // we namespace the metric using the instance chain at drawing time
-        gauge._ns = (parent ? parent._ns : []).concat(instance ? [instance]: []);
+        let ns = parent ? parent._ns.slice() : [];
+        if (instance) {
+            // instances like '...foo' removes two items from parent chain
+            if (instance.startsWith('.')) {
+                let m = instance.match(/^\.+(.*)/);
+                let s = m[1];
+                ns = ns.slice(0, -(instance.length - s.length - 1));
+                if (s) ns.push(s);
+            } else {
+                ns.push(instance);
+            }
+        }
+        gauge._ns = ns;
 
         const m = gauge.metric();
 
@@ -252,6 +264,10 @@ export function statusLight(_) {
     }
     statusLight.metric = function(_) {
         const v = g.metric(_);
+        return arguments.length ? statusLight: v;
+    }
+    statusLight.instance = function(_) {
+        const v = g.instance(_);
         return arguments.length ? statusLight: v;
     }
     statusLight.fake = function(_) {

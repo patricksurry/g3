@@ -22,43 +22,69 @@ function maybeConvert(v, fromUnit, toUnit) {
 
 export function gaugeController(interval) {
     // create a gauge controller that we'll use to update values
-    var callbacks = {},
-        fakes = {};
+    var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
+        fakes = {},         // dict of metric => generator
+        updaters = null;    // dict mapping input metric keys => {metric: unit: updaters: {unit: fns}}
 
     // call the controller to display current metric values
-    function gaugeController(values) {
+    function gaugeController(metrics) {
+        /*
+        metrics is a dictionary
+        with keys like: "metric.some.qualification:unit"
+        and corresponding values
+        */
+        if (!updaters) {
+            // Establish the mapping from metric keys => callbacks
+            updaters = {};
+            var sources = {};
+            Object.keys(metrics).map(k => {
+                const
+                    ks = k.split(':'),
+                    unit = (ks.length > 1) ? ks.slice(-1): '',
+                    // restore any surplus ':' in metric or qualifier
+                    m = (ks.length > 1) ? ks.slice(0, -1).join(':'): k;
+                updaters[k] = {metric: m, unit: unit, updaters: null};
+                sources[m] = k;
+            })
 
-        var units = {}, vs = {};
-        Object.entries(values).map(([k, v]) => {
-            const
-                ks = k.split(':'),
-                unit = (ks.length > 1) ? ks.slice(-1): undefined,
-                m = (ks.length > 1) ? ks.slice(0, -1).join(':'): k;
-            units[m] = unit;
-            vs[m] = v;
-        })
+            Object.entries(callbacks).map(([m, ufs]) => {
+                /*
+                for each callback, find best qualified metric from the input values,
+                which we'll convert to appropriate units
+                e.g. a gauge requesting fuel.copilot.rear will match
+                a metric called fuel.copilot.rear,
+                or else fuel.copilot or else simply fuel but never fuel.pilot
+                */
 
-        // for each callback, find a qualified metric from the input values,
-        // returning the best match, converted to appropriate units
-        // e.g. fuel.copilot.rear will match fuel.copilot.rear
-        // then fuel.copilot then fuel but never fuel.pilot
-        function fetch(m, unit) {
-            if (!m) return;
-            var ks = m.split('.');
-            while (ks.length) {
-                let k = ks.join('.');
-                if (k in vs) return maybeConvert(vs[k], units[k], unit);
-                ks.pop();
-            }
+                var ks = m.split('.');
+                while (ks.length) {
+                    let k = ks.join('.');
+                    if (k in sources) {
+                        updaters[sources[k]].updaters = ufs
+                        break;
+                    }
+                    ks.pop();
+                }
+            });
+            Object.entries(updaters).map(([k, d]) => {
+                if (!d.updaters) {
+                    console.log('Warning: unmapped source metric', k)
+                    delete updaters[k];
+                }
+            });
         }
 
-        Object.entries(callbacks).map(([m, ufs]) => {
-            Object.entries(ufs).map(([unit, fs]) => {
-                let v = fetch(m, unit);
-                if (typeof v == 'undefined') return;
-                fs.map(f => f(v));
-            })
-        })
+        // Trigger updates for each source metric
+        Object.entries(updaters).map(([k, d]) => {
+            Object.entries(d.updaters).map(([unit, fs]) => {
+                let v = maybeConvert(metrics[k], d.unit, unit);
+                if (typeof v == 'undefined') {
+                    console.log(`Warning: failed to convert ${metrics[k]} from ${d.unit} to ${unit}`);
+                } else {
+                    fs.map(f => f(v));
+                }
+            });
+        });
     }
     gaugeController.register = function(updater, metric, unit) {
         unit = unit || '';
@@ -74,7 +100,7 @@ export function gaugeController(interval) {
             Object.entries(fakes).map(([m, g]) => [m, g()])
         );
     }
-    gaugeController.metrics = function() {
+    gaugeController.indicators = function() {
         return Object.keys(callbacks);
     }
     activeController = gaugeController;
