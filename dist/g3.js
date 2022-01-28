@@ -8147,6 +8147,9 @@
             } catch(err) {
                 console.log('Unit conversion error: ' + err.message);
             }
+        } else if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
+            // convert string-serialized date metrics back to JS objects
+            v = new Date(v);
         }
         return v;
     }
@@ -8159,24 +8162,18 @@
             updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
 
         // call the controller to display current metric values
-        function gaugeController(metrics) {
+        function gaugeController(data) {
             /*
-            metrics is a dictionary
-            with keys like: "metric.some.qualification:unit"
+            data is a dictionary {latest: 1234, metrics: {}, [units: {}]}
+            where metrics is a dictionary
+            with keys like: "metric.some.qualification"
             and corresponding values
             */
             if (!updaters) {
-                // Establish the mapping from metric keys => callbacks
+                // First call, we establish the mapping from metric keys => callbacks
                 updaters = {};
-                var sources = {};
-                Object.keys(metrics).map(k => {
-                    const
-                        ks = k.split(':'),
-                        unit = (ks.length > 1) ? ks.slice(-1): '',
-                        // restore any surplus ':' in metric or qualifier
-                        m = (ks.length > 1) ? ks.slice(0, -1).join(':'): k;
-                    updaters[k] = {metric: m, unit: unit, updaters: null};
-                    sources[m] = k;
+                Object.keys(data.metrics).map(m => {
+                    updaters[m] = {unit: data.units[m] || '', updaters: null};
                 });
 
                 Object.entries(callbacks).map(([m, ufs]) => {
@@ -8187,31 +8184,30 @@
                     a metric called fuel.copilot.rear,
                     or else fuel.copilot or else simply fuel but never fuel.pilot
                     */
-
                     var ks = m.split('.');
                     while (ks.length) {
                         let k = ks.join('.');
-                        if (k in sources) {
-                            updaters[sources[k]].updaters = ufs;
+                        if (k in updaters) {
+                            updaters[k].updaters = ufs;
                             break;
                         }
                         ks.pop();
                     }
                 });
-                Object.entries(updaters).map(([k, d]) => {
+                Object.entries(updaters).map(([m, d]) => {
                     if (!d.updaters) {
-                        console.log('Warning: unmapped source metric', k);
-                        delete updaters[k];
+                        console.log('Warning: unmapped source metric', m);
+                        delete updaters[m];
                     }
                 });
             }
 
             // Trigger updates for each source metric
-            Object.entries(updaters).map(([k, d]) => {
+            Object.entries(updaters).map(([m, d]) => {
                 Object.entries(d.updaters).map(([unit, fs]) => {
-                    let v = maybeConvert(metrics[k], d.unit, unit);
+                    let v = maybeConvert(data.metrics[m], d.unit, unit);
                     if (typeof v == 'undefined') {
-                        console.log(`Warning: failed to convert ${metrics[k]} from ${d.unit} to ${unit}`);
+                        console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
                     } else {
                         fs.map(f => f(v));
                     }
@@ -8228,9 +8224,13 @@
             fakes[metric] = generator;
         };
         gaugeController.fakeMetrics = function() {
-            return Object.fromEntries(
-                Object.entries(fakes).map(([m, g]) => [m, g()])
-            );
+            return {
+                latest: 0,
+                units: {},
+                metrics: Object.fromEntries(
+                    Object.entries(fakes).map(([m, g]) => [m, g()])
+                )
+            }
         };
         gaugeController.indicators = function() {
             return Object.keys(callbacks);
@@ -8400,20 +8400,6 @@
     ];
 
 
-    // helper function to convert string-serialized date metrics back to JS objects
-    function jsondates(obj) {
-        return Object.fromEntries(Object.entries(obj).map(
-            ([k,v]) => {
-                if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
-                    v = new Date(v);
-                }
-                return [k, v];
-            }
-        ))
-    }
-
-
-
     function panel() {
         var width=1024,
             height=768,
@@ -8440,11 +8426,21 @@
 
             console.log('Starting panel expecting metrics for:', controller.indicators());
 
+            let with_units = true, latest=0;
             setInterval(() => {
                     if (url) {
+                        url.search = new URLSearchParams({
+                            latest: latest,
+                            // metrics: ...,  // controller.metrics ?
+                            units: with_units,
+                        }).toString();
                         fetch(url)
-                          .then(response => response.json())
-                          .then(metrics => controller(jsondates(metrics)));
+                            .then(response => response.json())
+                            .then(data => {
+                                controller(data);
+                                with_units = False;
+                                latest = data.latest;
+                            });
                     } else {
                         controller(controller.fakeMetrics());
                     }
@@ -8462,7 +8458,7 @@
             return arguments.length ? (showgrid = !!_, panel): showgrid;
         };
         panel.url = function(_) {
-            return arguments.length ? (url = _, panel): url;
+            return arguments.length ? (url = new URL(_), panel): url;
         };
         panel.interval = function(_) {
             return arguments.length ? (interval = _, panel): interval;

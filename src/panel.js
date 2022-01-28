@@ -36,20 +36,6 @@ const globalDefs = (width, height) => [
 ];
 
 
-// helper function to convert string-serialized date metrics back to JS objects
-function jsondates(obj) {
-    return Object.fromEntries(Object.entries(obj).map(
-        ([k,v]) => {
-            if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
-                v = new Date(v);
-            }
-            return [k, v];
-        }
-    ))
-}
-
-
-
 export function panel() {
     var width=1024,
         height=768,
@@ -76,11 +62,21 @@ export function panel() {
 
         console.log('Starting panel expecting metrics for:', controller.indicators());
 
+        let with_units = true, latest=0;
         setInterval(() => {
                 if (url) {
+                    url.search = new URLSearchParams({
+                        latest: latest,
+                        // metrics: ...,  // controller.metrics ?
+                        units: with_units,
+                    }).toString();
                     fetch(url)
-                      .then(response => response.json())
-                      .then(metrics => controller(jsondates(metrics)));
+                        .then(response => response.json())
+                        .then(data => {
+                            controller(data);
+                            with_units = False;
+                            latest = data.latest;
+                        });
                 } else {
                     controller(controller.fakeMetrics());
                 }
@@ -98,7 +94,7 @@ export function panel() {
         return arguments.length ? (showgrid = !!_, panel): showgrid;
     }
     panel.url = function(_) {
-        return arguments.length ? (url = _, panel): url;
+        return arguments.length ? (url = new URL(_), panel): url;
     }
     panel.interval = function(_) {
         return arguments.length ? (interval = _, panel): interval;
