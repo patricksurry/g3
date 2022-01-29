@@ -7,6 +7,7 @@ import * as dhc2engine from './dhc2-engine.js';
 import * as jagetype from './jagetype.js';
 import * as clocks from './clocks.js';
 import * as speedmaster from './speedmaster.js';
+import * as switches from './switches.js';
 import * as debug from './debug.js';
 
 
@@ -76,6 +77,9 @@ export var contrib = {
         simple: clocks.simple,
         casioF91W: clocks.casioF91W,
         omegaSpeedmaster: speedmaster.omegaSpeedmaster,
+    },
+    switches: {
+        toggle: switches.toggleFactory,
     },
     debug: {
         alignment: debug.alignment

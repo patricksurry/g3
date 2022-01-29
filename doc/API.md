@@ -264,13 +264,10 @@ Otherwise, return the default value, which defaults to 0.
 
 
 <a name="g3-axisLabels" href="#g3-axisLabels">#</a>
-g3.**axisLabels**([*vs*: array<number>]) · [source](src/axis.js)
+g3.**axisLabels**([*vs*: array<number>|object]) · [source](src/axis.js)
 
 Returns a [stylable](#stylable) *axisLabels* object,
 which will draw text labels relative to the gauge's metric domain.
-The optional *vs* defines a list of specific label locations in the metric domain.
-
-*axisLabels*.**values**([*vs*: array<number>|object]) · [source](src/axis.js)
 
 If *vs* is defined, set specific label locations along the axis, in the metric domain.
 If *vs* is an array of numbers, each value defines a label position
