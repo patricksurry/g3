@@ -8458,7 +8458,7 @@
             return arguments.length ? (showgrid = !!_, panel): showgrid;
         };
         panel.url = function(_) {
-            return arguments.length ? (url = new URL(_), panel): url;
+            return arguments.length ? (url = new URL(_, document.location), panel): url;
         };
         panel.interval = function(_) {
             return arguments.length ? (interval = _, panel): interval;
