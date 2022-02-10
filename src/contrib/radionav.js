@@ -19,24 +19,25 @@ export function VORGeneric() {
             g3.element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
             g3.gaugeLabel('TO').x(35).y(-35).size(8),
             g3.gaugeLabel('FR').x(35).y(35).size(8),
-            // use a single styled gauge to flip to=0/from=1 dir by styling the 'on' state over the 'off' state
+            // use a single styled gauge to flip to/from/unreliable
+            // draw the 'to' state with a greyed out 'from' state
             g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-highlight-fill'),
             g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
             g3.gauge()
-                .metric('toFrVOR')
-                .fake(g3.categoricalSeries([true, false]))
+                .metric('toFromVOR')  // 1: to, -1: from, 0: off
+                .fake(g3.categoricalSeries([1, 0, -1]))
                 .append(
-                    g3.indicateStyle().trigger(v => v ? 0.9 : 0.1).append(
+                    g3.indicateStyle().trigger(v => v == -1 ? 0.9 : 0.1).append(
+                        // overlay a slightly (or very) transparent 'from' state
                         g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
                         g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-highlight-fill'),
                     ),
                 ),
-            // a similar styled gauge hides both to show the unreliable signal indicator
+            // similarly, show unreliability by drawing background over to/from plus the NAV indicator
             g3.gauge()
-                .metric('reliabilityVOR')
-                .fake(g3.categoricalSeries([true, false]))
+                .metric('toFromVOR')
                 .append(
-                    g3.indicateStyle().trigger(v => v ? 0 : 1).append(
+                    g3.indicateStyle().trigger(v => v == 0 ? 1 : 0).append(
                         g3.element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
                         g3.element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
                         g3.element('rect', {x: 10, width: 12, y: -50, height: 30}).style('fill: red'),
