@@ -53,11 +53,12 @@ export function gauge() {
 
         if (fake && m) activeController.fake(m, fake);
 
+        function update(v) {
+            _.attr('transform', gauge.metrictransform(rescale(v), true))
+        }
+
         if (autoindicate) {
             _.classed('will-change-transform', true);
-            function update(v) {
-                _.attr('transform', gauge.metrictransform(rescale(v), true))
-            }
             activeController.register(update, m, unit)
         }
     }
@@ -170,7 +171,7 @@ export function gaugeFace() {
 export function gaugeScrew() {
     var r = 8,
         shape = 'slotted';  // or phillips, robertson
-    function screw(_, g) {
+    function screw(_, /* g */) {
         let rotate = Math.random()*360;
         _ = _.append('g').attr('class', 'g3-gauge-screw');
         screw.transformable(_);
@@ -189,7 +190,7 @@ export function gaugeScrew() {
                     .attr('transform', `scale(${r}) rotate(${rotate+90})`)
                     .attr('x', -1).attr('width', 2)
                     .attr('y', -0.2).attr('height', 0.4);
-                // no break
+                // eslint-disable-next-line no-fallthrough
             default:  // slotted
                 _.append('rect')
                     .attr('transform', `scale(${r}) rotate(${rotate})`)
@@ -208,10 +209,10 @@ export function gaugeScrew() {
 
 
 
-export function gaugeLabel(s, opts) {
-    var s = s || '',
+export function gaugeLabel(s_, opts) {
+    var s = s_ || '',
         x = 0, y = 0, dx = 0, dy = 0, size = 10;
-    function label(sel, g) {
+    function label(sel, /* g */) {
         let _ = sel.append('text')
             .attr('x', x).attr('y', y)
             .attr('dx', dx).attr('dy', dy)

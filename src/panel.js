@@ -46,7 +46,7 @@ export function panel() {
     function panel(sel) {
         if (typeof sel === 'string') sel = d3.select(sel);
         // draw and start updating panel
-        let controller = gaugeController(interval),  // establish context for gauges
+        let controller = gaugeController(),  // establish context for gauges
             _ = sel.append('svg')
                 .attr('width', width).attr('height', height);
 

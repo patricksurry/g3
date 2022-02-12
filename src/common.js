@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 import {stylable, transformable, appendable} from "./mixin.js";
 
 
-export function element(elt, attrs) {
-    var attrs = attrs || {};
+export function element(elt, attrs_) {
+    var attrs = attrs_ || {};
 
     function element(sel, g) {
         var _ = sel.append(elt);

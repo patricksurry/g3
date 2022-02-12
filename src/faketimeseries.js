@@ -1,7 +1,7 @@
-export function forceSeries(min, max, opts) {
-    var min = min ?? 0,
-        max = max ?? 1,
-        opts = opts ?? {},
+export function forceSeries(min_, max_, opts_) {
+    var min = min_ ?? 0,
+        max = max_ ?? 1,
+        opts = opts_ ?? {},
         fmax = opts.fmax ?? 0.01,
         damping = opts.damping ?? 0.9,
         wrap = opts.wrap ?? false,

@@ -23,7 +23,7 @@ function maybeConvert(v, fromUnit, toUnit) {
 }
 
 
-export function gaugeController(interval) {
+export function gaugeController() {
     // create a gauge controller that we'll use to update values
     var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
         fakes = {},         // dict of metric => generator
@@ -52,15 +52,17 @@ export function gaugeController(interval) {
                 a metric called fuel.copilot.rear,
                 or else fuel.copilot or else simply fuel but never fuel.pilot
                 */
-                var ks = m.split('.');
-                while (ks.length) {
+                var ks = m.split('.'),
+                    matched = false;
+                while (ks.length && !matched) {
                     let k = ks.join('.');
                     if (k in updaters) {
                         updaters[k].updaters = ufs
-                        break;
+                        matched = true;
                     }
                     ks.pop();
                 }
+                if (!matched) console.log('Warning: no source metric matching', m);
             });
             Object.entries(updaters).map(([m, d]) => {
                 if (!d.updaters) {

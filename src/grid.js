@@ -39,11 +39,11 @@ export function grid() {
         vlines.append('line').attr('y2', height);
         hlines.append('line').attr('x2', width);
 
-        var vlabels = vlines.selectAll(null)
+        vlines.selectAll(null)
             .data(ys.slice(0, -1))
           .enter().append('g').attr('class', 'g3-grid-label')
             .attr('transform', y => 'translate(0,' + (y - y0 + ymajor/2) + ') rotate(-90) ');
-        var hlabels = hlines.selectAll(null)
+        hlines.selectAll(null)
             .data(xs.slice(0, -1))
           .enter().append('g').attr('class', 'g3-grid-label')
             .attr('transform', x => 'translate(' + (x - x0 + xmajor/2) + ', 0)');
