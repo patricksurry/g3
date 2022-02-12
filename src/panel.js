@@ -37,10 +37,10 @@ const globalDefs = (width, height) => [
 
 
 export function panel() {
-    var width=1024,
-        height=768,
-        interval=100,
-        showgrid=false,
+    var width = 1024,
+        height = 768,
+        interval = 100,
+        showgrid = false,
         url;
 
     function panel(sel) {
@@ -74,7 +74,7 @@ export function panel() {
                         .then(response => response.json())
                         .then(data => {
                             controller(data);
-                            with_units = False;
+                            with_units = false;
                             latest = data.latest;
                         });
                 } else {
