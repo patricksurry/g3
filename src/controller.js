@@ -9,17 +9,18 @@ export var activeController;  // hack to provide current context for gauges to r
 
 
 function maybeConvert(v, fromUnit, toUnit) {
+    var u = v;
     if (fromUnit && toUnit) {
         try {
-            v = convertUnits(v).from(fromUnit).to(toUnit);
+            u = convertUnits(v).from(fromUnit).to(toUnit);
         } catch(err) {
             console.log('Unit conversion error: ' + err.message);
         }
     } else if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
         // convert string-serialized date metrics back to JS objects
-        v = new Date(v);
+        u = new Date(v);
     }
-    return v;
+    return u;
 }
 
 
@@ -40,11 +41,11 @@ export function gaugeController() {
         if (!updaters) {
             // First call, we establish the mapping from metric keys => callbacks
             updaters = {};
-            Object.keys(data.metrics).map(m => {
+            Object.keys(data.metrics).forEach(m => {
                 updaters[m] = {unit: data.units[m] || '', updaters: null};
             })
 
-            Object.entries(callbacks).map(([m, ufs]) => {
+            Object.entries(callbacks).forEach(([m, ufs]) => {
                 /*
                 for each callback, find best qualified metric from the input values,
                 which we'll convert to appropriate units
@@ -64,7 +65,7 @@ export function gaugeController() {
                 }
                 if (!matched) console.log('Warning: no source metric matching', m);
             });
-            Object.entries(updaters).map(([m, d]) => {
+            Object.entries(updaters).forEach(([m, d]) => {
                 if (!d.updaters) {
                     console.log('Warning: unmapped source metric', m)
                     delete updaters[m];
@@ -73,15 +74,17 @@ export function gaugeController() {
         }
 
         // Trigger updates for each source metric
-        Object.entries(updaters).map(([m, d]) => {
-            Object.entries(d.updaters).map(([unit, fs]) => {
-                let v = maybeConvert(data.metrics[m], d.unit, unit);
-                if (typeof v == 'undefined') {
-                    console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
-                } else {
-                    fs.map(f => f(v));
-                }
-            });
+        Object.entries(updaters).forEach(([m, d]) => {
+            if (m in data.metrics) {
+                Object.entries(d.updaters).forEach(([unit, fs]) => {
+                    let v = maybeConvert(data.metrics[m], d.unit, unit);
+                    if (typeof v == 'undefined') {
+                        console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
+                    } else {
+                        fs.forEach(f => f(v));
+                    }
+                });
+            }
         });
     }
     gaugeController.register = function(updater, metric, unit) {
