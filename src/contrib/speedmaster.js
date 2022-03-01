@@ -18,6 +18,7 @@ const
 export function omegaSpeedmaster() {
     return g3.gauge()
         .metric('time').unit('s')
+        .fake(g3.midnightSecondsSeries())
         .measure(d3.scaleLinear().domain([0,60]).range([0, 360]))
         .css(`
 .g3-pointer-hub, .g3-pointer-blade {fill: #ddd; stroke: #ddd}
@@ -29,6 +30,7 @@ text {fill: #ccc}
             g3.put().rotate(90).append(
                 g3.gauge().autoindicate(true)
                     .metric('date').unit('dateTime')
+                    .fake(g3.datetimeSeries())
                     .rescale(dt => dt.getDate())
                     .measure(d3.scaleLinear().domain([1,32]).range([0,360]))
                     .append(

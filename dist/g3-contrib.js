@@ -10902,6 +10902,7 @@ text.g3-gauge-label, .g3-axis-labels text {
     function omegaSpeedmaster() {
         return gauge()
             .metric('time').unit('s')
+            .fake(midnightSecondsSeries())
             .measure(linear().domain([0,60]).range([0, 360]))
             .css(`
 .g3-pointer-hub, .g3-pointer-blade {fill: #ddd; stroke: #ddd}
@@ -10913,6 +10914,7 @@ text {fill: #ccc}
                 put().rotate(90).append(
                     gauge().autoindicate(true)
                         .metric('date').unit('dateTime')
+                        .fake(datetimeSeries())
                         .rescale(dt => dt.getDate())
                         .measure(linear().domain([1,32]).range([0,360]))
                         .append(
