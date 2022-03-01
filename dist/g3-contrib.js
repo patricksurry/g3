@@ -3296,7 +3296,7 @@
 
     var constant$1 = x => () => x;
 
-    function linear$1(a, d) {
+    function linear$2(a, d) {
       return function(t) {
         return a + t * d;
       };
@@ -3316,7 +3316,7 @@
 
     function nogamma(a, b) {
       var d = b - a;
-      return d ? linear$1(a, d) : constant$1(isNaN(a) ? b : a);
+      return d ? linear$2(a, d) : constant$1(isNaN(a) ? b : a);
     }
 
     var interpolateRgb = (function rgbGamma(y) {
@@ -4536,6 +4536,8 @@
       end: transition_end,
       [Symbol.iterator]: selection_prototype[Symbol.iterator]
     };
+
+    const linear$1 = t => +t;
 
     function cubicInOut(t) {
       return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
@@ -9067,7 +9069,7 @@
             updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
 
         // call the controller to display current metric values
-        function gaugeController(data) {
+        function gaugeController(data, transition) {
             /*
             data is a dictionary {latest: 1234, metrics: {}, [units: {}]}
             where metrics is a dictionary
@@ -9117,7 +9119,7 @@
                         if (typeof v == 'undefined') {
                             console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
                         } else {
-                            fs.forEach(f => f(v));
+                            fs.forEach(f => f(v, transition));
                         }
                     });
                 }
@@ -9143,6 +9145,9 @@
         };
         gaugeController.indicators = function() {
             return Object.keys(callbacks);
+        };
+        gaugeController.mappedMetrics = function() {
+            return updaters && Object.keys(updaters);
         };
         exports.activeController = gaugeController;
         return gaugeController;
@@ -9312,14 +9317,18 @@
     function panel() {
         var width = 1024,
             height = 768,
-            interval = 100,
+            interval = 250,
             showgrid = false,
+            smooth = true,
             url;
 
         function panel(sel) {
             if (typeof sel === 'string') sel = select(sel);
             // draw and start updating panel
             let controller = gaugeController(),  // establish context for gauges
+                transition = smooth ?
+                    (sel => sel.transition().duration(interval).ease(linear$1)) :
+                    (sel => sel),
                 _ = sel.append('svg')
                     .attr('width', width).attr('height', height);
 
@@ -9335,23 +9344,23 @@
 
             console.log('Starting panel expecting metrics for:', controller.indicators());
 
-            let with_units = true, latest=0;
+            let latest=0;
             setInterval(() => {
                     if (url) {
-                        url.search = new URLSearchParams({
+                        let params = {
                             latest: latest,
-                            // metrics: ...,  // controller.metrics ?
-                            units: with_units,
-                        }).toString();
+                            units: latest == 0,
+                        };
+                        if (latest) params.metrics = controller.mappedMetrics();
+                        url.search = new URLSearchParams(params).toString();
                         fetch(url)
                             .then(response => response.json())
                             .then(data => {
-                                controller(data);
-                                with_units = false;
+                                controller(data, transition);
                                 latest = data.latest;
                             });
                     } else {
-                        controller(controller.fakeMetrics());
+                        controller(controller.fakeMetrics(), transition);
                     }
                 },
                 interval
@@ -9371,6 +9380,9 @@
         };
         panel.interval = function(_) {
             return arguments.length ? (interval = _, panel): interval;
+        };
+        panel.smooth = function(_) {
+            return arguments.length ? (smooth = _, panel): smooth;
         };
         stylable(appendable(transformable(panel))).class('g3-panel');
         panel.defs = element('defs');
@@ -9447,7 +9459,7 @@
             text.stylable(_);
             _ = _.text('');
 
-            function update(v) {
+            function update(v, transition) {    // eslint-disable-line no-unused-vars
                 _.text(format(v));
             }
             exports.activeController.register(update, g.metric(), g.unit());
@@ -9476,11 +9488,11 @@
             }
             pointer.appendable(_, g);
 
-            function update(v) {
+            function update(v, transition) {
                 let z = rescale(v);
                 if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                 if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                _.attr('transform', g.metrictransform(z));
+                transition(_).attr('transform', g.metrictransform(z));
             }
             exports.activeController.register(update, g.metric(), g.unit());
         }
@@ -9507,8 +9519,9 @@
             let _ = sel.append('g').attr('class', 'g3-indicate-style');
             style.appendable(_, g);
 
-            function update(v) {
+            function update(v, transition) {    // eslint-disable-line no-unused-vars
                 let s = tween(trigger(v));
+                // Nb. ignore transition for style updates, looks weird for light on/off
                 for (let k in s) _.style(k, s[k]);
             }
             exports.activeController.register(update, g.metric(), g.unit());
@@ -9572,8 +9585,8 @@
 
             if (fake && m) exports.activeController.fake(m, fake);
 
-            function update(v) {
-                _.attr('transform', gauge.metrictransform(rescale(v), true));
+            function update(v, transition) {
+                transition(_).attr('transform', gauge.metrictransform(rescale(v), true));
             }
 
             if (autoindicate) {

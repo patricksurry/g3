@@ -39,14 +39,18 @@ const globalDefs = (width, height) => [
 export function panel() {
     var width = 1024,
         height = 768,
-        interval = 100,
+        interval = 250,
         showgrid = false,
+        smooth = true,
         url;
 
     function panel(sel) {
         if (typeof sel === 'string') sel = d3.select(sel);
         // draw and start updating panel
         let controller = gaugeController(),  // establish context for gauges
+            transition = smooth ?
+                (sel => sel.transition().duration(interval).ease(d3.easeLinear)) :
+                (sel => sel),
             _ = sel.append('svg')
                 .attr('width', width).attr('height', height);
 
@@ -65,20 +69,20 @@ export function panel() {
         let with_units = true, latest=0;
         setInterval(() => {
                 if (url) {
-                    url.search = new URLSearchParams({
+                    let params = {
                         latest: latest,
-                        // metrics: ...,  // controller.metrics ?
-                        units: with_units,
-                    }).toString();
+                        units: latest == 0,
+                    };
+                    if (latest) params.metrics = controller.mappedMetrics();
+                    url.search = new URLSearchParams(params).toString();
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            controller(data);
-                            with_units = false;
+                            controller(data, transition);
                             latest = data.latest;
                         });
                 } else {
-                    controller(controller.fakeMetrics());
+                    controller(controller.fakeMetrics(), transition);
                 }
             },
             interval
@@ -98,6 +102,9 @@ export function panel() {
     }
     panel.interval = function(_) {
         return arguments.length ? (interval = _, panel): interval;
+    }
+    panel.smooth = function(_) {
+        return arguments.length ? (smooth = _, panel): smooth;
     }
     stylable(appendable(transformable(panel))).class('g3-panel')
     panel.defs = element('defs')

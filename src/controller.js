@@ -31,7 +31,7 @@ export function gaugeController() {
         updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
 
     // call the controller to display current metric values
-    function gaugeController(data) {
+    function gaugeController(data, transition) {
         /*
         data is a dictionary {latest: 1234, metrics: {}, [units: {}]}
         where metrics is a dictionary
@@ -81,7 +81,7 @@ export function gaugeController() {
                     if (typeof v == 'undefined') {
                         console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
                     } else {
-                        fs.forEach(f => f(v));
+                        fs.forEach(f => f(v, transition));
                     }
                 });
             }
@@ -107,6 +107,9 @@ export function gaugeController() {
     }
     gaugeController.indicators = function() {
         return Object.keys(callbacks);
+    }
+    gaugeController.mappedMetrics = function() {
+        return updaters && Object.keys(updaters);
     }
     activeController = gaugeController;
     return gaugeController;

@@ -53,8 +53,8 @@ export function gauge() {
 
         if (fake && m) activeController.fake(m, fake);
 
-        function update(v) {
-            _.attr('transform', gauge.metrictransform(rescale(v), true))
+        function update(v, transition) {
+            transition(_).attr('transform', gauge.metrictransform(rescale(v), true))
         }
 
         if (autoindicate) {

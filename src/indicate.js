@@ -14,7 +14,7 @@ export function indicateText() {
         text.stylable(_);
         _ = _.text('');
 
-        function update(v) {
+        function update(v, transition) {    // eslint-disable-line no-unused-vars
             _.text(format(v));
         }
         activeController.register(update, g.metric(), g.unit())
@@ -43,11 +43,11 @@ export function indicatePointer() {
         }
         pointer.appendable(_, g);
 
-        function update(v) {
+        function update(v, transition) {
             let z = rescale(v);
             if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
             if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-            _.attr('transform', g.metrictransform(z));
+            transition(_).attr('transform', g.metrictransform(z));
         }
         activeController.register(update, g.metric(), g.unit())
     }
@@ -74,8 +74,9 @@ export function indicateStyle() {
         let _ = sel.append('g').attr('class', 'g3-indicate-style');
         style.appendable(_, g);
 
-        function update(v) {
+        function update(v, transition) {    // eslint-disable-line no-unused-vars
             let s = tween(trigger(v));
+            // Nb. ignore transition for style updates, looks weird for light on/off
             for (let k in s) _.style(k, s[k]);
         }
         activeController.register(update, g.metric(), g.unit());
