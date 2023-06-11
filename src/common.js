@@ -1,6 +1,9 @@
+// implements deferred element constructors that let us define elements
+// and later draw them in the context of a specific selection and parent gauge
+
 import * as d3 from 'd3';
 
-import {stylable, transformable, appendable} from "./mixin.js";
+import {stylable, interactable, transformable, appendable} from "./mixin.js";
 
 
 export function element(elt, attrs_) {
@@ -11,11 +14,12 @@ export function element(elt, attrs_) {
         Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
         element.stylable(_);
         element.appendable(_, g);
+        element.interactable(_, g);
     }
     element.attr = function(k, _) {
         return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
     }
-    return stylable(appendable(element));
+    return interactable(stylable(appendable(element)));
 }
 
 
@@ -25,8 +29,9 @@ export function put() {
         put.transformable(_);
         put.stylable(_);
         put.appendable(_, g);
+        put.interactable(_, g);
     }
-    stylable(transformable(appendable(put)));
+    interactable(stylable(transformable(appendable(put))));
     return put;
 }
 

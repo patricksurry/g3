@@ -6,6 +6,7 @@ import * as dhc2elec from './dhc2-electrical.js';
 import * as dhc2engine from './dhc2-engine.js';
 import * as jagetype from './jagetype.js';
 import * as clocks from './clocks.js';
+import * as speedometer from './speedometer.js';
 import * as speedmaster from './speedmaster.js';
 import * as switches from './switches.js';
 import * as debug from './debug.js';
@@ -44,6 +45,9 @@ export var contrib = {
         tachometer: {
             DHC2: dhc2engine.tachometer,
             jageype: jagetype.tachometer,
+        },
+        speedometer: {
+            BMW: speedometer.speedometerBMW,
         },
         suctionPressure: {
             DHC2: dhc2engine.suctionPressure,

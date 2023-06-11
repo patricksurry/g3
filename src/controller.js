@@ -25,7 +25,14 @@ function maybeConvert(v, fromUnit, toUnit) {
 
 
 export function gaugeController() {
-    // create a gauge controller that we'll use to update values
+    /*
+    create a gauge controller that we'll use to update values
+
+    `callbacks` is keyed by the panel indicator names,
+    which can be more precise than the actual metric name, e.g. fuel.copilot;
+    `updaters` is populated after the first call with best match to actual metrics
+    */
+
     var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
         fakes = {},         // dict of metric => generator
         updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
@@ -88,6 +95,7 @@ export function gaugeController() {
         });
     }
     gaugeController.register = function(updater, metric, unit) {
+        if (!metric) return;
         unit = unit || '';
         if (!(metric in callbacks)) callbacks[metric] = {};
         if (!(unit in callbacks[metric])) callbacks[metric][unit] = [];
@@ -106,9 +114,11 @@ export function gaugeController() {
         }
     }
     gaugeController.indicators = function() {
+        // return panel indicator keys, available at startup but possibly more specific than actual metrics
         return Object.keys(callbacks);
     }
     gaugeController.mappedMetrics = function() {
+        // return matched metrics, available after first data update
         return updaters && Object.keys(updaters);
     }
     activeController = gaugeController;

@@ -11,7 +11,7 @@ export function toggleFactory(metric, label) {
         .measure(d3.scaleLinear().domain([0, 1]).range([-40, 40]))
         .kind('linear')
         .append(
-            g3.put().rotate(-90).append(
+            g3.put().rotate(-90).on('click', () => alert('clicked')).append(
                 g3.element('path', {d: 'M 40,40 a 40,40 0 0 0 0,-80 l -80,0 a 40,40 0 0 0 0,80 z'})
                     .class('g3-fg-stroke').style('stroke-width: 7'),
                 g3.axisLabels({0: 'off', 1: 'on'}).inset(60).rotate(90),

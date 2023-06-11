@@ -3,7 +3,8 @@
 [G3](https://github.com/patricksurry/g3) is a flexible Javascript
 framework for building steam gauge instrument panels
 that display live external metrics from flight (or other) simulators
-like [X-Plane](https://www.x-plane.com/) and [Microsoft FS2020](https://www.flightsimulator.com/).
+like [X-Plane](https://www.x-plane.com/)
+and [Microsoft FS2020](https://www.flightsimulator.com/).
 Here's a screenshot with some of the included flight gauges
 (or try this [live demo](https://patricksurry.github.io/)):
 
@@ -15,7 +16,7 @@ Here's a screenshot with some of the included flight gauges
 
 - [Install G3](#installing)
 - [Get started](#getting-started) by running a panel or designing a new gauge
-- Browse the complete [API reference](#api-reference)
+- Browse the complete [API reference](doc/API.md)
 - Give back by [contributing](#contributing) new gauges and panels
 - Explore related [resources](#resources)
 
@@ -60,9 +61,9 @@ showcases G3's flexibility to create complex, working gauges that look good:
 You can skip installing altogether and just refer to a standalone copy of the
 module distribution from an NPM CDN like these:
 
-    https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js
+    https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js
 
-    https://cdn.jsdelivr.net/npm/@patricksurry/g3/dist/g3-examples.min.js
+    https://cdn.jsdelivr.net/npm/@patricksurry/g3/dist/g3-contrib.min.js
 
 You can also set up an [npm project](https://docs.npmjs.com/getting-started),
 by creating a project directory and installing G3:
@@ -71,35 +72,37 @@ by creating a project directory and installing G3:
 
 If you prefer, you can download a
 [bundled distribution from github](https://github.com/patricksurry/g3/tree/master/dist),
-by picking any of `g3[-examples][.min].js`,
+by picking any of `g3[-contrib][.min].js`,
 clicking the 'Raw' button, and then right-clicking to "save as".
 The base `g3` package provides the API to define gauges and assemble them into control panels,
-and the `g3-examples` package adds a bunch of predefined gauges and panels
+and the `g3-contrib` package adds a bunch of predefined gauges and panels
 that you can use or modify.   The `.min` versions are minified to load slightly faster,
-but harder to debug.  Choosing `g3-examples.js` is probably a good start.
+but harder to debug.  Choosing `g3-contrib.js` is probably a good start.
 See [Contributing](#contributing) if you want to hack on G3.
 
 ## Getting started
 
-### Display an existing panel
+### Browse existing gauges
 
-Check things are working by creating a minimal HTML file that displays an existing panel with fake metrics.
-Create a new file called `test.html` that looks like this:
+Check things are working by creating a minimal HTML file to show a gallery
+of all existing gauges, updated with fake metrics.
+Create a new file called `gallery.html` that looks like this
+(or use `tutorial/gallery.html` for a slightly prettier version that includes the pointer gallery):
 
 ```html
 <html>
-  <body>
-    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
-    <script>
-g3.panel('DHC2FlightPanel')('body');
-    </script>
-  </body>
+    <body>
+        <script src="https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js"></script>
+        <script>
+g3.gallery.contrib('body');
+        </script>
+    </body>
 </html>
 ```
 
-This tells G3 to fetch the pre-defined `DHC2FlightPanel` example panel,
-and draw it as a new SVG object appended to the HTML `<body>` element.
-By default the panel provides fake metrics so you can see your gauges moving
+This tells G3 to fetch the `g3.gallery.contrib` panel definition,
+and draw it as an SVG object appended to the HTML `<body>` element.
+By default the panel provides fake metrics so you'll see gauges moving
 in a somewhat realistic but random way.
 Save the file and use a terminal window to serve it locally using your favorite HTTP server.
 For example try:
@@ -111,47 +114,51 @@ or
 npx http-server -p 8000
 ```
 and then point your browser at http://localhost:8000/test.html.
-You should see something that looks like the [live demo](https://patricksurry.github.io/)
+You should see something that looks a bit like the [live demo](https://patricksurry.github.io/)
 above.
 
-### Create a panel with existing gauges
 
-The [examples folder](src/examples)
-included with `g3-examples.js` contains a number of predefined gauges including
-[clocks](src/examples/clocks.js),
-[flight instruments](src/examples/flight.js),
-[engine gauges](src/examples/engine.js),
-and [electrical gauges](src/examples/electrical.js);
-as well as a few
-[example panels](src/examples/panels.js).
-You can see them all at once by modifying `test.html` to display the `DebugPanel` which
-displays every registered gauge,
-including exploded views of all named sub-gauges.
-(Temporarily naming an anonymous sub-gauge is a useful debugging technique.)
+### Define your own panel with existing gauges
 
-Let's create a new panel that shows a clock and a heading gauge side by side.
+The [contrib folder](src/contrib)
+included with `g3-contrib.js` is where all the predefined gauges live, including
+clocks, flight instruments, as well as engine and electrical gauges.
+The full index of definitions can be found [`__index__.js`](src/contrib/__index__.js) file,
+and two predefined panels, `g3.gallery.contrib` and `g3.gallery.pointers`,
+will draw a gallery of all known gauges and indicator pointer types respectively as we saw above.
+
+Let's create our own panel that shows a clock and a heading gauge side by side.
 Create a new HTML file called `panel.html`:
 ```html
 <html>
   <body>
-    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js"></script>
     <script>
-var panel = g3.panel('SimplePanel')
+var panel = g3.panel()
         .width(600).height(300)
         .append(
-            g3.put().x(150).y(150).append(g3.gauge('clockSimple')),
-            g3.put().x(450).y(150).append(g3.gauge('headingDHC2')),
+            g3.put().x(150).y(150).append(g3.contrib.clocks.simple()),
+            g3.put().x(450).y(150).append(g3.contrib.nav.heading.generic()),
         );
 panel('body');
     </script>
   </body>
 </html>
 ```
-This defines our `SimplePanel` which&mdash;when called via `panel('body')`&mdash;creates a 600x300
-SVG container within the document `<body>`, retrieves existing gauge definitions,
-and centers them at (150,150) and (450,150).
+
+This defines a layout we've called `panel` which specifies
+a 600x300 SVG container, and places two existing gauges
+at (150,150) and (450,150) respectively,
+with names referencing the definitions in `src/contrib/__index__.js`.
 By convention gauges are drawn with a radius of 100 SVG units,
-but you could simply add `.scale(1.5)` to the `put()` if, say, you prefer a radius 150.
+but you can scale via `put().scale(1.5)...` if (say) you prefer a radius 150.
+
+Note that the panel specification in the `panel` variable is actually a
+function that will draw the panel when we call it with a CSS selector
+like `panel('body')`.
+In this case the panel is appended directly to the HTML `<body>` element,
+and will start polling for metric updates as soon as it's drawn.
+
 Serve locally as before and browse to http://localhost:8000/panel.html
 and you should see something like this:
 
@@ -162,7 +169,7 @@ and you should see something like this:
 
 ### Display real metrics
 
-We've built a panel, but by default it displays [fake metrics](#metrics) generated in the browser.
+We've built a panel, but by default it's displaying [fake metrics](#metrics) that are generated in the browser.
 G3 normally polls an external URL for metrics,
 and expects a response containing
 a [JSON](https://www.json.org/json-en.html) dictionary
@@ -177,7 +184,7 @@ panel.interval(500).url('/metrics/fake.json')('body');
 ...
 ```
 
-Now we need a server that provides metrics at the `/metrics/fake.json` endpoint.
+Now we'll need a server that provides metrics at the `/metrics/fake.json` endpoint.
 To start with we'll run a server that also provides fake metrics,
 so the behavior will look similar but gives us the stubs to hook it up to whatever source we want.
 Grab this sample [G3 python server](https://github.com/patricksurry/g3py)
@@ -222,10 +229,10 @@ TODO: include an example based on FS2020 SimConnnect
 ### Create a new gauge
 
 The easiest way to get started with gauge design is to find a
-similar example gauge in the `DebugPanel`,
+similar gauge in `src/contrib`
 and experiment with its
-[implementation](https://github.com/patricksurry/g3/tree/master/src/examples).
-As a simple example of building a gauge from scratch, let's build a
+[implementation](https://github.com/patricksurry/g3/tree/master/src/contrib).
+As a simple example of building a gauge from scratch, let's create a
 [classic Jaguar E-type tachometer](https://www.smiths-instruments.co.uk/blog/new-smiths-digital-tachometer-for-the-classic-jaguar-e-type) (photo, below left).
 With a few lines of code, we'll end up with a credible facsimile (below right).
 
@@ -255,17 +262,17 @@ Here's what we have so far (see result below left):
 <html>
   <body>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-examples.min.js"></script>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js"></script>
     <script>
 
-var g = g3.gauge('JagETypeTachometer')
+var g = g3.gauge()
     .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
     .append(
         g3.gaugeFace(),
         g3.axisLine(),
         g3.axisTicks(),
-        g3.axisLabels()
+        g3.axisLabels(),
     );
 
 var p = g3.panel()
@@ -320,7 +327,7 @@ either from existing SVG images or files created via
 an SVG drawing tool like [Inkscape](https://inkscape.org/).
 
 ```js
-var g = g3.gauge('JagETypeTachometer')
+var g = g3.gauge()
     .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0,6000]).range([-125,125]))
     .css(`
@@ -333,19 +340,16 @@ text.g3-gauge-label, .g3-axis-labels text {
 `)
     .append(
         g3.gaugeFace(),
-        // add an inner face
         g3.gaugeFace().r(50).style('filter: url(#dropShadow2)'),
-        // add the warning sector
         g3.axisSector([5000,6000]).inset(50).size(35).style('fill: #800'),
         g3.gaugeLabel('SMITHS').y(-45).size(7),
         g3.gaugeLabel('8 CYL').y(40).size(7),
-        // a trick to put a circular label opposite the 3000RPM top of the gauge
+        // a trick to put a circular path label opposite the 3000RPM top of the gauge
         g3.put().rotate(180).append(
             g3.axisLabels({3000: 'POSITIVE EARTH'}).orient('counterclockwise').size(3.5).inset(52)
         ),
         g3.gaugeLabel('RPM').y(65).size(12),
         g3.gaugeLabel('X 100').y(75).size(8),
-        // add a couple of screws which get a random orientation
         g3.gaugeScrew().shape('phillips').r(3).x(-20),
         g3.gaugeScrew().shape('phillips').r(3).x(20),
         g3.put().scale(0.95).append(
@@ -353,7 +357,6 @@ text.g3-gauge-label, .g3-axis-labels text {
             g3.axisTicks().step(500).style('stroke-width: 5'),
             g3.axisTicks().step(100).size(5),
             g3.axisLabels().inset(20).size(15).format(v => v/100),
-            // customize the pointer
             g3.indicatePointer().append(
                 // the full pointer blade
                 g3.element('path', {d: 'M 3,0 l -1.5,-90 l -1.5,-5 l -1.5,5 l -1.5,90 z'})
@@ -389,20 +392,19 @@ var p = g3.panel().width(640).height(640).append(
 ```
 
 In this tutorial we reused the `engineRPM` metric defined with the
-[sample engine gauges](https://github.com/patricksurry/g3/blob/master/src/examples/engine.js),
+[sample engine gauges](https://github.com/patricksurry/g3/blob/master/src/contrib/engine.js),
 but it's easy to add our own.
 Simply choose a name for the metric that matches how it will be provided from the external source,
-and (if desired) register a corresponding [fake metric](#metrics) for testing.
+and (if desired) define a corresponding [fake metric](#metrics) for testing.
 Note it's often a good idea to test metric values outside the expected range
 (e.g. max of 7000 instead of the max label of 6000)
 to ensure your gauge behaves as expected.  For our tachometer we probably
 want to [clamp](/#g3-indicatePointer) the pointer as if there was a physical stop at 6000:
 
 ```js
-g3.fakeMetrics.register({jaguarRPM: g3.forceSeries(0, 7000)});
-
-var g = g3.gauge('JagETypeTachometer')
+var g = g3.gauge()
     .metric('jaguarRPM').unit('rpm')
+    .fake(g3.forceSeries(0, 7000))
     .clamp([0, 6000])
     ...
 ```
@@ -435,6 +437,7 @@ then commit and tag in github and finally publish with something like:
 ```sh
 git tag v0.1.3
 git push origin --tags
+npm login
 npm publish --access public
 ```
 

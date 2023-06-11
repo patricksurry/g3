@@ -125,7 +125,6 @@ body {
     fill: #6B5634;
 }
 /* pointer default styles */
-
 .g3-indicate-pointer {
     fill: #222;
     filter: url(#dropShadow2);
@@ -140,6 +139,13 @@ body {
 .g3-pointer-luminous {
     fill: #e0e8d0;
     stroke: #d0d8c0;
+}
+.g3-indicate-sector {
+    fill: green;
+    stroke: none;
+}
+.g3-indicate-sector.g3-indicate-sector-negative {
+    fill: red;
 }
 .g3-gauge-screw {
     fill: #333;

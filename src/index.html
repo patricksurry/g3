@@ -32,7 +32,8 @@ window.process = {
 import * as g3 from './g3-contrib.js';
 
 // A panel with all contrib gauges
-g3.gallery.contrib /*.url('http://0.0.0.0:8000/metrics.json') */('#gauge-gallery');
+g3.gallery.contrib('#gauge-gallery');
+//g3.gallery.contrib.url('http://0.0.0.0:8000/metrics.json')('#gauge-gallery');
 
 // A panel showing all the pointer shapes
 g3.gallery.pointers('#pointer-gallery');

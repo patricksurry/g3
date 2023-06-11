@@ -585,7 +585,7 @@ by configuring a [panel's](#g3-panel) *url*,
 but for development it's handy to display fake metrics which are generated locally.
 You can use [g3py](https://github.com/patricksurry/g3py)
 to provide the server for your panel.  It offers both fake metrics and
-stubs integrated with X-Plane and FS2020 (coming soon).
+stubs integrated with X-Plane and FS2020.
 
 Simple metrics are provided as a JSON dictionary of {*metricName*: *metricValue*},
 where *metricValue* is either the raw metric value or an object

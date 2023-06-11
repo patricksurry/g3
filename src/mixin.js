@@ -1,3 +1,15 @@
+/*
+various mixins that add functionality to an existing object
+typically mixin(f) adds a number of setters/getters to f that adjust arguments
+as well as a mixin(sel[, ...]) function that renders the mixin into sel based on the current arguments
+sample usage:
+
+    obj = ...
+    stylable(obj)
+    obj.class('some-class')   // add a class argument
+    obj.stylable(sel)            // render the style attributes for
+*/
+
 import * as d3 from 'd3';
 import { css } from '@emotion/css';
 
@@ -44,11 +56,27 @@ export function transformable(f) {
     f.y = function(_) {
         return arguments.length ? (y = _, f) : y;
     }
-    f.scale = function(x,y) {
+    f.scale = function(x, y) {
         return arguments.length ? (scalex = x, scaley = y ?? x, f) : [scalex, scaley];
     }
     f.rotate = function(_) {
         return arguments.length ? (rotate = _, f) : rotate;
+    }
+    return f;
+}
+
+
+export function interactable(f) {
+    var handlers = {};
+
+    f.interactable = function(selection, ...args) {
+        Object.entries(handlers).map(([type, v]) => {
+            let [handler, opts] = v;
+            selection.on(type, (e) => handler(e, ...args), opts)
+        })
+    }
+    f.on = function(type, handler, opts) {
+        return arguments.length ? (handlers[type] = [handler, opts], f): handlers;
     }
     return f;
 }

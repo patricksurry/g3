@@ -65,6 +65,47 @@ export function indicatePointer() {
 }
 
 
+export function indicateSector() {
+    var rescale = identity,
+        clamp = [undefined, undefined],
+        anchor = 0,
+        size = 10,
+        inset = 0;
+
+    function sector(sel, g) {
+        let _ = sel.append('path');
+
+        sector.stylable(_);
+
+        function update(v, transition) {
+            let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
+            if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+            if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+            transition(_)
+                .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
+            _.classed('g3-indicate-sector-negative', negative);
+        }
+        activeController.register(update, g.metric(), g.unit());
+    }
+    sector.rescale = function(_) {
+        return arguments.length ? (rescale = _, sector) : rescale;
+    }
+    sector.clamp = function(_) {
+        return arguments.length ? (clamp = _, sector) : clamp;
+    }
+    sector.anchor = function(_) {
+        return arguments.length ? (anchor = _, sector) : anchor;
+    }
+    sector.size = function(_) {
+        return arguments.length ? (size = _, sector) : size;
+    }
+    sector.inset = function(_) {
+        return arguments.length ? (inset = _, sector) : inset;
+    }
+    return stylable(sector).class('g3-indicate-sector');
+}
+
+
 export function indicateStyle() {
     var styleOn = {opacity: 1},
         styleOff = {opacity: 0},

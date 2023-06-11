@@ -49,7 +49,7 @@ export function panel() {
         // draw and start updating panel
         let controller = gaugeController(),  // establish context for gauges
             transition = smooth ?
-                (sel => sel.transition().duration(interval).ease(d3.easeLinear)) :
+                (sel => sel.transition().duration(interval || 250).ease(d3.easeLinear)) :
                 (sel => sel),
             _ = sel.append('svg')
                 .attr('width', width).attr('height', height);
@@ -66,27 +66,40 @@ export function panel() {
 
         console.log('Starting panel expecting metrics for:', controller.indicators());
 
-        let with_units = true, latest=0;
-        setInterval(() => {
-                if (url) {
-                    let params = {
-                        latest: latest,
-                        units: latest == 0,
-                    };
-                    if (latest) params.metrics = controller.mappedMetrics();
-                    url.search = new URLSearchParams(params).toString();
-                    fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            controller(data, transition);
-                            latest = data.latest;
-                        });
-                } else {
-                    controller(controller.fakeMetrics(), transition);
-                }
-            },
-            interval
-        );
+        if (!url) {
+            // fake metrics
+            setInterval(() => {
+                controller(controller.fakeMetrics(), transition);
+            }, interval || 250);
+        } else if (interval) {
+            // with non-zero interval, poll an endpoint
+            let latest=0;
+            setInterval(() => {
+                let params = {
+                    latest: latest,
+                    units: latest == 0,
+                };
+                // add the matched metrics once we've determined them
+                if (latest) params.metrics = controller.mappedMetrics();
+                url.search = new URLSearchParams(params).toString();
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        controller(data, transition);
+                        latest = data.latest;
+                    });
+            }, interval);
+        } else {
+            // set interval to 0 or None to use server-sent event endpoint
+            let source = new EventSource(url);
+            url.search = new URLSearchParams({
+                // server should determine best match metrics
+                indicators: controller.indicators()
+            }).toString();
+            source.onmessage = function(e) {
+                controller(JSON.parse(e.data), transition);
+            };
+        }
     }
     panel.width = function(_) {
         return arguments.length ? (width = _, panel): width;

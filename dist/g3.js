@@ -5853,11 +5853,27 @@
         f.y = function(_) {
             return arguments.length ? (y = _, f) : y;
         };
-        f.scale = function(x,y) {
+        f.scale = function(x, y) {
             return arguments.length ? (scalex = x, scaley = y ?? x, f) : [scalex, scaley];
         };
         f.rotate = function(_) {
             return arguments.length ? (rotate = _, f) : rotate;
+        };
+        return f;
+    }
+
+
+    function interactable(f) {
+        var handlers = {};
+
+        f.interactable = function(selection, ...args) {
+            Object.entries(handlers).map(([type, v]) => {
+                let [handler, opts] = v;
+                selection.on(type, (e) => handler(e, ...args), opts);
+            });
+        };
+        f.on = function(type, handler, opts) {
+            return arguments.length ? (handlers[type] = [handler, opts], f): handlers;
         };
         return f;
     }
@@ -8182,7 +8198,14 @@
 
 
     function gaugeController() {
-        // create a gauge controller that we'll use to update values
+        /*
+        create a gauge controller that we'll use to update values
+
+        `callbacks` is keyed by the panel indicator names,
+        which can be more precise than the actual metric name, e.g. fuel.copilot;
+        `updaters` is populated after the first call with best match to actual metrics
+        */
+
         var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
             fakes = {},         // dict of metric => generator
             updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
@@ -8245,6 +8268,7 @@
             });
         }
         gaugeController.register = function(updater, metric, unit) {
+            if (!metric) return;
             unit = unit || '';
             if (!(metric in callbacks)) callbacks[metric] = {};
             if (!(unit in callbacks[metric])) callbacks[metric][unit] = [];
@@ -8263,9 +8287,11 @@
             }
         };
         gaugeController.indicators = function() {
+            // return panel indicator keys, available at startup but possibly more specific than actual metrics
             return Object.keys(callbacks);
         };
         gaugeController.mappedMetrics = function() {
+            // return matched metrics, available after first data update
             return updaters && Object.keys(updaters);
         };
         exports.activeController = gaugeController;
@@ -8280,11 +8306,12 @@
             Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
             element.stylable(_);
             element.appendable(_, g);
+            element.interactable(_, g);
         }
         element.attr = function(k, _) {
             return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
         };
-        return stylable(appendable(element));
+        return interactable(stylable(appendable(element)));
     }
 
 
@@ -8294,8 +8321,9 @@
             put.transformable(_);
             put.stylable(_);
             put.appendable(_, g);
+            put.interactable(_, g);
         }
-        stylable(transformable(appendable(put)));
+        interactable(stylable(transformable(appendable(put))));
         return put;
     }
 
@@ -8446,7 +8474,7 @@
             // draw and start updating panel
             let controller = gaugeController(),  // establish context for gauges
                 transition = smooth ?
-                    (sel => sel.transition().duration(interval).ease(linear$1)) :
+                    (sel => sel.transition().duration(interval || 250).ease(linear$1)) :
                     (sel => sel),
                 _ = sel.append('svg')
                     .attr('width', width).attr('height', height);
@@ -8463,27 +8491,40 @@
 
             console.log('Starting panel expecting metrics for:', controller.indicators());
 
-            let latest=0;
-            setInterval(() => {
-                    if (url) {
-                        let params = {
-                            latest: latest,
-                            units: latest == 0,
-                        };
-                        if (latest) params.metrics = controller.mappedMetrics();
-                        url.search = new URLSearchParams(params).toString();
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                controller(data, transition);
-                                latest = data.latest;
-                            });
-                    } else {
-                        controller(controller.fakeMetrics(), transition);
-                    }
-                },
-                interval
-            );
+            if (!url) {
+                // fake metrics
+                setInterval(() => {
+                    controller(controller.fakeMetrics(), transition);
+                }, interval || 250);
+            } else if (interval) {
+                // with non-zero interval, poll an endpoint
+                let latest=0;
+                setInterval(() => {
+                    let params = {
+                        latest: latest,
+                        units: latest == 0,
+                    };
+                    // add the matched metrics once we've determined them
+                    if (latest) params.metrics = controller.mappedMetrics();
+                    url.search = new URLSearchParams(params).toString();
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            controller(data, transition);
+                            latest = data.latest;
+                        });
+                }, interval);
+            } else {
+                // set interval to 0 or None to use server-sent event endpoint
+                let source = new EventSource(url);
+                url.search = new URLSearchParams({
+                    // server should determine best match metrics
+                    indicators: controller.indicators()
+                }).toString();
+                source.onmessage = function(e) {
+                    controller(JSON.parse(e.data), transition);
+                };
+            }
         }
         panel.width = function(_) {
             return arguments.length ? (width = _, panel): width;
@@ -8626,6 +8667,47 @@
             return arguments.length ? (shape = _, pointer) : shape;
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
+    }
+
+
+    function indicateSector() {
+        var rescale = identity,
+            clamp = [undefined, undefined],
+            anchor = 0,
+            size = 10,
+            inset = 0;
+
+        function sector(sel, g) {
+            let _ = sel.append('path');
+
+            sector.stylable(_);
+
+            function update(v, transition) {
+                let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
+                if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+                if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+                transition(_)
+                    .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
+                _.classed('g3-indicate-sector-negative', negative);
+            }
+            exports.activeController.register(update, g.metric(), g.unit());
+        }
+        sector.rescale = function(_) {
+            return arguments.length ? (rescale = _, sector) : rescale;
+        };
+        sector.clamp = function(_) {
+            return arguments.length ? (clamp = _, sector) : clamp;
+        };
+        sector.anchor = function(_) {
+            return arguments.length ? (anchor = _, sector) : anchor;
+        };
+        sector.size = function(_) {
+            return arguments.length ? (size = _, sector) : size;
+        };
+        sector.inset = function(_) {
+            return arguments.length ? (inset = _, sector) : inset;
+        };
+        return stylable(sector).class('g3-indicate-sector');
     }
 
 
@@ -9292,7 +9374,6 @@ body {
     fill: #6B5634;
 }
 /* pointer default styles */
-
 .g3-indicate-pointer {
     fill: #222;
     filter: url(#dropShadow2);
@@ -9307,6 +9388,13 @@ body {
 .g3-pointer-luminous {
     fill: #e0e8d0;
     stroke: #d0d8c0;
+}
+.g3-indicate-sector {
+    fill: green;
+    stroke: none;
+}
+.g3-indicate-sector.g3-indicate-sector-negative {
+    fill: red;
 }
 .g3-gauge-screw {
     fill: #333;
@@ -9338,6 +9426,7 @@ body {
     exports.gaugeScrew = gaugeScrew;
     exports.grid = grid;
     exports.indicatePointer = indicatePointer;
+    exports.indicateSector = indicateSector;
     exports.indicateStyle = indicateStyle;
     exports.indicateText = indicateText;
     exports.knownUnits = knownUnits;

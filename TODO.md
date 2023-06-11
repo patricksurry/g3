@@ -1,6 +1,12 @@
 ## Open issues
 
-- remove examples with named gauges and panels
+- doc panel        showgrid = false,  smooth = true,
+
+- doc indicateSector, add an example?
+
+- fix links like #metrics to API
+
+- update api fakemetrics since it's now inline part of gauge not a separate thing
 
 - doc contrib (should all be function that works with no args and returns a gauge)
 
@@ -30,8 +36,6 @@
   an [orthographic globe projection](https://github.com/d3/d3-geo#geoOrthographic)
   would also work better 360 loop/roll attitude indicator
 
-- indicateSector: would need redraw not global xform
-
 - indicateOdometer - maybe indicateText option? - https://github.hubspot.com/odometer/
   or a collection of cylindrical self-indicators with a form of snapscale
 
@@ -54,5 +58,3 @@
     https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
 
     ffmpeg -ss 0 -t 5 -i flightdemo.mov -vf "fps=10,scale=630:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 flightdemo.gif
-
-
