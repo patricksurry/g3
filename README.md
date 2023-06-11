@@ -435,7 +435,7 @@ When I want to publish a new release, I also bump the version in `package.json`,
 then commit and tag in github and finally publish with something like:
 
 ```sh
-git tag v0.1.3
+git tag v0.1.18
 git push origin --tags
 npm login
 npm publish --access public
