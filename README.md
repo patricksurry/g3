@@ -48,7 +48,7 @@ several years ago in
 
 The iconic [Omega Speedmaster](https://en.wikipedia.org/wiki/Omega_Speedmaster) watch,
 mimicked by the example `omegaSpeedmaster` gauge below
-(see [live demo](https://bl.ocks.org/patricksurry/95f8f76a1dfd3c84e7a31429c7cbddc9)),
+(see [live demo](https://blocks.roadtolarissa.com/patricksurry/95f8f76a1dfd3c84e7a31429c7cbddc9)),
 showcases G3's flexibility to create complex, working gauges that look good:
 
 <div align='center'>
@@ -169,37 +169,84 @@ and you should see something like this:
 
 ### Display real metrics
 
-We've built a panel, but by default it's displaying [fake metrics](#metrics) that are generated in the browser.
+We've built a panel, but by default it's displaying fake [metrics](doc/API.md#metrics) 
+that are generated in the browser.
 G3 normally polls an external URL for metrics,
-and expects a response containing
-a [JSON](https://www.json.org/json-en.html) dictionary
-with an entry for each metric.
+and expects a [JSON](https://www.json.org/json-en.html) response object containing the current metrics.
 Unless we specify a polling interval,
 it will check four times per second (an interval of 250ms).
+
 Let's modify `panel.html`, replacing `panel('body');` with:
 
 ```js
 ...
-panel.interval(500).url('/metrics/fake.json')('body');
+panel.interval(500).url('/metrics')('body');
 ...
 ```
 
-Now we'll need a server that provides metrics at the `/metrics/fake.json` endpoint.
-To start with we'll run a server that also provides fake metrics,
-so the behavior will look similar but gives us the stubs to hook it up to whatever source we want.
-Grab this sample [G3 python server](https://github.com/patricksurry/g3py)
-based on [FastAPI](https://fastapi.tiangolo.com/) from github.
-Copy your `panel.html` to the `g3py/panels/` folder,
-and follow the README to launch the server and browse to your control panel:
+We'll need a server that provides the two metrics,
+one for `heading` (in degrees) and one for `time` (as seconds since midnight).
+The metric names can be found in the gauge definitions,
+or check your browser's development console (e.g. cmd-shift-J in Chrome)
+where you'll see output like this:
 
-    http://localhost:8000/panels/panel.html
+```
+...
+g3-contrib.min.js:1 Starting panel expecting metrics for: (2) ['time', 'heading']
+...
+```
 
-You should see your panel working again,
-but the browser console log should show that it's fetching
-metrics from the server.  More usefully, our server would fetch metrics from our simulation,
-for example via [SimConnect](https://github.com/odwdinc/Python-SimConnect)
+We'll use python to serve both the metrics and the HTML for the panel.
+
+- Install [Python](https://www.python.org/) 
+    and [FastAPI](https://fastapi.tiangolo.com/#installation)
+- Create a file called `metrics.py` containing the code below
+- Make a subfolder called `panels` and copy your `panel.html` there
+- In a terminal, start the server: `fastapi dev metrics.py`
+- In your browser, navigate to http://localhost:8000/metrics and check
+  that you see a json result
+- Finally, navigate to http://localhost:8000/panels/panel.html to see your gauges!
+
+```python
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from random import gauss
+from datetime import datetime, timezone
+
+heading = 0
+
+app = FastAPI()
+
+# Serve panel.html from the panels folder, preventing CORS issues
+app.mount("/panels", StaticFiles(directory="panels"), name="panels")
+
+# Provide the metrics endpoint
+@app.get("/metrics")
+async def metrics(latest: int = 0, units: bool = False):
+    global heading
+    # randomly vary the heading
+    heading += gauss(0, 2)      
+
+    # calculate time since midnight for the clock
+    now = datetime.now(timezone.utc)
+    seconds = (now - now.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
+
+    return {
+        "latest": 0,
+        "units": {},
+        "metrics": {
+            "heading": heading,
+            "time": seconds
+        }
+    }
+```
+
+In a more realistic scenario you probably want to fetch metrics
+from a simulator like [SimConnect](https://github.com/odwdinc/Python-SimConnect)
 for FS2020, or [XPlaneConnect](https://github.com/nasa/XPlaneConnect/)
-for X-Plane, and deliver those to our endpoint.
+for X-Plane.
+The [G3 python server](https://github.com/patricksurry/g3py)
+illustrates how this works.
 
 **XPlane 11**
 
@@ -395,7 +442,7 @@ In this tutorial we reused the `engineRPM` metric defined with the
 [sample engine gauges](https://github.com/patricksurry/g3/blob/master/src/contrib/engine.js),
 but it's easy to add our own.
 Simply choose a name for the metric that matches how it will be provided from the external source,
-and (if desired) define a corresponding [fake metric](#metrics) for testing.
+and (if desired) define a corresponding [fake metric](doc/API.md#metrics) for testing.
 Note it's often a good idea to test metric values outside the expected range
 (e.g. max of 7000 instead of the max label of 6000)
 to ensure your gauge behaves as expected.  For our tachometer we probably
