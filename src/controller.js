@@ -1,4 +1,5 @@
-import configureMeasurements, {allMeasures} from 'convert-units';
+import configureMeasurements from 'convert-units';
+import allMeasures from 'convert-units/definitions/all';
 
 export const
     convertUnits = configureMeasurements(allMeasures),

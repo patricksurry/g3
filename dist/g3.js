@@ -2,7 +2,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.g3 = {}));
-}(this, (function (exports) { 'use strict';
+})(this, (function (exports) { 'use strict';
 
     (function() {
         const env = {};
@@ -15,6 +15,8 @@
         } catch (e) {} // avoid ReferenceError: process is not defined
         globalThis.process = { env:env };
     })();
+
+    var isDevelopment$1 = false;
 
     /*
 
@@ -38,10 +40,9 @@
     - empties the stylesheet of all its contents
 
     */
-    // $FlowFixMe
+
     function sheetForTag(tag) {
       if (tag.sheet) {
-        // $FlowFixMe
         return tag.sheet;
       } // this weirdness brought to you by firefox
 
@@ -50,10 +51,13 @@
 
       for (var i = 0; i < document.styleSheets.length; i++) {
         if (document.styleSheets[i].ownerNode === tag) {
-          // $FlowFixMe
           return document.styleSheets[i];
         }
-      }
+      } // this function should always return with a value
+      // TS can't understand it though so we make it stop complaining here
+
+
+      return undefined;
     }
 
     function createStyleElement(options) {
@@ -70,6 +74,7 @@
     }
 
     var StyleSheet = /*#__PURE__*/function () {
+      // Using Node instead of HTMLElement since container may be a ShadowRoot
       function StyleSheet(options) {
         var _this = this;
 
@@ -77,7 +82,13 @@
           var before;
 
           if (_this.tags.length === 0) {
-            before = _this.prepend ? _this.container.firstChild : _this.before;
+            if (_this.insertionPoint) {
+              before = _this.insertionPoint.nextSibling;
+            } else if (_this.prepend) {
+              before = _this.container.firstChild;
+            } else {
+              before = _this.before;
+            }
           } else {
             before = _this.tags[_this.tags.length - 1].nextSibling;
           }
@@ -87,7 +98,7 @@
           _this.tags.push(tag);
         };
 
-        this.isSpeedy = options.speedy === undefined ? process.env.NODE_ENV === 'production' : options.speedy;
+        this.isSpeedy = options.speedy === undefined ? !isDevelopment$1 : options.speedy;
         this.tags = [];
         this.ctr = 0;
         this.nonce = options.nonce; // key is the value of the data-emotion attribute, it's used to identify different sheets
@@ -95,6 +106,7 @@
         this.key = options.key;
         this.container = options.container;
         this.prepend = options.prepend;
+        this.insertionPoint = options.insertionPoint;
         this.before = null;
       }
 
@@ -114,18 +126,6 @@
 
         var tag = this.tags[this.tags.length - 1];
 
-        if (process.env.NODE_ENV !== 'production') {
-          var isImportRule = rule.charCodeAt(0) === 64 && rule.charCodeAt(1) === 105;
-
-          if (isImportRule && this._alreadyInsertedOrderInsensitiveRule) {
-            // this would only cause problem in speedy mode
-            // but we don't want enabling speedy to affect the observable behavior
-            // so we report this error at all times
-            console.error("You're attempting to insert the following rule:\n" + rule + '\n\n`@import` rules must be before all other types of rules in a stylesheet but other rules have already been inserted. Please ensure that `@import` rules are before all other rules.');
-          }
-          this._alreadyInsertedOrderInsensitiveRule = this._alreadyInsertedOrderInsensitiveRule || !isImportRule;
-        }
-
         if (this.isSpeedy) {
           var sheet = sheetForTag(tag);
 
@@ -134,9 +134,6 @@
             // the big drawback is that the css won't be editable in devtools
             sheet.insertRule(rule, sheet.cssRules.length);
           } catch (e) {
-            if (process.env.NODE_ENV !== 'production' && !/:(-moz-placeholder|-ms-input-placeholder|-moz-read-write|-moz-read-only){/.test(rule)) {
-              console.error("There was a problem inserting the following rule: \"" + rule + "\"", e);
-            }
           }
         } else {
           tag.appendChild(document.createTextNode(rule));
@@ -146,16 +143,13 @@
       };
 
       _proto.flush = function flush() {
-        // $FlowFixMe
         this.tags.forEach(function (tag) {
-          return tag.parentNode.removeChild(tag);
+          var _tag$parentNode;
+
+          return (_tag$parentNode = tag.parentNode) == null ? void 0 : _tag$parentNode.removeChild(tag);
         });
         this.tags = [];
         this.ctr = 0;
-
-        if (process.env.NODE_ENV !== 'production') {
-          this._alreadyInsertedOrderInsensitiveRule = false;
-        }
       };
 
       return StyleSheet;
@@ -170,6 +164,7 @@
     var DECLARATION = 'decl';
     var IMPORT = '@import';
     var KEYFRAMES = '@keyframes';
+    var LAYER = '@layer';
 
     /**
      * @param {number}
@@ -184,12 +179,18 @@
     var from = String.fromCharCode;
 
     /**
+     * @param {object}
+     * @return {object}
+     */
+    var assign = Object.assign;
+
+    /**
      * @param {string} value
      * @param {number} length
      * @return {number}
      */
     function hash (value, length) {
-    	return (((((((length << 2) ^ charat(value, 0)) << 2) ^ charat(value, 1)) << 2) ^ charat(value, 2)) << 2) ^ charat(value, 3)
+    	return charat(value, 0) ^ 45 ? (((((((length << 2) ^ charat(value, 0)) << 2) ^ charat(value, 1)) << 2) ^ charat(value, 2)) << 2) ^ charat(value, 3) : 0
     }
 
     /**
@@ -221,7 +222,7 @@
 
     /**
      * @param {string} value
-     * @param {string} value
+     * @param {string} search
      * @return {number}
      */
     function indexof (value, search) {
@@ -268,7 +269,7 @@
      * @param {any[]} array
      * @return {any}
      */
-    function append (value, array) {
+    function append$1 (value, array) {
     	return array.push(value), value
     }
 
@@ -290,11 +291,11 @@
 
     /**
      * @param {string} value
-     * @param {object} root
-     * @param {object?} parent
+     * @param {object | null} root
+     * @param {object | null} parent
      * @param {string} type
-     * @param {string[]} props
-     * @param {object[]} children
+     * @param {string[] | string} props
+     * @param {object[] | string} children
      * @param {number} length
      */
     function node (value, root, parent, type, props, children, length) {
@@ -302,12 +303,12 @@
     }
 
     /**
-     * @param {string} value
      * @param {object} root
-     * @param {string} type
+     * @param {object} props
+     * @return {object}
      */
-    function copy$1 (value, root, type) {
-    	return node(value, root.root, root.parent, type, root.props, root.children, 0)
+    function copy$1 (root, props) {
+    	return assign(node('', null, null, '', null, null, 0), root, {length: -root.length}, props)
     }
 
     /**
@@ -456,7 +457,9 @@
     				return position
     			// " '
     			case 34: case 39:
-    				return delimiter(type === 34 || type === 39 ? type : character)
+    				if (type !== 34 && type !== 39)
+    					delimiter(character);
+    				break
     			// (
     			case 40:
     				if (type === 41)
@@ -538,8 +541,15 @@
 
     	while (scanning)
     		switch (previous = character, character = next()) {
-    			// " ' [ (
-    			case 34: case 39: case 91: case 40:
+    			// (
+    			case 40:
+    				if (previous != 108 && charat(characters, length - 1) == 58) {
+    					if (indexof(characters += replace(delimit(character), '&', '&\f'), '&\f') != -1)
+    						ampersand = -1;
+    					break
+    				}
+    			// " ' [
+    			case 34: case 39: case 91:
     				characters += delimit(character);
     				break
     			// \t \n \r \s
@@ -554,7 +564,7 @@
     			case 47:
     				switch (peek()) {
     					case 42: case 47:
-    						append(comment(commenter(next(), caret()), root, parent), declarations);
+    						append$1(comment(commenter(next(), caret()), root, parent), declarations);
     						break
     					default:
     						characters += '/';
@@ -569,27 +579,27 @@
     					// \0 }
     					case 0: case 125: scanning = 0;
     					// ;
-    					case 59 + offset:
+    					case 59 + offset: if (ampersand == -1) characters = replace(characters, /\f/g, '');
     						if (property > 0 && (strlen(characters) - length))
-    							append(property > 32 ? declaration(characters + ';', rule, parent, length - 1) : declaration(replace(characters, ' ', '') + ';', rule, parent, length - 2), declarations);
+    							append$1(property > 32 ? declaration(characters + ';', rule, parent, length - 1) : declaration(replace(characters, ' ', '') + ';', rule, parent, length - 2), declarations);
     						break
     					// @ ;
     					case 59: characters += ';';
     					// { rule/at-rule
     					default:
-    						append(reference = ruleset(characters, root, parent, index, offset, rules, points, type, props = [], children = [], length), rulesets);
+    						append$1(reference = ruleset(characters, root, parent, index, offset, rules, points, type, props = [], children = [], length), rulesets);
 
     						if (character === 123)
     							if (offset === 0)
     								parse(characters, root, reference, reference, props, rulesets, length, points, children);
     							else
-    								switch (atrule) {
-    									// d m s
-    									case 100: case 109: case 115:
-    										parse(value, reference, reference, rule && append(ruleset(value, reference, reference, 0, 0, rules, points, type, rules, props = [], length), children), rules, children, length, points, rule ? props : children);
+    								switch (atrule === 99 && charat(characters, 3) === 110 ? 100 : atrule) {
+    									// d l m s
+    									case 100: case 108: case 109: case 115:
+    										parse(value, reference, reference, rule && append$1(ruleset(value, reference, reference, 0, 0, rules, points, type, rules, props = [], length), children), rules, children, length, points, rule ? props : children);
     										break
     									default:
-    										parse(characters, reference, reference, reference, [''], children, length, points, children);
+    										parse(characters, reference, reference, reference, [''], children, 0, points, children);
     								}
     				}
 
@@ -620,7 +630,7 @@
     						if (peek() === 45)
     							characters += delimit(next());
 
-    						atrule = peek(), offset = strlen(type = characters += identifier(caret())), character++;
+    						atrule = peek(), offset = length = strlen(type = characters += identifier(caret())), character++;
     						break
     					// -
     					case 45:
@@ -681,123 +691,6 @@
     }
 
     /**
-     * @param {string} value
-     * @param {number} length
-     * @return {string}
-     */
-    function prefix (value, length) {
-    	switch (hash(value, length)) {
-    		// color-adjust
-    		case 5103:
-    			return WEBKIT + 'print-' + value + value
-    		// animation, animation-(delay|direction|duration|fill-mode|iteration-count|name|play-state|timing-function)
-    		case 5737: case 4201: case 3177: case 3433: case 1641: case 4457: case 2921:
-    		// text-decoration, filter, clip-path, backface-visibility, column, box-decoration-break
-    		case 5572: case 6356: case 5844: case 3191: case 6645: case 3005:
-    		// mask, mask-image, mask-(mode|clip|size), mask-(repeat|origin), mask-position, mask-composite,
-    		case 6391: case 5879: case 5623: case 6135: case 4599: case 4855:
-    		// background-clip, columns, column-(count|fill|gap|rule|rule-color|rule-style|rule-width|span|width)
-    		case 4215: case 6389: case 5109: case 5365: case 5621: case 3829:
-    			return WEBKIT + value + value
-    		// appearance, user-select, transform, hyphens, text-size-adjust
-    		case 5349: case 4246: case 4810: case 6968: case 2756:
-    			return WEBKIT + value + MOZ + value + MS + value + value
-    		// flex, flex-direction
-    		case 6828: case 4268:
-    			return WEBKIT + value + MS + value + value
-    		// order
-    		case 6165:
-    			return WEBKIT + value + MS + 'flex-' + value + value
-    		// align-items
-    		case 5187:
-    			return WEBKIT + value + replace(value, /(\w+).+(:[^]+)/, WEBKIT + 'box-$1$2' + MS + 'flex-$1$2') + value
-    		// align-self
-    		case 5443:
-    			return WEBKIT + value + MS + 'flex-item-' + replace(value, /flex-|-self/, '') + value
-    		// align-content
-    		case 4675:
-    			return WEBKIT + value + MS + 'flex-line-pack' + replace(value, /align-content|flex-|-self/, '') + value
-    		// flex-shrink
-    		case 5548:
-    			return WEBKIT + value + MS + replace(value, 'shrink', 'negative') + value
-    		// flex-basis
-    		case 5292:
-    			return WEBKIT + value + MS + replace(value, 'basis', 'preferred-size') + value
-    		// flex-grow
-    		case 6060:
-    			return WEBKIT + 'box-' + replace(value, '-grow', '') + WEBKIT + value + MS + replace(value, 'grow', 'positive') + value
-    		// transition
-    		case 4554:
-    			return WEBKIT + replace(value, /([^-])(transform)/g, '$1' + WEBKIT + '$2') + value
-    		// cursor
-    		case 6187:
-    			return replace(replace(replace(value, /(zoom-|grab)/, WEBKIT + '$1'), /(image-set)/, WEBKIT + '$1'), value, '') + value
-    		// background, background-image
-    		case 5495: case 3959:
-    			return replace(value, /(image-set\([^]*)/, WEBKIT + '$1' + '$`$1')
-    		// justify-content
-    		case 4968:
-    			return replace(replace(value, /(.+:)(flex-)?(.*)/, WEBKIT + 'box-pack:$3' + MS + 'flex-pack:$3'), /s.+-b[^;]+/, 'justify') + WEBKIT + value + value
-    		// (margin|padding)-inline-(start|end)
-    		case 4095: case 3583: case 4068: case 2532:
-    			return replace(value, /(.+)-inline(.+)/, WEBKIT + '$1$2') + value
-    		// (min|max)?(width|height|inline-size|block-size)
-    		case 8116: case 7059: case 5753: case 5535:
-    		case 5445: case 5701: case 4933: case 4677:
-    		case 5533: case 5789: case 5021: case 4765:
-    			// stretch, max-content, min-content, fill-available
-    			if (strlen(value) - 1 - length > 6)
-    				switch (charat(value, length + 1)) {
-    					// (m)ax-content, (m)in-content
-    					case 109:
-    						// -
-    						if (charat(value, length + 4) !== 45)
-    							break
-    					// (f)ill-available, (f)it-content
-    					case 102:
-    						return replace(value, /(.+:)(.+)-([^]+)/, '$1' + WEBKIT + '$2-$3' + '$1' + MOZ + (charat(value, length + 3) == 108 ? '$3' : '$2-$3')) + value
-    					// (s)tretch
-    					case 115:
-    						return ~indexof(value, 'stretch') ? prefix(replace(value, 'stretch', 'fill-available'), length) + value : value
-    				}
-    			break
-    		// position: sticky
-    		case 4949:
-    			// (s)ticky?
-    			if (charat(value, length + 1) !== 115)
-    				break
-    		// display: (flex|inline-flex)
-    		case 6444:
-    			switch (charat(value, strlen(value) - 3 - (~indexof(value, '!important') && 10))) {
-    				// stic(k)y
-    				case 107:
-    					return replace(value, ':', ':' + WEBKIT) + value
-    				// (inline-)?fl(e)x
-    				case 101:
-    					return replace(value, /(.+:)([^;!]+)(;|!.+)?/, '$1' + WEBKIT + (charat(value, 14) === 45 ? 'inline-' : '') + 'box$3' + '$1' + WEBKIT + '$2$3' + '$1' + MS + '$2box$3') + value
-    			}
-    			break
-    		// writing-mode
-    		case 5936:
-    			switch (charat(value, length + 11)) {
-    				// vertical-l(r)
-    				case 114:
-    					return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, 'tb') + value
-    				// vertical-r(l)
-    				case 108:
-    					return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, 'tb-rl') + value
-    				// horizontal(-)tb
-    				case 45:
-    					return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, 'lr') + value
-    			}
-
-    			return WEBKIT + value + MS + value + value
-    	}
-
-    	return value
-    }
-
-    /**
      * @param {object[]} children
      * @param {function} callback
      * @return {string}
@@ -821,8 +714,10 @@
      */
     function stringify (element, index, children, callback) {
     	switch (element.type) {
+    		case LAYER: if (element.children.length) break
     		case IMPORT: case DECLARATION: return element.return = element.return || element.value
     		case COMMENT: return ''
+    		case KEYFRAMES: return element.return = element.value + '{' + serialize(element.children, callback) + '}'
     		case RULESET: element.value = element.props.join(',');
     	}
 
@@ -858,46 +753,12 @@
     	}
     }
 
-    /**
-     * @param {object} element
-     * @param {number} index
-     * @param {object[]} children
-     * @param {function} callback
-     */
-    function prefixer (element, index, children, callback) {
-    	if (!element.return)
-    		switch (element.type) {
-    			case DECLARATION: element.return = prefix(element.value, element.length);
-    				break
-    			case KEYFRAMES:
-    				return serialize([copy$1(replace(element.value, '@', '@' + WEBKIT), element, '')], callback)
-    			case RULESET:
-    				if (element.length)
-    					return combine(element.props, function (value) {
-    						switch (match(value, /(::plac\w+|:read-\w+)/)) {
-    							// :read-(only|write)
-    							case ':read-only': case ':read-write':
-    								return serialize([copy$1(replace(value, /:(read-\w+)/, ':' + MOZ + '$1'), element, '')], callback)
-    							// :placeholder
-    							case '::placeholder':
-    								return serialize([
-    									copy$1(replace(value, /:(plac\w+)/, ':' + WEBKIT + 'input-$1'), element, ''),
-    									copy$1(replace(value, /:(plac\w+)/, ':' + MOZ + '$1'), element, ''),
-    									copy$1(replace(value, /:(plac\w+)/, MS + 'input-$1'), element, '')
-    								], callback)
-    						}
-
-    						return ''
-    					})
-    		}
-    }
-
     var weakMemoize = function weakMemoize(func) {
-      // $FlowFixMe flow doesn't include all non-primitive types as allowed for weakmaps
       var cache = new WeakMap();
       return function (arg) {
         if (cache.has(arg)) {
-          // $FlowFixMe
+          // Use non-null assertion because we just checked that the cache `has` it
+          // This allows us to remove `undefined` from the return value
           return cache.get(arg);
         }
 
@@ -915,8 +776,28 @@
       };
     }
 
-    var last = function last(arr) {
-      return arr.length ? arr[arr.length - 1] : null;
+    var isBrowser$1 = typeof document !== 'undefined';
+
+    var identifierWithPointTracking = function identifierWithPointTracking(begin, points, index) {
+      var previous = 0;
+      var character = 0;
+
+      while (true) {
+        previous = character;
+        character = peek(); // &\f
+
+        if (previous === 38 && character === 12) {
+          points[index] = 1;
+        }
+
+        if (token(character)) {
+          break;
+        }
+
+        next();
+      }
+
+      return slice(begin, position);
     };
 
     var toRules = function toRules(parsed, points) {
@@ -936,7 +817,7 @@
               points[index] = 1;
             }
 
-            parsed[index] += identifier(position - 1);
+            parsed[index] += identifierWithPointTracking(position - 1, points, index);
             break;
 
           case 2:
@@ -969,13 +850,14 @@
 
     var fixedElements = /* #__PURE__ */new WeakMap();
     var compat = function compat(element) {
-      if (element.type !== 'rule' || !element.parent || // .length indicates if this rule contains pseudo or not
-      !element.length) {
+      if (element.type !== 'rule' || !element.parent || // positive .length indicates that this rule contains pseudo
+      // negative .length indicates that this rule has been already prefixed
+      element.length < 1) {
         return;
       }
 
-      var value = element.value,
-          parent = element.parent;
+      var value = element.value;
+      var parent = element.parent;
       var isImplicitRule = element.column === parent.column && element.line === parent.line;
 
       while (parent.type !== 'rule') {
@@ -1020,87 +902,228 @@
         }
       }
     };
-    var ignoreFlag = 'emotion-disable-server-rendering-unsafe-selector-warning-please-do-not-use-this-the-warning-exists-for-a-reason';
 
-    var isIgnoringComment = function isIgnoringComment(element) {
-      return !!element && element.type === 'comm' && element.children.indexOf(ignoreFlag) > -1;
-    };
+    /* eslint-disable no-fallthrough */
 
-    var createUnsafeSelectorsAlarm = function createUnsafeSelectorsAlarm(cache) {
-      return function (element, index, children) {
-        if (element.type !== 'rule') return;
-        var unsafePseudoClasses = element.value.match(/(:first|:nth|:nth-last)-child/g);
+    function prefix(value, length) {
+      switch (hash(value, length)) {
+        // color-adjust
+        case 5103:
+          return WEBKIT + 'print-' + value + value;
+        // animation, animation-(delay|direction|duration|fill-mode|iteration-count|name|play-state|timing-function)
 
-        if (unsafePseudoClasses && cache.compat !== true) {
-          var prevElement = index > 0 ? children[index - 1] : null;
+        case 5737:
+        case 4201:
+        case 3177:
+        case 3433:
+        case 1641:
+        case 4457:
+        case 2921: // text-decoration, filter, clip-path, backface-visibility, column, box-decoration-break
 
-          if (prevElement && isIgnoringComment(last(prevElement.children))) {
-            return;
+        case 5572:
+        case 6356:
+        case 5844:
+        case 3191:
+        case 6645:
+        case 3005: // mask, mask-image, mask-(mode|clip|size), mask-(repeat|origin), mask-position, mask-composite,
+
+        case 6391:
+        case 5879:
+        case 5623:
+        case 6135:
+        case 4599:
+        case 4855: // background-clip, columns, column-(count|fill|gap|rule|rule-color|rule-style|rule-width|span|width)
+
+        case 4215:
+        case 6389:
+        case 5109:
+        case 5365:
+        case 5621:
+        case 3829:
+          return WEBKIT + value + value;
+        // appearance, user-select, transform, hyphens, text-size-adjust
+
+        case 5349:
+        case 4246:
+        case 4810:
+        case 6968:
+        case 2756:
+          return WEBKIT + value + MOZ + value + MS + value + value;
+        // flex, flex-direction
+
+        case 6828:
+        case 4268:
+          return WEBKIT + value + MS + value + value;
+        // order
+
+        case 6165:
+          return WEBKIT + value + MS + 'flex-' + value + value;
+        // align-items
+
+        case 5187:
+          return WEBKIT + value + replace(value, /(\w+).+(:[^]+)/, WEBKIT + 'box-$1$2' + MS + 'flex-$1$2') + value;
+        // align-self
+
+        case 5443:
+          return WEBKIT + value + MS + 'flex-item-' + replace(value, /flex-|-self/, '') + value;
+        // align-content
+
+        case 4675:
+          return WEBKIT + value + MS + 'flex-line-pack' + replace(value, /align-content|flex-|-self/, '') + value;
+        // flex-shrink
+
+        case 5548:
+          return WEBKIT + value + MS + replace(value, 'shrink', 'negative') + value;
+        // flex-basis
+
+        case 5292:
+          return WEBKIT + value + MS + replace(value, 'basis', 'preferred-size') + value;
+        // flex-grow
+
+        case 6060:
+          return WEBKIT + 'box-' + replace(value, '-grow', '') + WEBKIT + value + MS + replace(value, 'grow', 'positive') + value;
+        // transition
+
+        case 4554:
+          return WEBKIT + replace(value, /([^-])(transform)/g, '$1' + WEBKIT + '$2') + value;
+        // cursor
+
+        case 6187:
+          return replace(replace(replace(value, /(zoom-|grab)/, WEBKIT + '$1'), /(image-set)/, WEBKIT + '$1'), value, '') + value;
+        // background, background-image
+
+        case 5495:
+        case 3959:
+          return replace(value, /(image-set\([^]*)/, WEBKIT + '$1' + '$`$1');
+        // justify-content
+
+        case 4968:
+          return replace(replace(value, /(.+:)(flex-)?(.*)/, WEBKIT + 'box-pack:$3' + MS + 'flex-pack:$3'), /s.+-b[^;]+/, 'justify') + WEBKIT + value + value;
+        // (margin|padding)-inline-(start|end)
+
+        case 4095:
+        case 3583:
+        case 4068:
+        case 2532:
+          return replace(value, /(.+)-inline(.+)/, WEBKIT + '$1$2') + value;
+        // (min|max)?(width|height|inline-size|block-size)
+
+        case 8116:
+        case 7059:
+        case 5753:
+        case 5535:
+        case 5445:
+        case 5701:
+        case 4933:
+        case 4677:
+        case 5533:
+        case 5789:
+        case 5021:
+        case 4765:
+          // stretch, max-content, min-content, fill-available
+          if (strlen(value) - 1 - length > 6) switch (charat(value, length + 1)) {
+            // (m)ax-content, (m)in-content
+            case 109:
+              // -
+              if (charat(value, length + 4) !== 45) break;
+            // (f)ill-available, (f)it-content
+
+            case 102:
+              return replace(value, /(.+:)(.+)-([^]+)/, '$1' + WEBKIT + '$2-$3' + '$1' + MOZ + (charat(value, length + 3) == 108 ? '$3' : '$2-$3')) + value;
+            // (s)tretch
+
+            case 115:
+              return ~indexof(value, 'stretch') ? prefix(replace(value, 'stretch', 'fill-available'), length) + value : value;
+          }
+          break;
+        // position: sticky
+
+        case 4949:
+          // (s)ticky?
+          if (charat(value, length + 1) !== 115) break;
+        // display: (flex|inline-flex)
+
+        case 6444:
+          switch (charat(value, strlen(value) - 3 - (~indexof(value, '!important') && 10))) {
+            // stic(k)y
+            case 107:
+              return replace(value, ':', ':' + WEBKIT) + value;
+            // (inline-)?fl(e)x
+
+            case 101:
+              return replace(value, /(.+:)([^;!]+)(;|!.+)?/, '$1' + WEBKIT + (charat(value, 14) === 45 ? 'inline-' : '') + 'box$3' + '$1' + WEBKIT + '$2$3' + '$1' + MS + '$2box$3') + value;
           }
 
-          unsafePseudoClasses.forEach(function (unsafePseudoClass) {
-            console.error("The pseudo class \"" + unsafePseudoClass + "\" is potentially unsafe when doing server-side rendering. Try changing it to \"" + unsafePseudoClass.split('-child')[0] + "-of-type\".");
+          break;
+        // writing-mode
+
+        case 5936:
+          switch (charat(value, length + 11)) {
+            // vertical-l(r)
+            case 114:
+              return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, 'tb') + value;
+            // vertical-r(l)
+
+            case 108:
+              return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, 'tb-rl') + value;
+            // horizontal(-)tb
+
+            case 45:
+              return WEBKIT + value + MS + replace(value, /[svh]\w+-[tblr]{2}/, 'lr') + value;
+          }
+
+          return WEBKIT + value + MS + value + value;
+      }
+
+      return value;
+    }
+
+    var prefixer = function prefixer(element, index, children, callback) {
+      if (element.length > -1) if (!element["return"]) switch (element.type) {
+        case DECLARATION:
+          element["return"] = prefix(element.value, element.length);
+          break;
+
+        case KEYFRAMES:
+          return serialize([copy$1(element, {
+            value: replace(element.value, '@', '@' + WEBKIT)
+          })], callback);
+
+        case RULESET:
+          if (element.length) return combine(element.props, function (value) {
+            switch (match(value, /(::plac\w+|:read-\w+)/)) {
+              // :read-(only|write)
+              case ':read-only':
+              case ':read-write':
+                return serialize([copy$1(element, {
+                  props: [replace(value, /:(read-\w+)/, ':' + MOZ + '$1')]
+                })], callback);
+              // :placeholder
+
+              case '::placeholder':
+                return serialize([copy$1(element, {
+                  props: [replace(value, /:(plac\w+)/, ':' + WEBKIT + 'input-$1')]
+                }), copy$1(element, {
+                  props: [replace(value, /:(plac\w+)/, ':' + MOZ + '$1')]
+                }), copy$1(element, {
+                  props: [replace(value, /:(plac\w+)/, MS + 'input-$1')]
+                })], callback);
+            }
+
+            return '';
           });
-        }
-      };
-    };
-
-    var isImportRule = function isImportRule(element) {
-      return element.type.charCodeAt(1) === 105 && element.type.charCodeAt(0) === 64;
-    };
-
-    var isPrependedWithRegularRules = function isPrependedWithRegularRules(index, children) {
-      for (var i = index - 1; i >= 0; i--) {
-        if (!isImportRule(children[i])) {
-          return true;
-        }
-      }
-
-      return false;
-    }; // use this to remove incorrect elements from further processing
-    // so they don't get handed to the `sheet` (or anything else)
-    // as that could potentially lead to additional logs which in turn could be overhelming to the user
-
-
-    var nullifyElement = function nullifyElement(element) {
-      element.type = '';
-      element.value = '';
-      element["return"] = '';
-      element.children = '';
-      element.props = '';
-    };
-
-    var incorrectImportAlarm = function incorrectImportAlarm(element, index, children) {
-      if (!isImportRule(element)) {
-        return;
-      }
-
-      if (element.parent) {
-        console.error("`@import` rules can't be nested inside other rules. Please move it to the top level and put it before regular rules. Keep in mind that they can only be used within global styles.");
-        nullifyElement(element);
-      } else if (isPrependedWithRegularRules(index, children)) {
-        console.error("`@import` rules can't be after other rules. Please put your `@import` rules before your other rules.");
-        nullifyElement(element);
       }
     };
 
-    var isBrowser$1 = typeof document !== 'undefined';
     var getServerStylisCache = isBrowser$1 ? undefined : weakMemoize(function () {
       return memoize(function () {
-        var cache = {};
-        return function (name) {
-          return cache[name];
-        };
+        return {};
       });
     });
     var defaultStylisPlugins = [prefixer];
 
     var createCache = function createCache(options) {
       var key = options.key;
-
-      if (process.env.NODE_ENV !== 'production' && !key) {
-        throw new Error("You have to configure `key` for your cache. Please make sure it's unique (and not equal to 'css') as it's used for linking styles to your cache.\n" + "If multiple caches share the same key they might \"fight\" for each other's style elements.");
-      }
 
       if (isBrowser$1 && key === 'css') {
         var ssrStyles = document.querySelectorAll("style[data-emotion]:not([data-s])"); // get SSRed styles out of the way of React's hydration
@@ -1120,6 +1143,7 @@
           if (dataEmotionAttribute.indexOf(' ') === -1) {
             return;
           }
+
           document.head.appendChild(node);
           node.setAttribute('data-s', '');
         });
@@ -1127,15 +1151,7 @@
 
       var stylisPlugins = options.stylisPlugins || defaultStylisPlugins;
 
-      if (process.env.NODE_ENV !== 'production') {
-        // $FlowFixMe
-        if (/[^a-z-]/.test(key)) {
-          throw new Error("Emotion key must only contain lower case alphabetical characters and - but \"" + key + "\" was passed");
-        }
-      }
-
-      var inserted = {}; // $FlowFixMe
-
+      var inserted = {};
       var container;
       var nodesToHydrate = [];
 
@@ -1144,7 +1160,7 @@
         Array.prototype.forEach.call( // this means we will ignore elements which don't have a space in them which
         // means that the style elements we're looking at are only Emotion 11 server-rendered style elements
         document.querySelectorAll("style[data-emotion^=\"" + key + " \"]"), function (node) {
-          var attrib = node.getAttribute("data-emotion").split(' '); // $FlowFixMe
+          var attrib = node.getAttribute("data-emotion").split(' ');
 
           for (var i = 1; i < attrib.length; i++) {
             inserted[attrib[i]] = true;
@@ -1158,28 +1174,9 @@
 
       var omnipresentPlugins = [compat, removeLabel];
 
-      if (process.env.NODE_ENV !== 'production') {
-        omnipresentPlugins.push(createUnsafeSelectorsAlarm({
-          get compat() {
-            return cache.compat;
-          }
-
-        }), incorrectImportAlarm);
-      }
-
-      if (isBrowser$1) {
+      if (!getServerStylisCache) {
         var currentSheet;
-        var finalizingPlugins = [stringify, process.env.NODE_ENV !== 'production' ? function (element) {
-          if (!element.root) {
-            if (element["return"]) {
-              currentSheet.insert(element["return"]);
-            } else if (element.value && element.type !== COMMENT) {
-              // insert empty rule in non-production environments
-              // so @emotion/jest can grab `key` from the (JS)DOM for caches without any rules inserted yet
-              currentSheet.insert(element.value + "{}");
-            }
-          }
-        } : rulesheet(function (rule) {
+        var finalizingPlugins = [stringify, rulesheet(function (rule) {
           currentSheet.insert(rule);
         })];
         var serializer = middleware(omnipresentPlugins.concat(stylisPlugins, finalizingPlugins));
@@ -1190,14 +1187,6 @@
 
         _insert = function insert(selector, serialized, sheet, shouldCache) {
           currentSheet = sheet;
-
-          if (process.env.NODE_ENV !== 'production' && serialized.map !== undefined) {
-            currentSheet = {
-              insert: function insert(rule) {
-                sheet.insert(rule + serialized.map);
-              }
-            };
-          }
 
           stylis(selector ? selector + "{" + serialized.styles + "}" : serialized.styles);
 
@@ -1212,8 +1201,7 @@
 
         var _stylis = function _stylis(styles) {
           return serialize(compile(styles), _serializer);
-        }; // $FlowFixMe
-
+        };
 
         var serverStylisCache = getServerStylisCache(stylisPlugins)(key);
 
@@ -1237,12 +1225,6 @@
             // we return them so that they are rendered in a style tag
             if (shouldCache) {
               cache.inserted[name] = true;
-            }
-
-            if ( // using === development instead of !== production
-            // because if people do ssr in tests, the source maps showing up would be annoying
-            process.env.NODE_ENV === 'development' && serialized.map !== undefined) {
-              return rules + serialized.map;
             }
 
             return rules;
@@ -1270,7 +1252,8 @@
           container: container,
           nonce: options.nonce,
           speedy: options.speedy,
-          prepend: options.prepend
+          prepend: options.prepend,
+          insertionPoint: options.insertionPoint
         }),
         nonce: options.nonce,
         inserted: inserted,
@@ -1337,6 +1320,7 @@
 
     var unitlessKeys = {
       animationIterationCount: 1,
+      aspectRatio: 1,
       borderImageOutset: 1,
       borderImageSlice: 1,
       borderImageWidth: 1,
@@ -1368,6 +1352,7 @@
       opacity: 1,
       order: 1,
       orphans: 1,
+      scale: 1,
       tabSize: 1,
       widows: 1,
       zIndex: 1,
@@ -1384,8 +1369,8 @@
       strokeWidth: 1
     };
 
-    var ILLEGAL_ESCAPE_SEQUENCE_ERROR = "You have illegal escape sequence in your template literal, most likely inside content's property value.\nBecause you write your CSS inside a JavaScript string you actually have to do double escaping, so for example \"content: '\\00d7';\" should become \"content: '\\\\00d7';\".\nYou can read more about this here:\nhttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#ES2018_revision_of_illegal_escape_sequences";
-    var UNDEFINED_AS_OBJECT_KEY_ERROR = "You have passed in falsy value as style object's key (can happen when in example you pass unexported component as computed key).";
+    var isDevelopment = false;
+
     var hyphenateRegex = /[A-Z]|^ms/g;
     var animationRegex = /_EMO_([^_]+?)_([^]*?)_EMO_/g;
 
@@ -1426,45 +1411,18 @@
       return value;
     };
 
-    if (process.env.NODE_ENV !== 'production') {
-      var contentValuePattern = /(attr|counters?|url|(((repeating-)?(linear|radial))|conic)-gradient)\(|(no-)?(open|close)-quote/;
-      var contentValues = ['normal', 'none', 'initial', 'inherit', 'unset'];
-      var oldProcessStyleValue = processStyleValue;
-      var msPattern = /^-ms-/;
-      var hyphenPattern = /-(.)/g;
-      var hyphenatedCache = {};
-
-      processStyleValue = function processStyleValue(key, value) {
-        if (key === 'content') {
-          if (typeof value !== 'string' || contentValues.indexOf(value) === -1 && !contentValuePattern.test(value) && (value.charAt(0) !== value.charAt(value.length - 1) || value.charAt(0) !== '"' && value.charAt(0) !== "'")) {
-            throw new Error("You seem to be using a value for 'content' without quotes, try replacing it with `content: '\"" + value + "\"'`");
-          }
-        }
-
-        var processed = oldProcessStyleValue(key, value);
-
-        if (processed !== '' && !isCustomProperty(key) && key.indexOf('-') !== -1 && hyphenatedCache[key] === undefined) {
-          hyphenatedCache[key] = true;
-          console.error("Using kebab-case for css properties in objects is not supported. Did you mean " + key.replace(msPattern, 'ms-').replace(hyphenPattern, function (str, _char) {
-            return _char.toUpperCase();
-          }) + "?");
-        }
-
-        return processed;
-      };
-    }
+    var noComponentSelectorMessage = 'Component selectors can only be used in conjunction with ' + '@emotion/babel-plugin, the swc Emotion plugin, or another Emotion-aware ' + 'compiler transform.';
 
     function handleInterpolation(mergedProps, registered, interpolation) {
       if (interpolation == null) {
         return '';
       }
 
-      if (interpolation.__emotion_styles !== undefined) {
-        if (process.env.NODE_ENV !== 'production' && interpolation.toString() === 'NO_COMPONENT_SELECTOR') {
-          throw new Error('Component selectors can only be used in conjunction with @emotion/babel-plugin.');
-        }
+      var componentSelector = interpolation;
 
-        return interpolation;
+      if (componentSelector.__emotion_styles !== undefined) {
+
+        return componentSelector;
       }
 
       switch (typeof interpolation) {
@@ -1475,17 +1433,21 @@
 
         case 'object':
           {
-            if (interpolation.anim === 1) {
+            var keyframes = interpolation;
+
+            if (keyframes.anim === 1) {
               cursor = {
-                name: interpolation.name,
-                styles: interpolation.styles,
+                name: keyframes.name,
+                styles: keyframes.styles,
                 next: cursor
               };
-              return interpolation.name;
+              return keyframes.name;
             }
 
-            if (interpolation.styles !== undefined) {
-              var next = interpolation.next;
+            var serializedStyles = interpolation;
+
+            if (serializedStyles.styles !== undefined) {
+              var next = serializedStyles.next;
 
               if (next !== undefined) {
                 // not the most efficient thing ever but this is a pretty rare case
@@ -1500,12 +1462,7 @@
                 }
               }
 
-              var styles = interpolation.styles + ";";
-
-              if (process.env.NODE_ENV !== 'production' && interpolation.map !== undefined) {
-                styles += interpolation.map;
-              }
-
+              var styles = serializedStyles.styles + ";";
               return styles;
             }
 
@@ -1519,37 +1476,21 @@
               var result = interpolation(mergedProps);
               cursor = previousCursor;
               return handleInterpolation(mergedProps, registered, result);
-            } else if (process.env.NODE_ENV !== 'production') {
-              console.error('Functions that are interpolated in css calls will be stringified.\n' + 'If you want to have a css call based on props, create a function that returns a css call like this\n' + 'let dynamicStyle = (props) => css`color: ${props.color}`\n' + 'It can be called directly with props or interpolated in a styled call like this\n' + "let SomeComponent = styled('div')`${dynamicStyle}`");
             }
 
             break;
           }
-
-        case 'string':
-          if (process.env.NODE_ENV !== 'production') {
-            var matched = [];
-            var replaced = interpolation.replace(animationRegex, function (match, p1, p2) {
-              var fakeVarName = "animation" + matched.length;
-              matched.push("const " + fakeVarName + " = keyframes`" + p2.replace(/^@keyframes animation-\w+/, '') + "`");
-              return "${" + fakeVarName + "}";
-            });
-
-            if (matched.length) {
-              console.error('`keyframes` output got interpolated into plain string, please wrap it with `css`.\n\n' + 'Instead of doing this:\n\n' + [].concat(matched, ["`" + replaced + "`"]).join('\n') + '\n\nYou should wrap it with `css` like this:\n\n' + ("css`" + replaced + "`"));
-            }
-          }
-
-          break;
       } // finalize string values (regular strings and functions interpolated into css calls)
 
 
+      var asString = interpolation;
+
       if (registered == null) {
-        return interpolation;
+        return asString;
       }
 
-      var cached = registered[interpolation];
-      return cached !== undefined ? cached : interpolation;
+      var cached = registered[asString];
+      return cached !== undefined ? cached : asString;
     }
 
     function createStringFromObject(mergedProps, registered, obj) {
@@ -1560,44 +1501,43 @@
           string += handleInterpolation(mergedProps, registered, obj[i]) + ";";
         }
       } else {
-        for (var _key in obj) {
-          var value = obj[_key];
+        for (var key in obj) {
+          var value = obj[key];
 
           if (typeof value !== 'object') {
-            if (registered != null && registered[value] !== undefined) {
-              string += _key + "{" + registered[value] + "}";
-            } else if (isProcessableValue(value)) {
-              string += processStyleName(_key) + ":" + processStyleValue(_key, value) + ";";
+            var asString = value;
+
+            if (registered != null && registered[asString] !== undefined) {
+              string += key + "{" + registered[asString] + "}";
+            } else if (isProcessableValue(asString)) {
+              string += processStyleName(key) + ":" + processStyleValue(key, asString) + ";";
             }
           } else {
-            if (_key === 'NO_COMPONENT_SELECTOR' && process.env.NODE_ENV !== 'production') {
-              throw new Error('Component selectors can only be used in conjunction with @emotion/babel-plugin.');
+            if (key === 'NO_COMPONENT_SELECTOR' && isDevelopment) {
+              throw new Error(noComponentSelectorMessage);
             }
 
             if (Array.isArray(value) && typeof value[0] === 'string' && (registered == null || registered[value[0]] === undefined)) {
               for (var _i = 0; _i < value.length; _i++) {
                 if (isProcessableValue(value[_i])) {
-                  string += processStyleName(_key) + ":" + processStyleValue(_key, value[_i]) + ";";
+                  string += processStyleName(key) + ":" + processStyleValue(key, value[_i]) + ";";
                 }
               }
             } else {
               var interpolated = handleInterpolation(mergedProps, registered, value);
 
-              switch (_key) {
+              switch (key) {
                 case 'animation':
                 case 'animationName':
                   {
-                    string += processStyleName(_key) + ":" + interpolated + ";";
+                    string += processStyleName(key) + ":" + interpolated + ";";
                     break;
                   }
 
                 default:
                   {
-                    if (process.env.NODE_ENV !== 'production' && _key === 'undefined') {
-                      console.error(UNDEFINED_AS_OBJECT_KEY_ERROR);
-                    }
 
-                    string += _key + "{" + interpolated + "}";
+                    string += key + "{" + interpolated + "}";
                   }
               }
             }
@@ -1608,17 +1548,11 @@
       return string;
     }
 
-    var labelPattern = /label:\s*([^\s;\n{]+)\s*(;|$)/g;
-    var sourceMapPattern;
-
-    if (process.env.NODE_ENV !== 'production') {
-      sourceMapPattern = /\/\*#\ssourceMappingURL=data:application\/json;\S+\s+\*\//g;
-    } // this is the cursor for keyframes
+    var labelPattern = /label:\s*([^\s;{]+)\s*(;|$)/g; // this is the cursor for keyframes
     // keyframes are stored on the SerializedStyles object as a linked list
 
-
     var cursor;
-    var serializeStyles = function serializeStyles(args, registered, mergedProps) {
+    function serializeStyles(args, registered, mergedProps) {
       if (args.length === 1 && typeof args[0] === 'object' && args[0] !== null && args[0].styles !== undefined) {
         return args[0];
       }
@@ -1632,11 +1566,9 @@
         stringMode = false;
         styles += handleInterpolation(mergedProps, registered, strings);
       } else {
-        if (process.env.NODE_ENV !== 'production' && strings[0] === undefined) {
-          console.error(ILLEGAL_ESCAPE_SEQUENCE_ERROR);
-        }
+        var asTemplateStringsArr = strings;
 
-        styles += strings[0];
+        styles += asTemplateStringsArr[0];
       } // we start at 1 since we've already handled the first arg
 
 
@@ -1644,21 +1576,10 @@
         styles += handleInterpolation(mergedProps, registered, args[i]);
 
         if (stringMode) {
-          if (process.env.NODE_ENV !== 'production' && strings[i] === undefined) {
-            console.error(ILLEGAL_ESCAPE_SEQUENCE_ERROR);
-          }
+          var templateStringsArr = strings;
 
-          styles += strings[i];
+          styles += templateStringsArr[i];
         }
-      }
-
-      var sourceMap;
-
-      if (process.env.NODE_ENV !== 'production') {
-        styles = styles.replace(sourceMapPattern, function (match) {
-          sourceMap = match;
-          return '';
-        });
       } // using a global regex with .exec is stateful so lastIndex has to be reset each time
 
 
@@ -1667,45 +1588,32 @@
       var match; // https://esbench.com/bench/5b809c2cf2949800a0f61fb5
 
       while ((match = labelPattern.exec(styles)) !== null) {
-        identifierName += '-' + // $FlowFixMe we know it's not null
-        match[1];
+        identifierName += '-' + match[1];
       }
 
       var name = murmur2(styles) + identifierName;
-
-      if (process.env.NODE_ENV !== 'production') {
-        // $FlowFixMe SerializedStyles type doesn't have toString property (and we don't want to add it)
-        return {
-          name: name,
-          styles: styles,
-          map: sourceMap,
-          next: cursor,
-          toString: function toString() {
-            return "You have tried to stringify object returned from `css` function. It isn't supposed to be used directly (e.g. as value of the `className` prop), but rather handed to emotion so it can handle it (e.g. as value of `css` prop).";
-          }
-        };
-      }
 
       return {
         name: name,
         styles: styles,
         next: cursor
       };
-    };
+    }
 
     var isBrowser = typeof document !== 'undefined';
+
     function getRegisteredStyles(registered, registeredStyles, classNames) {
       var rawClassName = '';
       classNames.split(' ').forEach(function (className) {
         if (registered[className] !== undefined) {
           registeredStyles.push(registered[className] + ";");
-        } else {
+        } else if (className) {
           rawClassName += className + " ";
         }
       });
       return rawClassName;
     }
-    var insertStyles = function insertStyles(cache, serialized, isStringTag) {
+    var registerStyles = function registerStyles(cache, serialized, isStringTag) {
       var className = cache.key + "-" + serialized.name;
 
       if ( // we only need to add the styles to the registered cache if the
@@ -1720,6 +1628,10 @@
       isBrowser === false && cache.compat !== undefined) && cache.registered[className] === undefined) {
         cache.registered[className] = serialized.styles;
       }
+    };
+    var insertStyles = function insertStyles(cache, serialized, isStringTag) {
+      registerStyles(cache, serialized, isStringTag);
+      var className = cache.key + "-" + serialized.name;
 
       if (cache.inserted[serialized.name] === undefined) {
         var stylesForSSR = '';
@@ -1759,12 +1671,9 @@
     }
 
     var createEmotion = function createEmotion(options) {
-      var cache = createCache(options); // $FlowFixMe
+      var cache = createCache(options);
 
       cache.sheet.speedy = function (value) {
-        if (process.env.NODE_ENV !== 'production' && this.ctr !== 0) {
-          throw new Error('speedy must be changed before any rules are inserted');
-        }
 
         this.isSpeedy = value;
       };
@@ -1827,7 +1736,6 @@
           cache.inserted = {};
           cache.sheet.flush();
         },
-        // $FlowFixMe
         sheet: cache.sheet,
         cache: cache,
         getRegisteredStyles: getRegisteredStyles.bind(null, cache.registered),
@@ -1885,6 +1793,137 @@
     }),
         injectGlobal = _createEmotion.injectGlobal,
         css = _createEmotion.css;
+
+    function ascending$1(a, b) {
+      return a == null || b == null ? NaN : a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+    }
+
+    function descending(a, b) {
+      return a == null || b == null ? NaN
+        : b < a ? -1
+        : b > a ? 1
+        : b >= a ? 0
+        : NaN;
+    }
+
+    function bisector(f) {
+      let compare1, compare2, delta;
+
+      // If an accessor is specified, promote it to a comparator. In this case we
+      // can test whether the search value is (self-) comparable. We can’t do this
+      // for a comparator (except for specific, known comparators) because we can’t
+      // tell if the comparator is symmetric, and an asymmetric comparator can’t be
+      // used to test whether a single value is comparable.
+      if (f.length !== 2) {
+        compare1 = ascending$1;
+        compare2 = (d, x) => ascending$1(f(d), x);
+        delta = (d, x) => f(d) - x;
+      } else {
+        compare1 = f === ascending$1 || f === descending ? f : zero$1;
+        compare2 = f;
+        delta = f;
+      }
+
+      function left(a, x, lo = 0, hi = a.length) {
+        if (lo < hi) {
+          if (compare1(x, x) !== 0) return hi;
+          do {
+            const mid = (lo + hi) >>> 1;
+            if (compare2(a[mid], x) < 0) lo = mid + 1;
+            else hi = mid;
+          } while (lo < hi);
+        }
+        return lo;
+      }
+
+      function right(a, x, lo = 0, hi = a.length) {
+        if (lo < hi) {
+          if (compare1(x, x) !== 0) return hi;
+          do {
+            const mid = (lo + hi) >>> 1;
+            if (compare2(a[mid], x) <= 0) lo = mid + 1;
+            else hi = mid;
+          } while (lo < hi);
+        }
+        return lo;
+      }
+
+      function center(a, x, lo = 0, hi = a.length) {
+        const i = left(a, x, lo, hi - 1);
+        return i > lo && delta(a[i - 1], x) > -delta(a[i], x) ? i - 1 : i;
+      }
+
+      return {left, center, right};
+    }
+
+    function zero$1() {
+      return 0;
+    }
+
+    function number$1(x) {
+      return x === null ? NaN : +x;
+    }
+
+    const ascendingBisect = bisector(ascending$1);
+    const bisectRight = ascendingBisect.right;
+    bisector(number$1).center;
+    var bisect = bisectRight;
+
+    const e10 = Math.sqrt(50),
+        e5 = Math.sqrt(10),
+        e2 = Math.sqrt(2);
+
+    function tickSpec(start, stop, count) {
+      const step = (stop - start) / Math.max(0, count),
+          power = Math.floor(Math.log10(step)),
+          error = step / Math.pow(10, power),
+          factor = error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1;
+      let i1, i2, inc;
+      if (power < 0) {
+        inc = Math.pow(10, -power) / factor;
+        i1 = Math.round(start * inc);
+        i2 = Math.round(stop * inc);
+        if (i1 / inc < start) ++i1;
+        if (i2 / inc > stop) --i2;
+        inc = -inc;
+      } else {
+        inc = Math.pow(10, power) * factor;
+        i1 = Math.round(start / inc);
+        i2 = Math.round(stop / inc);
+        if (i1 * inc < start) ++i1;
+        if (i2 * inc > stop) --i2;
+      }
+      if (i2 < i1 && 0.5 <= count && count < 2) return tickSpec(start, stop, count * 2);
+      return [i1, i2, inc];
+    }
+
+    function ticks(start, stop, count) {
+      stop = +stop, start = +start, count = +count;
+      if (!(count > 0)) return [];
+      if (start === stop) return [start];
+      const reverse = stop < start, [i1, i2, inc] = reverse ? tickSpec(stop, start, count) : tickSpec(start, stop, count);
+      if (!(i2 >= i1)) return [];
+      const n = i2 - i1 + 1, ticks = new Array(n);
+      if (reverse) {
+        if (inc < 0) for (let i = 0; i < n; ++i) ticks[i] = (i2 - i) / -inc;
+        else for (let i = 0; i < n; ++i) ticks[i] = (i2 - i) * inc;
+      } else {
+        if (inc < 0) for (let i = 0; i < n; ++i) ticks[i] = (i1 + i) / -inc;
+        else for (let i = 0; i < n; ++i) ticks[i] = (i1 + i) * inc;
+      }
+      return ticks;
+    }
+
+    function tickIncrement(start, stop, count) {
+      stop = +stop, start = +start, count = +count;
+      return tickSpec(start, stop, count)[2];
+    }
+
+    function tickStep(start, stop, count) {
+      stop = +stop, start = +start, count = +count;
+      const reverse = stop < start, inc = reverse ? tickIncrement(stop, start, count) : tickIncrement(start, stop, count);
+      return (reverse ? -1 : 1) * (inc < 0 ? 1 / -inc : inc);
+    }
 
     function range(start, stop, step) {
       start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
@@ -2355,7 +2394,7 @@
     }
 
     function selection_sort(compare) {
-      if (!compare) compare = ascending$1;
+      if (!compare) compare = ascending;
 
       function compareNode(a, b) {
         return a && b ? compare(a.__data__, b.__data__) : !a - !b;
@@ -2373,7 +2412,7 @@
       return new Selection$1(sortgroups, this._parents).order();
     }
 
-    function ascending$1(a, b) {
+    function ascending(a, b) {
       return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
     }
 
@@ -2930,15 +2969,15 @@
     var brighter = 1 / darker;
 
     var reI = "\\s*([+-]?\\d+)\\s*",
-        reN = "\\s*([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)\\s*",
-        reP = "\\s*([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)%\\s*",
+        reN = "\\s*([+-]?(?:\\d*\\.)?\\d+(?:[eE][+-]?\\d+)?)\\s*",
+        reP = "\\s*([+-]?(?:\\d*\\.)?\\d+(?:[eE][+-]?\\d+)?)%\\s*",
         reHex = /^#([0-9a-f]{3,8})$/,
-        reRgbInteger = new RegExp("^rgb\\(" + [reI, reI, reI] + "\\)$"),
-        reRgbPercent = new RegExp("^rgb\\(" + [reP, reP, reP] + "\\)$"),
-        reRgbaInteger = new RegExp("^rgba\\(" + [reI, reI, reI, reN] + "\\)$"),
-        reRgbaPercent = new RegExp("^rgba\\(" + [reP, reP, reP, reN] + "\\)$"),
-        reHslPercent = new RegExp("^hsl\\(" + [reN, reP, reP] + "\\)$"),
-        reHslaPercent = new RegExp("^hsla\\(" + [reN, reP, reP, reN] + "\\)$");
+        reRgbInteger = new RegExp(`^rgb\\(${reI},${reI},${reI}\\)$`),
+        reRgbPercent = new RegExp(`^rgb\\(${reP},${reP},${reP}\\)$`),
+        reRgbaInteger = new RegExp(`^rgba\\(${reI},${reI},${reI},${reN}\\)$`),
+        reRgbaPercent = new RegExp(`^rgba\\(${reP},${reP},${reP},${reN}\\)$`),
+        reHslPercent = new RegExp(`^hsl\\(${reN},${reP},${reP}\\)$`),
+        reHslaPercent = new RegExp(`^hsla\\(${reN},${reP},${reP},${reN}\\)$`);
 
     var named = {
       aliceblue: 0xf0f8ff,
@@ -3092,14 +3131,15 @@
     };
 
     define(Color, color, {
-      copy: function(channels) {
+      copy(channels) {
         return Object.assign(new this.constructor, this, channels);
       },
-      displayable: function() {
+      displayable() {
         return this.rgb().displayable();
       },
       hex: color_formatHex, // Deprecated! Use color.formatHex.
       formatHex: color_formatHex,
+      formatHex8: color_formatHex8,
       formatHsl: color_formatHsl,
       formatRgb: color_formatRgb,
       toString: color_formatRgb
@@ -3107,6 +3147,10 @@
 
     function color_formatHex() {
       return this.rgb().formatHex();
+    }
+
+    function color_formatHex8() {
+      return this.rgb().formatHex8();
     }
 
     function color_formatHsl() {
@@ -3164,18 +3208,21 @@
     }
 
     define(Rgb, rgb, extend(Color, {
-      brighter: function(k) {
+      brighter(k) {
         k = k == null ? brighter : Math.pow(brighter, k);
         return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
       },
-      darker: function(k) {
+      darker(k) {
         k = k == null ? darker : Math.pow(darker, k);
         return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
       },
-      rgb: function() {
+      rgb() {
         return this;
       },
-      displayable: function() {
+      clamp() {
+        return new Rgb(clampi(this.r), clampi(this.g), clampi(this.b), clampa(this.opacity));
+      },
+      displayable() {
         return (-0.5 <= this.r && this.r < 255.5)
             && (-0.5 <= this.g && this.g < 255.5)
             && (-0.5 <= this.b && this.b < 255.5)
@@ -3183,25 +3230,34 @@
       },
       hex: rgb_formatHex, // Deprecated! Use color.formatHex.
       formatHex: rgb_formatHex,
+      formatHex8: rgb_formatHex8,
       formatRgb: rgb_formatRgb,
       toString: rgb_formatRgb
     }));
 
     function rgb_formatHex() {
-      return "#" + hex(this.r) + hex(this.g) + hex(this.b);
+      return `#${hex(this.r)}${hex(this.g)}${hex(this.b)}`;
+    }
+
+    function rgb_formatHex8() {
+      return `#${hex(this.r)}${hex(this.g)}${hex(this.b)}${hex((isNaN(this.opacity) ? 1 : this.opacity) * 255)}`;
     }
 
     function rgb_formatRgb() {
-      var a = this.opacity; a = isNaN(a) ? 1 : Math.max(0, Math.min(1, a));
-      return (a === 1 ? "rgb(" : "rgba(")
-          + Math.max(0, Math.min(255, Math.round(this.r) || 0)) + ", "
-          + Math.max(0, Math.min(255, Math.round(this.g) || 0)) + ", "
-          + Math.max(0, Math.min(255, Math.round(this.b) || 0))
-          + (a === 1 ? ")" : ", " + a + ")");
+      const a = clampa(this.opacity);
+      return `${a === 1 ? "rgb(" : "rgba("}${clampi(this.r)}, ${clampi(this.g)}, ${clampi(this.b)}${a === 1 ? ")" : `, ${a})`}`;
+    }
+
+    function clampa(opacity) {
+      return isNaN(opacity) ? 1 : Math.max(0, Math.min(1, opacity));
+    }
+
+    function clampi(value) {
+      return Math.max(0, Math.min(255, Math.round(value) || 0));
     }
 
     function hex(value) {
-      value = Math.max(0, Math.min(255, Math.round(value) || 0));
+      value = clampi(value);
       return (value < 16 ? "0" : "") + value.toString(16);
     }
 
@@ -3250,15 +3306,15 @@
     }
 
     define(Hsl, hsl, extend(Color, {
-      brighter: function(k) {
+      brighter(k) {
         k = k == null ? brighter : Math.pow(brighter, k);
         return new Hsl(this.h, this.s, this.l * k, this.opacity);
       },
-      darker: function(k) {
+      darker(k) {
         k = k == null ? darker : Math.pow(darker, k);
         return new Hsl(this.h, this.s, this.l * k, this.opacity);
       },
-      rgb: function() {
+      rgb() {
         var h = this.h % 360 + (this.h < 0) * 360,
             s = isNaN(h) || isNaN(this.s) ? 0 : this.s,
             l = this.l,
@@ -3271,20 +3327,28 @@
           this.opacity
         );
       },
-      displayable: function() {
+      clamp() {
+        return new Hsl(clamph(this.h), clampt(this.s), clampt(this.l), clampa(this.opacity));
+      },
+      displayable() {
         return (0 <= this.s && this.s <= 1 || isNaN(this.s))
             && (0 <= this.l && this.l <= 1)
             && (0 <= this.opacity && this.opacity <= 1);
       },
-      formatHsl: function() {
-        var a = this.opacity; a = isNaN(a) ? 1 : Math.max(0, Math.min(1, a));
-        return (a === 1 ? "hsl(" : "hsla(")
-            + (this.h || 0) + ", "
-            + (this.s || 0) * 100 + "%, "
-            + (this.l || 0) * 100 + "%"
-            + (a === 1 ? ")" : ", " + a + ")");
+      formatHsl() {
+        const a = clampa(this.opacity);
+        return `${a === 1 ? "hsl(" : "hsla("}${clamph(this.h)}, ${clampt(this.s) * 100}%, ${clampt(this.l) * 100}%${a === 1 ? ")" : `, ${a})`}`;
       }
     }));
+
+    function clamph(value) {
+      value = (value || 0) % 360;
+      return value < 0 ? value + 360 : value;
+    }
+
+    function clampt(value) {
+      return Math.max(0, Math.min(1, value || 0));
+    }
 
     /* From FvD 13.37, CSS Color Module Level 3 */
     function hsl2rgb(h, m1, m2) {
@@ -4589,39 +4653,58 @@
         epsilon$1 = 1e-6,
         tauEpsilon = tau$1 - epsilon$1;
 
-    function Path() {
-      this._x0 = this._y0 = // start of current subpath
-      this._x1 = this._y1 = null; // end of current subpath
-      this._ = "";
+    function append(strings) {
+      this._ += strings[0];
+      for (let i = 1, n = strings.length; i < n; ++i) {
+        this._ += arguments[i] + strings[i];
+      }
     }
 
-    function path() {
-      return new Path;
+    function appendRound(digits) {
+      let d = Math.floor(digits);
+      if (!(d >= 0)) throw new Error(`invalid digits: ${digits}`);
+      if (d > 15) return append;
+      const k = 10 ** d;
+      return function(strings) {
+        this._ += strings[0];
+        for (let i = 1, n = strings.length; i < n; ++i) {
+          this._ += Math.round(arguments[i] * k) / k + strings[i];
+        }
+      };
     }
 
-    Path.prototype = path.prototype = {
-      constructor: Path,
-      moveTo: function(x, y) {
-        this._ += "M" + (this._x0 = this._x1 = +x) + "," + (this._y0 = this._y1 = +y);
-      },
-      closePath: function() {
+    class Path {
+      constructor(digits) {
+        this._x0 = this._y0 = // start of current subpath
+        this._x1 = this._y1 = null; // end of current subpath
+        this._ = "";
+        this._append = digits == null ? append : appendRound(digits);
+      }
+      moveTo(x, y) {
+        this._append`M${this._x0 = this._x1 = +x},${this._y0 = this._y1 = +y}`;
+      }
+      closePath() {
         if (this._x1 !== null) {
           this._x1 = this._x0, this._y1 = this._y0;
-          this._ += "Z";
+          this._append`Z`;
         }
-      },
-      lineTo: function(x, y) {
-        this._ += "L" + (this._x1 = +x) + "," + (this._y1 = +y);
-      },
-      quadraticCurveTo: function(x1, y1, x, y) {
-        this._ += "Q" + (+x1) + "," + (+y1) + "," + (this._x1 = +x) + "," + (this._y1 = +y);
-      },
-      bezierCurveTo: function(x1, y1, x2, y2, x, y) {
-        this._ += "C" + (+x1) + "," + (+y1) + "," + (+x2) + "," + (+y2) + "," + (this._x1 = +x) + "," + (this._y1 = +y);
-      },
-      arcTo: function(x1, y1, x2, y2, r) {
+      }
+      lineTo(x, y) {
+        this._append`L${this._x1 = +x},${this._y1 = +y}`;
+      }
+      quadraticCurveTo(x1, y1, x, y) {
+        this._append`Q${+x1},${+y1},${this._x1 = +x},${this._y1 = +y}`;
+      }
+      bezierCurveTo(x1, y1, x2, y2, x, y) {
+        this._append`C${+x1},${+y1},${+x2},${+y2},${this._x1 = +x},${this._y1 = +y}`;
+      }
+      arcTo(x1, y1, x2, y2, r) {
         x1 = +x1, y1 = +y1, x2 = +x2, y2 = +y2, r = +r;
-        var x0 = this._x1,
+
+        // Is the radius negative? Error.
+        if (r < 0) throw new Error(`negative radius: ${r}`);
+
+        let x0 = this._x1,
             y0 = this._y1,
             x21 = x2 - x1,
             y21 = y2 - y1,
@@ -4629,12 +4712,9 @@
             y01 = y0 - y1,
             l01_2 = x01 * x01 + y01 * y01;
 
-        // Is the radius negative? Error.
-        if (r < 0) throw new Error("negative radius: " + r);
-
         // Is this path empty? Move to (x1,y1).
         if (this._x1 === null) {
-          this._ += "M" + (this._x1 = x1) + "," + (this._y1 = y1);
+          this._append`M${this._x1 = x1},${this._y1 = y1}`;
         }
 
         // Or, is (x1,y1) coincident with (x0,y0)? Do nothing.
@@ -4644,12 +4724,12 @@
         // Equivalently, is (x1,y1) coincident with (x2,y2)?
         // Or, is the radius zero? Line to (x1,y1).
         else if (!(Math.abs(y01 * x21 - y21 * x01) > epsilon$1) || !r) {
-          this._ += "L" + (this._x1 = x1) + "," + (this._y1 = y1);
+          this._append`L${this._x1 = x1},${this._y1 = y1}`;
         }
 
         // Otherwise, draw an arc!
         else {
-          var x20 = x2 - x0,
+          let x20 = x2 - x0,
               y20 = y2 - y0,
               l21_2 = x21 * x21 + y21 * y21,
               l20_2 = x20 * x20 + y20 * y20,
@@ -4661,32 +4741,33 @@
 
           // If the start tangent is not coincident with (x0,y0), line to.
           if (Math.abs(t01 - 1) > epsilon$1) {
-            this._ += "L" + (x1 + t01 * x01) + "," + (y1 + t01 * y01);
+            this._append`L${x1 + t01 * x01},${y1 + t01 * y01}`;
           }
 
-          this._ += "A" + r + "," + r + ",0,0," + (+(y01 * x20 > x01 * y20)) + "," + (this._x1 = x1 + t21 * x21) + "," + (this._y1 = y1 + t21 * y21);
+          this._append`A${r},${r},0,0,${+(y01 * x20 > x01 * y20)},${this._x1 = x1 + t21 * x21},${this._y1 = y1 + t21 * y21}`;
         }
-      },
-      arc: function(x, y, r, a0, a1, ccw) {
+      }
+      arc(x, y, r, a0, a1, ccw) {
         x = +x, y = +y, r = +r, ccw = !!ccw;
-        var dx = r * Math.cos(a0),
+
+        // Is the radius negative? Error.
+        if (r < 0) throw new Error(`negative radius: ${r}`);
+
+        let dx = r * Math.cos(a0),
             dy = r * Math.sin(a0),
             x0 = x + dx,
             y0 = y + dy,
             cw = 1 ^ ccw,
             da = ccw ? a0 - a1 : a1 - a0;
 
-        // Is the radius negative? Error.
-        if (r < 0) throw new Error("negative radius: " + r);
-
         // Is this path empty? Move to (x0,y0).
         if (this._x1 === null) {
-          this._ += "M" + x0 + "," + y0;
+          this._append`M${x0},${y0}`;
         }
 
         // Or, is (x0,y0) not coincident with the previous point? Line to (x0,y0).
         else if (Math.abs(this._x1 - x0) > epsilon$1 || Math.abs(this._y1 - y0) > epsilon$1) {
-          this._ += "L" + x0 + "," + y0;
+          this._append`L${x0},${y0}`;
         }
 
         // Is this arc empty? We’re done.
@@ -4697,132 +4778,20 @@
 
         // Is this a complete circle? Draw two arcs to complete the circle.
         if (da > tauEpsilon) {
-          this._ += "A" + r + "," + r + ",0,1," + cw + "," + (x - dx) + "," + (y - dy) + "A" + r + "," + r + ",0,1," + cw + "," + (this._x1 = x0) + "," + (this._y1 = y0);
+          this._append`A${r},${r},0,1,${cw},${x - dx},${y - dy}A${r},${r},0,1,${cw},${this._x1 = x0},${this._y1 = y0}`;
         }
 
         // Is this arc non-empty? Draw an arc!
         else if (da > epsilon$1) {
-          this._ += "A" + r + "," + r + ",0," + (+(da >= pi$1)) + "," + cw + "," + (this._x1 = x + r * Math.cos(a1)) + "," + (this._y1 = y + r * Math.sin(a1));
+          this._append`A${r},${r},0,${+(da >= pi$1)},${cw},${this._x1 = x + r * Math.cos(a1)},${this._y1 = y + r * Math.sin(a1)}`;
         }
-      },
-      rect: function(x, y, w, h) {
-        this._ += "M" + (this._x0 = this._x1 = +x) + "," + (this._y0 = this._y1 = +y) + "h" + (+w) + "v" + (+h) + "h" + (-w) + "Z";
-      },
-      toString: function() {
+      }
+      rect(x, y, w, h) {
+        this._append`M${this._x0 = this._x1 = +x},${this._y0 = this._y1 = +y}h${w = +w}v${+h}h${-w}Z`;
+      }
+      toString() {
         return this._;
       }
-    };
-
-    function ascending(a, b) {
-      return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
-    }
-
-    function bisector(f) {
-      let delta = f;
-      let compare = f;
-
-      if (f.length === 1) {
-        delta = (d, x) => f(d) - x;
-        compare = ascendingComparator(f);
-      }
-
-      function left(a, x, lo, hi) {
-        if (lo == null) lo = 0;
-        if (hi == null) hi = a.length;
-        while (lo < hi) {
-          const mid = (lo + hi) >>> 1;
-          if (compare(a[mid], x) < 0) lo = mid + 1;
-          else hi = mid;
-        }
-        return lo;
-      }
-
-      function right(a, x, lo, hi) {
-        if (lo == null) lo = 0;
-        if (hi == null) hi = a.length;
-        while (lo < hi) {
-          const mid = (lo + hi) >>> 1;
-          if (compare(a[mid], x) > 0) hi = mid;
-          else lo = mid + 1;
-        }
-        return lo;
-      }
-
-      function center(a, x, lo, hi) {
-        if (lo == null) lo = 0;
-        if (hi == null) hi = a.length;
-        const i = left(a, x, lo, hi - 1);
-        return i > lo && delta(a[i - 1], x) > -delta(a[i], x) ? i - 1 : i;
-      }
-
-      return {left, center, right};
-    }
-
-    function ascendingComparator(f) {
-      return (d, x) => ascending(f(d), x);
-    }
-
-    function number$1(x) {
-      return x === null ? NaN : +x;
-    }
-
-    const ascendingBisect = bisector(ascending);
-    const bisectRight = ascendingBisect.right;
-    bisector(number$1).center;
-
-    var e10 = Math.sqrt(50),
-        e5 = Math.sqrt(10),
-        e2 = Math.sqrt(2);
-
-    function ticks(start, stop, count) {
-      var reverse,
-          i = -1,
-          n,
-          ticks,
-          step;
-
-      stop = +stop, start = +start, count = +count;
-      if (start === stop && count > 0) return [start];
-      if (reverse = stop < start) n = start, start = stop, stop = n;
-      if ((step = tickIncrement(start, stop, count)) === 0 || !isFinite(step)) return [];
-
-      if (step > 0) {
-        let r0 = Math.round(start / step), r1 = Math.round(stop / step);
-        if (r0 * step < start) ++r0;
-        if (r1 * step > stop) --r1;
-        ticks = new Array(n = r1 - r0 + 1);
-        while (++i < n) ticks[i] = (r0 + i) * step;
-      } else {
-        step = -step;
-        let r0 = Math.round(start * step), r1 = Math.round(stop * step);
-        if (r0 / step < start) ++r0;
-        if (r1 / step > stop) --r1;
-        ticks = new Array(n = r1 - r0 + 1);
-        while (++i < n) ticks[i] = (r0 + i) / step;
-      }
-
-      if (reverse) ticks.reverse();
-
-      return ticks;
-    }
-
-    function tickIncrement(start, stop, count) {
-      var step = (stop - start) / Math.max(0, count),
-          power = Math.floor(Math.log(step) / Math.LN10),
-          error = step / Math.pow(10, power);
-      return power >= 0
-          ? (error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1) * Math.pow(10, power)
-          : -Math.pow(10, -power) / (error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1);
-    }
-
-    function tickStep(start, stop, count) {
-      var step0 = Math.abs(stop - start) / Math.max(0, count),
-          step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
-          error = step0 / step1;
-      if (error >= e10) step1 *= 10;
-      else if (error >= e5) step1 *= 5;
-      else if (error >= e2) step1 *= 2;
-      return stop < start ? -step1 : step1;
     }
 
     function formatDecimal(x) {
@@ -5216,7 +5185,7 @@
       }
 
       return function(x) {
-        var i = bisectRight(domain, x, 1, j) - 1;
+        var i = bisect(domain, x, 1, j) - 1;
         return r[i](d[i](x));
       };
     }
@@ -5434,18 +5403,18 @@
       };
     }
 
-    var abs = Math.abs;
-    var atan2 = Math.atan2;
-    var cos = Math.cos;
-    var max = Math.max;
-    var min = Math.min;
-    var sin = Math.sin;
-    var sqrt = Math.sqrt;
+    const abs = Math.abs;
+    const atan2 = Math.atan2;
+    const cos = Math.cos;
+    const max = Math.max;
+    const min = Math.min;
+    const sin = Math.sin;
+    const sqrt = Math.sqrt;
 
-    var epsilon = 1e-12;
-    var pi = Math.PI;
-    var halfPi = pi / 2;
-    var tau = 2 * pi;
+    const epsilon = 1e-12;
+    const pi = Math.PI;
+    const halfPi = pi / 2;
+    const tau = 2 * pi;
 
     function acos(x) {
       return x > 1 ? 0 : x < -1 ? pi : Math.acos(x);
@@ -5453,6 +5422,24 @@
 
     function asin(x) {
       return x >= 1 ? halfPi : x <= -1 ? -halfPi : Math.asin(x);
+    }
+
+    function withPath(shape) {
+      let digits = 3;
+
+      shape.digits = function(_) {
+        if (!arguments.length) return digits;
+        if (_ == null) {
+          digits = null;
+        } else {
+          const d = Math.floor(_);
+          if (!(d >= 0)) throw new RangeError(`invalid digits: ${_}`);
+          digits = d;
+        }
+        return shape;
+      };
+
+      return () => new Path(digits);
     }
 
     function arcInnerRadius(d) {
@@ -5535,7 +5522,8 @@
           startAngle = arcStartAngle,
           endAngle = arcEndAngle,
           padAngle = arcPadAngle,
-          context = null;
+          context = null,
+          path = withPath(arc);
 
       function arc() {
         var buffer,
@@ -5604,16 +5592,22 @@
                 y00 = r0 * sin(a00),
                 oc;
 
-            // Restrict the corner radius according to the sector angle.
-            if (da < pi && (oc = intersect(x01, y01, x00, y00, x11, y11, x10, y10))) {
-              var ax = x01 - oc[0],
-                  ay = y01 - oc[1],
-                  bx = x11 - oc[0],
-                  by = y11 - oc[1],
-                  kc = 1 / sin(acos((ax * bx + ay * by) / (sqrt(ax * ax + ay * ay) * sqrt(bx * bx + by * by))) / 2),
-                  lc = sqrt(oc[0] * oc[0] + oc[1] * oc[1]);
-              rc0 = min(rc, (r0 - lc) / (kc - 1));
-              rc1 = min(rc, (r1 - lc) / (kc + 1));
+            // Restrict the corner radius according to the sector angle. If this
+            // intersection fails, it’s probably because the arc is too small, so
+            // disable the corner radius entirely.
+            if (da < pi) {
+              if (oc = intersect(x01, y01, x00, y00, x11, y11, x10, y10)) {
+                var ax = x01 - oc[0],
+                    ay = y01 - oc[1],
+                    bx = x11 - oc[0],
+                    by = y11 - oc[1],
+                    kc = 1 / sin(acos((ax * bx + ay * by) / (sqrt(ax * ax + ay * ay) * sqrt(bx * bx + by * by))) / 2),
+                    lc = sqrt(oc[0] * oc[0] + oc[1] * oc[1]);
+                rc0 = min(rc, (r0 - lc) / (kc - 1));
+                rc1 = min(rc, (r1 - lc) / (kc + 1));
+              } else {
+                rc0 = rc1 = 0;
+              }
             }
           }
 
@@ -5763,7 +5757,8 @@
       var defined = constant(true),
           context = null,
           curve = curveLinear,
-          output = null;
+          output = null,
+          path = withPath(line);
 
       x$1 = typeof x$1 === "function" ? x$1 : (x$1 === undefined) ? x : constant(x$1);
       y$1 = typeof y$1 === "function" ? y$1 : (y$1 === undefined) ? y : constant(y$1);
@@ -5810,6 +5805,53 @@
 
       return line;
     }
+
+    function Transform(k, x, y) {
+      this.k = k;
+      this.x = x;
+      this.y = y;
+    }
+
+    Transform.prototype = {
+      constructor: Transform,
+      scale: function(k) {
+        return k === 1 ? this : new Transform(this.k * k, this.x, this.y);
+      },
+      translate: function(x, y) {
+        return x === 0 & y === 0 ? this : new Transform(this.k, this.x + this.k * x, this.y + this.k * y);
+      },
+      apply: function(point) {
+        return [point[0] * this.k + this.x, point[1] * this.k + this.y];
+      },
+      applyX: function(x) {
+        return x * this.k + this.x;
+      },
+      applyY: function(y) {
+        return y * this.k + this.y;
+      },
+      invert: function(location) {
+        return [(location[0] - this.x) / this.k, (location[1] - this.y) / this.k];
+      },
+      invertX: function(x) {
+        return (x - this.x) / this.k;
+      },
+      invertY: function(y) {
+        return (y - this.y) / this.k;
+      },
+      rescaleX: function(x) {
+        return x.copy().domain(x.range().map(this.invertX, this).map(x.invert, x));
+      },
+      rescaleY: function(y) {
+        return y.copy().domain(y.range().map(this.invertY, this).map(y.invert, y));
+      },
+      toString: function() {
+        return "translate(" + this.x + "," + this.y + ") scale(" + this.k + ")";
+      }
+    };
+
+    new Transform(1, 0, 0);
+
+    Transform.prototype;
 
     const identity = v => v;
 
@@ -5904,47 +5946,123 @@
         return f;
     }
 
-    var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
+    function isWrapper(wrapper) {
+        return (wrapper != null &&
+            typeof wrapper === 'object' &&
+            'create' in wrapper &&
+            typeof wrapper.create === 'function' &&
+            'add' in wrapper &&
+            typeof wrapper.add === 'function' &&
+            'sub' in wrapper &&
+            typeof wrapper.sub === 'function' &&
+            'mul' in wrapper &&
+            typeof wrapper.mul === 'function' &&
+            'div' in wrapper &&
+            typeof wrapper.div === 'function' &&
+            'lt' in wrapper &&
+            typeof wrapper.lt === 'function' &&
+            'lte' in wrapper &&
+            typeof wrapper.lte === 'function' &&
+            'gt' in wrapper &&
+            typeof wrapper.gt === 'function' &&
+            'gte' in wrapper &&
+            typeof wrapper.gte === 'function');
+    }
+    class NotAValidNumber extends Error {
+    }
+
+    const DefaultWrapper = {
+        create(value) {
+            const result = Number(value);
+            if (Number.isNaN(result)) {
+                throw new NotAValidNumber(`"${value}" cannot be parsed into a number`);
             }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
+            return result;
+        },
+        add(left, right) {
+            return Number(left) + Number(right);
+        },
+        sub(left, right) {
+            return Number(left) - Number(right);
+        },
+        mul(left, right) {
+            return Number(left) * Number(right);
+        },
+        div(left, right) {
+            return Number(left) / Number(right);
+        },
+        lt(left, right) {
+            return Number(left) < Number(right);
+        },
+        lte(left, right) {
+            return Number(left) <= Number(right);
+        },
+        gt(left, right) {
+            return Number(left) > Number(right);
+        },
+        gte(left, right) {
+            return Number(left) >= Number(right);
+        },
     };
+
+    function isFraction(value) {
+        return (value != null &&
+            typeof value === 'object' &&
+            'numerator' in value &&
+            (typeof value.numerator === 'number' ||
+                typeof value.numerator === 'string') &&
+            'denominator' in value &&
+            (typeof value.denominator === 'number' ||
+                typeof value.denominator === 'string'));
+    }
+    class UnknownUnitError extends Error {
+    }
+    class OperationOrderError extends Error {
+    }
+    class IncompatibleUnitError extends Error {
+    }
+    class MeasureStructureError extends Error {
+    }
+    class UnknownMeasureError extends Error {
+    }
     /**
      * Represents a conversion path
      */
-    var Converter = /** @class */ (function () {
-        function Converter(measures, value) {
-            this.val = 0;
+    class Converter {
+        constructor(options, value) {
             this.destination = null;
             this.origin = null;
-            if (typeof value === 'number') {
-                this.val = value;
-            }
-            if (typeof measures !== 'object') {
-                throw new Error('Measures cannot be blank');
-            }
-            this.measureData = measures;
+            this.cls = options.cls;
+            this.val = this.cls.create(value ? value : 0);
+            this.measureData = options.measures;
+            this.unitCache = options.unitCache;
         }
         /**
          * Lets the converter know the source unit abbreviation
+         *
+         * @throws OperationOrderError, UnknownUnitError
          */
-        Converter.prototype.from = function (from) {
+        from(from) {
             if (this.destination != null)
-                throw new Error('.from must be called before .to');
+                throw new OperationOrderError('.from must be called before .to');
             this.origin = this.getUnit(from);
             if (this.origin == null) {
                 this.throwUnsupportedUnitError(from);
             }
             return this;
-        };
+        }
+        convertFraction(value) {
+            if (isFraction(value)) {
+                return this.cls.div(value.numerator, value.denominator);
+            }
+            return this.cls.create(value);
+        }
         /**
          * Converts the unit and returns the value
+         *
+         * @throws OperationOrderError, UnknownUnitError, IncompatibleUnitError, MeasureStructureError
          */
-        Converter.prototype.to = function (to) {
+        to(to) {
             var _a, _b;
             if (this.origin == null)
                 throw new Error('.to must be called after .from');
@@ -5952,27 +6070,27 @@
             if (this.destination == null) {
                 this.throwUnsupportedUnitError(to);
             }
-            var destination = this.destination;
-            var origin = this.origin;
+            const destination = this.destination;
+            const origin = this.origin;
             // Don't change the value if origin and destination are the same
             if (origin.abbr === destination.abbr) {
                 return this.val;
             }
             // You can't go from liquid to mass, for example
             if (destination.measure != origin.measure) {
-                throw new Error("Cannot convert incompatible measures of " + destination.measure + " and " + origin.measure);
+                throw new IncompatibleUnitError(`Cannot convert incompatible measures of ${destination.measure} and ${origin.measure}`);
             }
             /**
              * Convert from the source value to its anchor inside the system
              */
-            var result = this.val * origin.unit.to_anchor;
+            let result = this.cls.mul(this.val, this.convertFraction(origin.unit.to_anchor));
             /**
              * For some changes it's a simple shift (C to K)
-             * So we'll add it when convering into the unit (later)
+             * So we'll add it when converting into the unit (later)
              * and subtract it when converting from the unit
              */
             if (origin.unit.anchor_shift) {
-                result -= origin.unit.anchor_shift;
+                result = this.cls.sub(result, this.convertFraction(origin.unit.anchor_shift));
             }
             /**
              * Convert from one system to another through the anchor ratio. Some conversions
@@ -5980,69 +6098,81 @@
              * transform here to provide the direct result
              */
             if (origin.system != destination.system) {
-                var measure = this.measureData[origin.measure];
-                var anchors = measure.anchors;
+                const measure = this.measureData[origin.measure];
+                const anchors = measure.anchors;
                 if (anchors == null) {
-                    throw new Error("Unable to convert units. Anchors are missing for \"" + origin.measure + "\" and \"" + destination.measure + "\" measures.");
+                    throw new MeasureStructureError(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
                 }
-                var anchor = anchors[origin.system];
+                const anchor = anchors[origin.system];
                 if (anchor == null) {
-                    throw new Error("Unable to find anchor for \"" + origin.measure + "\" to \"" + destination.measure + "\". Please make sure it is defined.");
+                    throw new MeasureStructureError(`Unable to find anchor for "${origin.measure}" to "${destination.measure}". Please make sure it is defined.`);
                 }
-                var transform = (_a = anchor[destination.system]) === null || _a === void 0 ? void 0 : _a.transform;
-                var ratio = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
+                const transform = (_a = anchor[destination.system]) === null || _a === void 0 ? void 0 : _a.transform;
+                const ratio = (_b = anchor[destination.system]) === null || _b === void 0 ? void 0 : _b.ratio;
                 if (typeof transform === 'function') {
-                    result = transform(result);
+                    result = transform(result, this.cls);
                 }
                 else if (typeof ratio === 'number') {
-                    result *= ratio;
+                    result = this.cls.mul(result, ratio);
+                }
+                else if (isFraction(ratio)) {
+                    result = this.cls.mul(result, this.convertFraction(ratio));
                 }
                 else {
-                    throw new Error('A system anchor needs to either have a defined ratio number or a transform function.');
+                    throw new MeasureStructureError('A system anchor needs to either have a defined ratio number or a transform function.');
                 }
             }
             /**
              * This shift has to be done after the system conversion business
              */
             if (destination.unit.anchor_shift) {
-                result += destination.unit.anchor_shift;
+                result = this.cls.add(result, this.convertFraction(destination.unit.anchor_shift));
             }
             /**
              * Convert to another unit inside the destination system
              */
-            return result / destination.unit.to_anchor;
-        };
+            return this.cls.div(result, this.convertFraction(destination.unit.to_anchor));
+        }
         /**
          * Converts the unit to the best available unit.
+         *
+         * @throws OperationOrderError
          */
-        Converter.prototype.toBest = function (options) {
+        toBest(options) {
             var _a, _b, _c;
             if (this.origin == null)
-                throw new Error('.toBest must be called after .from');
-            var exclude = [];
-            var cutOffNumber = 1;
-            var system = this.origin.system;
+                throw new OperationOrderError('.toBest must be called after .from');
+            const isNegative = this.cls.lt(this.val, 0);
+            let exclude = [];
+            let cutOffNumber = isNegative ? -1 : 1;
+            let system = this.origin.system;
             if (typeof options === 'object') {
                 exclude = (_a = options.exclude) !== null && _a !== void 0 ? _a : [];
-                cutOffNumber = (_b = options.cutOffNumber) !== null && _b !== void 0 ? _b : 1;
+                cutOffNumber = (_b = options.cutOffNumber) !== null && _b !== void 0 ? _b : cutOffNumber;
                 system = (_c = options.system) !== null && _c !== void 0 ? _c : this.origin.system;
             }
-            var best = null;
+            let best = null;
             /**
               Looks through every possibility for the 'best' available unit.
               i.e. Where the value has the fewest numbers before the decimal point,
               but is still higher than 1.
             */
-            for (var _i = 0, _d = this.possibilities(); _i < _d.length; _i++) {
-                var possibility = _d[_i];
-                var unit = this.describe(possibility);
-                var isIncluded = exclude.indexOf(possibility) === -1;
+            for (const possibility of this.possibilities()) {
+                const unit = this.describe(possibility);
+                const isIncluded = exclude.indexOf(possibility) === -1;
                 if (isIncluded && unit.system === system) {
-                    var result = this.to(possibility);
-                    if (result < cutOffNumber) {
+                    const result = this.to(possibility);
+                    if (isNegative
+                        ? this.cls.gt(result, cutOffNumber)
+                        : this.cls.lt(result, cutOffNumber)) {
                         continue;
                     }
-                    if (best == null || (result >= cutOffNumber && result < best.val)) {
+                    if (best === null ||
+                        (isNegative
+                            ? this.cls.lte(result, cutOffNumber) &&
+                                this.cls.gt(result, best.val)
+                            : this.cls.gte(result, cutOffNumber) &&
+                                this.cls.lt(result, best.val))) {
                         best = {
                             val: result,
                             unit: possibility,
@@ -6052,43 +6182,36 @@
                     }
                 }
             }
+            if (best == null) {
+                return {
+                    val: this.val,
+                    unit: this.origin.abbr,
+                    singular: this.origin.unit.name.singular,
+                    plural: this.origin.unit.name.plural,
+                };
+            }
             return best;
-        };
+        }
         /**
          * Finds the unit
          */
-        Converter.prototype.getUnit = function (abbr) {
-            var found = null;
-            for (var _i = 0, _a = Object.entries(this.measureData); _i < _a.length; _i++) {
-                var _b = _a[_i], measureName = _b[0], measure = _b[1];
-                for (var _c = 0, _d = Object.entries(measure.systems); _c < _d.length; _c++) {
-                    var _e = _d[_c], systemName = _e[0], system = _e[1];
-                    for (var _f = 0, _g = Object.entries(system); _f < _g.length; _f++) {
-                        var _h = _g[_f], testAbbr = _h[0], unit = _h[1];
-                        if (testAbbr == abbr) {
-                            return {
-                                abbr: abbr,
-                                measure: measureName,
-                                system: systemName,
-                                unit: unit,
-                            };
-                        }
-                    }
-                }
-            }
-            return found;
-        };
+        getUnit(abbr) {
+            var _a;
+            return (_a = this.unitCache.get(abbr)) !== null && _a !== void 0 ? _a : null;
+        }
         /**
-         * An alias for getUnit
+         * Provides additional information about the unit
+         *
+         * @throws UnknownUnitError
          */
-        Converter.prototype.describe = function (abbr) {
-            var result = this.getUnit(abbr);
+        describe(abbr) {
+            const result = this.getUnit(abbr);
             if (result != null) {
                 return this.describeUnit(result);
             }
             this.throwUnsupportedUnitError(abbr);
-        };
-        Converter.prototype.describeUnit = function (unit) {
+        }
+        describeUnit(unit) {
             return {
                 abbr: unit.abbr,
                 measure: unit.measure,
@@ -6096,7 +6219,7 @@
                 singular: unit.unit.name.singular,
                 plural: unit.unit.name.plural,
             };
-        };
+        }
         /**
          * Detailed list of all supported units
          *
@@ -6107,19 +6230,17 @@
          * However, if the measure doesn't exist, an empty array will be
          * returned
          *
+         *
          */
-        Converter.prototype.list = function (measureName) {
-            var list = [];
+        list(measureName) {
+            const list = [];
             if (measureName == null) {
-                for (var _i = 0, _a = Object.entries(this.measureData); _i < _a.length; _i++) {
-                    var _b = _a[_i], name_1 = _b[0], measure = _b[1];
-                    for (var _c = 0, _d = Object.entries(measure.systems); _c < _d.length; _c++) {
-                        var _e = _d[_c], systemName = _e[0], units = _e[1];
-                        for (var _f = 0, _g = Object.entries(units); _f < _g.length; _f++) {
-                            var _h = _g[_f], abbr = _h[0], unit = _h[1];
+                for (const [name, measure] of Object.entries(this.measureData)) {
+                    for (const [systemName, units] of Object.entries(measure.systems)) {
+                        for (const [abbr, unit] of Object.entries(units)) {
                             list.push(this.describeUnit({
                                 abbr: abbr,
-                                measure: name_1,
+                                measure: name,
                                 system: systemName,
                                 unit: unit,
                             }));
@@ -6127,15 +6248,12 @@
                     }
                 }
             }
-            else if (!(measureName in this.measureData)) {
-                throw new Error("Meausre \"" + measureName + "\" not found.");
-            }
             else {
-                var measure = this.measureData[measureName];
-                for (var _j = 0, _k = Object.entries(measure.systems); _j < _k.length; _j++) {
-                    var _l = _k[_j], systemName = _l[0], units = _l[1];
-                    for (var _m = 0, _o = Object.entries(units); _m < _o.length; _m++) {
-                        var _p = _o[_m], abbr = _p[0], unit = _p[1];
+                if (!this.isMeasure(measureName))
+                    throw new UnknownMeasureError(`Meausure "${measureName}" not found.`);
+                const measure = this.measureData[measureName];
+                for (const [systemName, units] of Object.entries(measure.systems)) {
+                    for (const [abbr, unit] of Object.entries(units)) {
                         list.push(this.describeUnit({
                             abbr: abbr,
                             measure: measureName,
@@ -6146,26 +6264,27 @@
                 }
             }
             return list;
-        };
-        Converter.prototype.throwUnsupportedUnitError = function (what) {
-            var validUnits = [];
-            for (var _i = 0, _a = Object.values(this.measureData); _i < _a.length; _i++) {
-                var measure = _a[_i];
-                for (var _b = 0, _c = Object.values(measure.systems); _b < _c.length; _b++) {
-                    var systems = _c[_b];
+        }
+        isMeasure(measureName) {
+            return measureName in this.measureData;
+        }
+        throwUnsupportedUnitError(what) {
+            let validUnits = [];
+            for (const measure of Object.values(this.measureData)) {
+                for (const systems of Object.values(measure.systems)) {
                     validUnits = validUnits.concat(Object.keys(systems));
                 }
             }
-            throw new Error("Unsupported unit " + what + ", use one of: " + validUnits.join(', '));
-        };
+            throw new UnknownUnitError(`Unsupported unit ${what}, use one of: ${validUnits.join(', ')}`);
+        }
         /**
          * Returns the abbreviated measures that the value can be
          * converted to.
          */
-        Converter.prototype.possibilities = function (forMeasure) {
-            var possibilities = [];
-            var list_measures = [];
-            if (typeof forMeasure == 'string') {
+        possibilities(forMeasure) {
+            let possibilities = [];
+            let list_measures = [];
+            if (typeof forMeasure == 'string' && this.isMeasure(forMeasure)) {
                 list_measures.push(forMeasure);
             }
             else if (this.origin != null) {
@@ -6174,32 +6293,63 @@
             else {
                 list_measures = Object.keys(this.measureData);
             }
-            for (var _i = 0, list_measures_1 = list_measures; _i < list_measures_1.length; _i++) {
-                var measure = list_measures_1[_i];
-                var systems = this.measureData[measure].systems;
-                for (var _a = 0, _b = Object.values(systems); _a < _b.length; _a++) {
-                    var system = _b[_a];
-                    possibilities = __spreadArray(__spreadArray([], possibilities, true), Object.keys(system), true);
+            for (const measure of list_measures) {
+                const systems = this.measureData[measure].systems;
+                for (const system of Object.values(systems)) {
+                    possibilities = [
+                        ...possibilities,
+                        ...Object.keys(system),
+                    ];
                 }
             }
             return possibilities;
-        };
+        }
         /**
          * Returns the abbreviated measures that the value can be
          * converted to.
          */
-        Converter.prototype.measures = function () {
+        measures() {
             return Object.keys(this.measureData);
-        };
-        return Converter;
-    }());
-    function configMeasurements (measures) {
-        return function (value) {
-            return new Converter(measures, value);
-        };
+        }
+    }
+    function buildUnitCache(measures) {
+        const unitCache = new Map();
+        for (const [measureName, measure] of Object.entries(measures)) {
+            for (const [systemName, system] of Object.entries(measure.systems)) {
+                for (const [testAbbr, unit] of Object.entries(system)) {
+                    unitCache.set(testAbbr, {
+                        measure: measureName,
+                        system: systemName,
+                        abbr: testAbbr,
+                        unit,
+                    });
+                }
+            }
+        }
+        return unitCache;
+    }
+    function configureMeasurements(measures, cls) {
+        if (typeof measures !== 'object') {
+            throw new TypeError('The measures argument needs to be an object');
+        }
+        const unitCache = buildUnitCache(measures);
+        if (cls != null && isWrapper(cls)) {
+            return (value) => new Converter({
+                measures,
+                unitCache,
+                cls,
+            }, value);
+        }
+        else {
+            return (value) => new Converter({
+                measures,
+                unitCache,
+                cls: DefaultWrapper,
+            }, value);
+        }
     }
 
-    var metric$c = {
+    const metric$e = {
         'g-force': {
             name: {
                 singular: 'g-force',
@@ -6214,20 +6364,30 @@
             },
             to_anchor: 1,
         },
+        g0: {
+            name: {
+                singular: 'Standard Gravity',
+                plural: 'Standard Gravities',
+            },
+            to_anchor: 9.80665,
+        },
     };
-    var measure$q = {
+    const measure$s = {
         systems: {
-            metric: metric$c,
+            metric: metric$e,
         },
     };
 
-    var SI$b = {
+    const SI$b = {
         rad: {
             name: {
                 singular: 'radian',
                 plural: 'radians',
             },
-            to_anchor: 180 / Math.PI,
+            to_anchor: {
+                numerator: 180,
+                denominator: Math.PI,
+            },
         },
         deg: {
             name: {
@@ -6241,30 +6401,39 @@
                 singular: 'gradian',
                 plural: 'gradians',
             },
-            to_anchor: 9 / 10,
+            to_anchor: {
+                numerator: 9,
+                denominator: 10,
+            },
         },
         arcmin: {
             name: {
                 singular: 'arcminute',
                 plural: 'arcminutes',
             },
-            to_anchor: 1 / 60,
+            to_anchor: {
+                numerator: 1,
+                denominator: 60,
+            },
         },
         arcsec: {
             name: {
                 singular: 'arcsecond',
                 plural: 'arcseconds',
             },
-            to_anchor: 1 / 3600,
+            to_anchor: {
+                numerator: 1,
+                denominator: 3600,
+            },
         },
     };
-    var measure$p = {
+    const measure$r = {
         systems: {
             SI: SI$b,
         },
     };
 
-    var SI$a = {
+    const SI$a = {
         VA: {
             name: {
                 singular: 'Volt-Ampere',
@@ -6277,37 +6446,37 @@
                 singular: 'Millivolt-Ampere',
                 plural: 'Millivolt-Amperes',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         kVA: {
             name: {
                 singular: 'Kilovolt-Ampere',
                 plural: 'Kilovolt-Amperes',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         MVA: {
             name: {
                 singular: 'Megavolt-Ampere',
                 plural: 'Megavolt-Amperes',
             },
-            to_anchor: 1000000,
+            to_anchor: 1e6,
         },
         GVA: {
             name: {
                 singular: 'Gigavolt-Ampere',
                 plural: 'Gigavolt-Amperes',
             },
-            to_anchor: 1000000000,
+            to_anchor: 1e9,
         },
     };
-    var measure$o = {
+    const measure$q = {
         systems: {
             SI: SI$a,
         },
     };
 
-    var metric$b = {
+    const metric$d = {
         nm2: {
             name: {
                 singular: 'Square Nanometer',
@@ -6327,14 +6496,30 @@
                 singular: 'Square Millimeter',
                 plural: 'Square Millimeters',
             },
-            to_anchor: 1 / 1000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e6,
+            },
         },
         cm2: {
             name: {
                 singular: 'Square Centimeter',
                 plural: 'Square Centimeters',
             },
-            to_anchor: 1 / 10000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e4,
+            },
+        },
+        dm2: {
+            name: {
+                singular: 'Square Decimeter',
+                plural: 'Square Decimeters',
+            },
+            to_anchor: {
+                numerator: 1,
+                denominator: 100,
+            },
         },
         m2: {
             name: {
@@ -6343,28 +6528,38 @@
             },
             to_anchor: 1,
         },
+        a: {
+            name: {
+                singular: 'Are',
+                plural: 'Ares',
+            },
+            to_anchor: 100,
+        },
         ha: {
             name: {
                 singular: 'Hectare',
                 plural: 'Hectares',
             },
-            to_anchor: 10000,
+            to_anchor: 1e4,
         },
         km2: {
             name: {
                 singular: 'Square Kilometer',
                 plural: 'Square Kilometers',
             },
-            to_anchor: 1000000,
+            to_anchor: 1e6,
         },
     };
-    var imperial$a = {
+    const imperial$c = {
         in2: {
             name: {
                 singular: 'Square Inch',
                 plural: 'Square Inches',
             },
-            to_anchor: 1 / 144,
+            to_anchor: {
+                numerator: 1,
+                denominator: 144,
+            },
         },
         yd2: {
             name: {
@@ -6395,10 +6590,10 @@
             to_anchor: 27878400,
         },
     };
-    var measure$n = {
+    const measure$p = {
         systems: {
-            metric: metric$b,
-            imperial: imperial$a,
+            metric: metric$d,
+            imperial: imperial$c,
         },
         anchors: {
             metric: {
@@ -6408,13 +6603,16 @@
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 10.7639,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 10.7639,
+                    },
                 },
             },
         },
     };
 
-    var SI$9 = {
+    const SI$9 = {
         c: {
             name: {
                 singular: 'Coulomb',
@@ -6427,14 +6625,20 @@
                 singular: 'Millicoulomb',
                 plural: 'Millicoulombs',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1000,
+            },
         },
         μC: {
             name: {
                 singular: 'Microcoulomb',
                 plural: 'Microcoulombs',
             },
-            to_anchor: 1 / 1000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e6,
+            },
         },
         nC: {
             name: {
@@ -6451,13 +6655,13 @@
             to_anchor: 1e-12,
         },
     };
-    var measure$m = {
+    const measure$o = {
         systems: {
             SI: SI$9,
         },
     };
 
-    var SI$8 = {
+    const SI$8 = {
         A: {
             name: {
                 singular: 'Ampere',
@@ -6465,121 +6669,231 @@
             },
             to_anchor: 1,
         },
+        μA: {
+            name: {
+                singular: 'Microampere',
+                plural: 'Microamperes',
+            },
+            to_anchor: 1e-6,
+        },
         mA: {
             name: {
                 singular: 'Milliampere',
                 plural: 'Milliamperes',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         kA: {
             name: {
                 singular: 'Kiloampere',
                 plural: 'Kiloamperes',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
+        },
+        MA: {
+            name: {
+                singular: 'Megaampere',
+                plural: 'Megaamperes',
+            },
+            to_anchor: 1e6,
         },
     };
-    var measure$l = {
+    const measure$n = {
         systems: {
             SI: SI$8,
         },
     };
 
-    var bits = {
-        b: {
+    const bit = {
+        bit: {
             name: {
                 singular: 'Bit',
                 plural: 'Bits',
             },
             to_anchor: 1,
         },
-        Kb: {
+        kb: {
             name: {
                 singular: 'Kilobit',
                 plural: 'Kilobits',
             },
-            to_anchor: 1024,
+            to_anchor: 1e3,
         },
         Mb: {
             name: {
                 singular: 'Megabit',
                 plural: 'Megabits',
             },
-            to_anchor: 1048576,
+            to_anchor: 1e6,
         },
         Gb: {
             name: {
                 singular: 'Gigabit',
                 plural: 'Gigabits',
             },
-            to_anchor: 1073741824,
+            to_anchor: 1e9,
         },
         Tb: {
             name: {
                 singular: 'Terabit',
                 plural: 'Terabits',
             },
-            to_anchor: 1099511627776,
+            to_anchor: 1e12,
         },
     };
-    var bytes = {
-        B: {
+    const byte = {
+        byte: {
             name: {
                 singular: 'Byte',
                 plural: 'Bytes',
             },
             to_anchor: 1,
         },
-        KB: {
+        kB: {
             name: {
                 singular: 'Kilobyte',
                 plural: 'Kilobytes',
             },
-            to_anchor: 1024,
+            to_anchor: 1e3,
         },
         MB: {
             name: {
                 singular: 'Megabyte',
                 plural: 'Megabytes',
             },
-            to_anchor: 1048576,
+            to_anchor: 1e6,
         },
         GB: {
             name: {
                 singular: 'Gigabyte',
                 plural: 'Gigabytes',
             },
-            to_anchor: 1073741824,
+            to_anchor: 1e9,
         },
         TB: {
             name: {
                 singular: 'Terabyte',
                 plural: 'Terabytes',
             },
-            to_anchor: 1099511627776,
+            to_anchor: 1e12,
         },
     };
-    var measure$k = {
+    const IECBit = {
+        Kib: {
+            name: {
+                singular: 'Kibibit',
+                plural: 'Kibibits',
+            },
+            to_anchor: 1,
+        },
+        Mib: {
+            name: {
+                singular: 'Mebibit',
+                plural: 'Mebibits',
+            },
+            to_anchor: 1024,
+        },
+        Gib: {
+            name: {
+                singular: 'Gibibit',
+                plural: 'Gibibits',
+            },
+            to_anchor: 1.048576e6,
+        },
+        Tib: {
+            name: {
+                singular: 'Tebibit',
+                plural: 'Tebibits',
+            },
+            to_anchor: 1.073741824e9,
+        },
+    };
+    const IECByte = {
+        KiB: {
+            name: {
+                singular: 'Kibibyte',
+                plural: 'Kibibytes',
+            },
+            to_anchor: 1,
+        },
+        MiB: {
+            name: {
+                singular: 'Mebibyte',
+                plural: 'Mebibytes',
+            },
+            to_anchor: 1024,
+        },
+        GiB: {
+            name: {
+                singular: 'Gibibyte',
+                plural: 'Gibibytes',
+            },
+            to_anchor: 1.048576e6,
+        },
+        TiB: {
+            name: {
+                singular: 'Tebibyte',
+                plural: 'Tebibytes',
+            },
+            to_anchor: 1.073741824e9,
+        },
+    };
+    const measure$m = {
         systems: {
-            bits: bits,
-            bytes: bytes,
+            bit,
+            byte,
+            IECBit,
+            IECByte,
         },
         anchors: {
-            bits: {
-                bytes: {
-                    ratio: 1 / 8,
+            bit: {
+                byte: {
+                    ratio: 1.25e-1,
+                },
+                IECBit: {
+                    ratio: 9.765625e-4,
+                },
+                IECByte: {
+                    ratio: 1.220703125e-4,
                 },
             },
-            bytes: {
-                bits: {
+            byte: {
+                bit: {
+                    ratio: 8,
+                },
+                IECBit: {
+                    ratio: 7.8125e-3,
+                },
+                IECByte: {
+                    ratio: 9.765625e-4,
+                },
+            },
+            IECBit: {
+                bit: {
+                    ratio: 1024,
+                },
+                byte: {
+                    ratio: 1.28e2,
+                },
+                IECByte: {
+                    ratio: 1.25e-1,
+                },
+            },
+            IECByte: {
+                bit: {
+                    ratio: 8.192e3,
+                },
+                byte: {
+                    ratio: 1024,
+                },
+                IECBit: {
                     ratio: 8,
                 },
             },
         },
     };
 
-    var metric$a = {
+    const metric$c = {
         ea: {
             name: {
                 singular: 'Each',
@@ -6595,13 +6909,27 @@
             to_anchor: 12,
         },
     };
-    var measure$j = {
+    const measure$l = {
         systems: {
-            metric: metric$a,
+            metric: metric$c,
         },
     };
 
-    var SI$7 = {
+    const SI$7 = {
+        Ws: {
+            name: {
+                singular: 'Watt-second',
+                plural: 'Watt-seconds',
+            },
+            to_anchor: 1,
+        },
+        Wm: {
+            name: {
+                singular: 'Watt-minute',
+                plural: 'Watt-minutes',
+            },
+            to_anchor: 60,
+        },
         Wh: {
             name: {
                 singular: 'Watt-hour',
@@ -6621,21 +6949,21 @@
                 singular: 'Kilowatt-hour',
                 plural: 'Kilowatt-hours',
             },
-            to_anchor: 3600000,
+            to_anchor: 3.6e6,
         },
         MWh: {
             name: {
                 singular: 'Megawatt-hour',
                 plural: 'Megawatt-hours',
             },
-            to_anchor: 3600000000,
+            to_anchor: 3.6e9,
         },
         GWh: {
             name: {
                 singular: 'Gigawatt-hour',
                 plural: 'Gigawatt-hours',
             },
-            to_anchor: 3600000000000,
+            to_anchor: 3.6e12,
         },
         J: {
             name: {
@@ -6651,14 +6979,60 @@
             },
             to_anchor: 1000,
         },
+        MJ: {
+            name: {
+                singular: 'Megajoule',
+                plural: 'Megajoules',
+            },
+            to_anchor: 1e6,
+        },
+        GJ: {
+            name: {
+                singular: 'Gigajoule',
+                plural: 'Gigajoules',
+            },
+            to_anchor: 1e9,
+        },
     };
-    var measure$i = {
+    const nutrition = {
+        cal: {
+            name: {
+                singular: 'calorie',
+                plural: 'calories',
+            },
+            to_anchor: 1,
+        },
+        kcal: {
+            name: {
+                singular: 'Kilocalorie',
+                plural: 'Kilocalories',
+            },
+            to_anchor: 1000,
+        },
+    };
+    const measure$k = {
         systems: {
             SI: SI$7,
+            nutrition,
+        },
+        anchors: {
+            SI: {
+                nutrition: {
+                    ratio: {
+                        numerator: 1,
+                        denominator: 4.184,
+                    },
+                },
+            },
+            nutrition: {
+                SI: {
+                    ratio: 4.184,
+                },
+            },
         },
     };
 
-    var SI$6 = {
+    const SI$6 = {
         N: {
             name: {
                 singular: 'Newton',
@@ -6680,20 +7054,30 @@
             },
             to_anchor: 4.44822,
         },
+        kgf: {
+            name: {
+                singular: 'Kilogram-force',
+                plural: 'Kilogram-forces',
+            },
+            to_anchor: 9.807,
+        },
     };
-    var measure$h = {
+    const measure$j = {
         systems: {
             SI: SI$6,
         },
     };
 
-    var SI$5 = {
+    const SI$5 = {
         mHz: {
             name: {
                 singular: 'millihertz',
                 plural: 'millihertz',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1000,
+            },
         },
         Hz: {
             name: {
@@ -6714,51 +7098,60 @@
                 singular: 'megahertz',
                 plural: 'megahertz',
             },
-            to_anchor: 1000 * 1000,
+            to_anchor: 1e6,
         },
         GHz: {
             name: {
                 singular: 'gigahertz',
                 plural: 'gigahertz',
             },
-            to_anchor: 1000 * 1000 * 1000,
+            to_anchor: 1e9,
         },
         THz: {
             name: {
                 singular: 'terahertz',
                 plural: 'terahertz',
             },
-            to_anchor: 1000 * 1000 * 1000 * 1000,
+            to_anchor: 1e12,
         },
         rpm: {
             name: {
                 singular: 'rotation per minute',
                 plural: 'rotations per minute',
             },
-            to_anchor: 1 / 60,
+            to_anchor: {
+                numerator: 1,
+                denominator: 60,
+            },
         },
         'deg/s': {
             name: {
                 singular: 'degree per second',
                 plural: 'degrees per second',
             },
-            to_anchor: 1 / 360,
+            to_anchor: {
+                numerator: 1,
+                denominator: 360,
+            },
         },
         'rad/s': {
             name: {
                 singular: 'radian per second',
                 plural: 'radians per second',
             },
-            to_anchor: 1 / (Math.PI * 2),
+            to_anchor: {
+                numerator: 1,
+                denominator: 6.283185307179586, // Math.PI * 2
+            },
         },
     };
-    var measure$g = {
+    const measure$i = {
         systems: {
             SI: SI$5,
         },
     };
 
-    var metric$9 = {
+    const metric$b = {
         lx: {
             name: {
                 singular: 'Lux',
@@ -6767,7 +7160,7 @@
             to_anchor: 1,
         },
     };
-    var imperial$9 = {
+    const imperial$b = {
         'ft-cd': {
             name: {
                 singular: 'Foot-candle',
@@ -6776,15 +7169,18 @@
             to_anchor: 1,
         },
     };
-    var measure$f = {
+    const measure$h = {
         systems: {
-            metric: metric$9,
-            imperial: imperial$9,
+            metric: metric$b,
+            imperial: imperial$b,
         },
         anchors: {
             metric: {
                 imperial: {
-                    ratio: 1 / 10.76391,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 10.76391,
+                    },
                 },
             },
             imperial: {
@@ -6795,7 +7191,7 @@
         },
     };
 
-    var metric$8 = {
+    const metric$a = {
         nm: {
             name: {
                 singular: 'Nanometer',
@@ -6824,6 +7220,13 @@
             },
             to_anchor: 1e-2,
         },
+        dm: {
+            name: {
+                singular: 'Decimeter',
+                plural: 'Decimeters',
+            },
+            to_anchor: 1e-1,
+        },
         m: {
             name: {
                 singular: 'Meter',
@@ -6839,13 +7242,26 @@
             to_anchor: 1e3,
         },
     };
-    var imperial$8 = {
+    const imperial$a = {
+        mil: {
+            name: {
+                singular: 'Mil',
+                plural: 'Mils',
+            },
+            to_anchor: {
+                numerator: 1,
+                denominator: 12000,
+            },
+        },
         in: {
             name: {
                 singular: 'Inch',
                 plural: 'Inches',
             },
-            to_anchor: 1 / 12,
+            to_anchor: {
+                numerator: 1,
+                denominator: 12,
+            },
         },
         yd: {
             name: {
@@ -6890,10 +7306,10 @@
             to_anchor: 6076.12,
         },
     };
-    var measure$e = {
+    const measure$g = {
         systems: {
-            metric: metric$8,
-            imperial: imperial$8,
+            metric: metric$a,
+            imperial: imperial$a,
         },
         anchors: {
             metric: {
@@ -6903,26 +7319,35 @@
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 3.28084,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 3.28084,
+                    },
                 },
             },
         },
     };
 
-    var metric$7 = {
+    const metric$9 = {
         mcg: {
             name: {
                 singular: 'Microgram',
                 plural: 'Micrograms',
             },
-            to_anchor: 1 / 1000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e6,
+            },
         },
         mg: {
             name: {
                 singular: 'Milligram',
                 plural: 'Milligrams',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         g: {
             name: {
@@ -6936,23 +7361,26 @@
                 singular: 'Kilogram',
                 plural: 'Kilograms',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         mt: {
             name: {
                 singular: 'Metric Tonne',
                 plural: 'Metric Tonnes',
             },
-            to_anchor: 1000000,
+            to_anchor: 1e6,
         },
     };
-    var imperial$7 = {
+    const imperial$9 = {
         oz: {
             name: {
                 singular: 'Ounce',
                 plural: 'Ounces',
             },
-            to_anchor: 1 / 16,
+            to_anchor: {
+                numerator: 1,
+                denominator: 16,
+            },
         },
         lb: {
             name: {
@@ -6961,34 +7389,121 @@
             },
             to_anchor: 1,
         },
+        st: {
+            name: {
+                singular: 'Stone',
+                plural: 'Stones',
+            },
+            to_anchor: 14,
+        },
         t: {
             name: {
                 singular: 'Ton',
                 plural: 'Tons',
             },
-            to_anchor: 2000,
+            to_anchor: 2e3,
         },
     };
-    var measure$d = {
+    const measure$f = {
         systems: {
-            metric: metric$7,
-            imperial: imperial$7,
+            metric: metric$9,
+            imperial: imperial$9,
         },
         anchors: {
             metric: {
                 imperial: {
-                    ratio: 1 / 453.592,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 453.59237,
+                    },
                 },
             },
             imperial: {
                 metric: {
-                    ratio: 453.592,
+                    ratio: 453.59237,
                 },
             },
         },
     };
 
-    var metric$6 = {
+    const metric$8 = {
+        'kg/s': {
+            name: {
+                singular: 'Kilogram per second',
+                plural: 'Kilograms per second',
+            },
+            to_anchor: 1,
+        },
+        'kg/min': {
+            name: {
+                singular: 'Kilogram per minute',
+                plural: 'Kilograms per minute',
+            },
+            to_anchor: 1 / 60,
+        },
+        'kg/h': {
+            name: {
+                singular: 'Kilogram per hour',
+                plural: 'Kilograms per hour',
+            },
+            to_anchor: {
+                numerator: 1,
+                denominator: 3.6e3,
+            },
+        },
+        'mt/h': {
+            name: {
+                singular: 'Ton per hour',
+                plural: 'Tons per hour',
+            },
+            to_anchor: {
+                numerator: 1,
+                denominator: 3.6,
+            },
+        },
+    };
+    const imperial$8 = {
+        'lb/s': {
+            name: {
+                singular: 'Pound per second',
+                plural: 'Pounds per second',
+            },
+            to_anchor: 1,
+        },
+        'lb/h': {
+            name: {
+                singular: 'Pound per hour',
+                plural: 'Pounds per hour',
+            },
+            to_anchor: {
+                numerator: 1,
+                denominator: 3.6e3,
+            },
+        },
+    };
+    const measure$e = {
+        systems: {
+            metric: metric$8,
+            imperial: imperial$8,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: {
+                        numerator: 1,
+                        denominator: 0.453592,
+                    },
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 0.453592,
+                },
+            },
+        },
+    };
+
+    const metric$7 = {
         'min/km': {
             name: {
                 singular: 'Minute per kilometre',
@@ -7004,7 +7519,7 @@
             to_anchor: 1,
         },
     };
-    var imperial$6 = {
+    const imperial$7 = {
         'min/mi': {
             name: {
                 singular: 'Minute per mile',
@@ -7020,10 +7535,10 @@
             to_anchor: 1,
         },
     };
-    var measure$c = {
+    const measure$d = {
         systems: {
-            metric: metric$6,
-            imperial: imperial$6,
+            metric: metric$7,
+            imperial: imperial$7,
         },
         anchors: {
             metric: {
@@ -7033,13 +7548,16 @@
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 0.3048,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 0.3048,
+                    },
                 },
             },
         },
     };
 
-    var SI$4 = {
+    const SI$4 = {
         ppm: {
             name: {
                 singular: 'Part-per Million',
@@ -7052,30 +7570,30 @@
                 singular: 'Part-per Billion',
                 plural: 'Parts-per Billion',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         ppt: {
             name: {
                 singular: 'Part-per Trillion',
                 plural: 'Parts-per Trillion',
             },
-            to_anchor: 0.000001,
+            to_anchor: 1e-6,
         },
         ppq: {
             name: {
                 singular: 'Part-per Quadrillion',
                 plural: 'Parts-per Quadrillion',
             },
-            to_anchor: 0.000000001,
+            to_anchor: 1e-9,
         },
     };
-    var measure$b = {
+    const measure$c = {
         systems: {
             SI: SI$4,
         },
     };
 
-    var unit = {
+    const unit = {
         pcs: {
             name: {
                 singular: 'Piece',
@@ -7168,13 +7686,13 @@
             to_anchor: 3,
         },
     };
-    var measure$a = {
+    const measure$b = {
         systems: {
-            unit: unit,
+            unit,
         },
     };
 
-    var metric$5 = {
+    const metric$6 = {
         W: {
             name: {
                 singular: 'Watt',
@@ -7187,28 +7705,28 @@
                 singular: 'Milliwatt',
                 plural: 'Milliwatts',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         kW: {
             name: {
                 singular: 'Kilowatt',
                 plural: 'Kilowatts',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         MW: {
             name: {
                 singular: 'Megawatt',
                 plural: 'Megawatts',
             },
-            to_anchor: 1000000,
+            to_anchor: 1e6,
         },
         GW: {
             name: {
                 singular: 'Gigawatt',
                 plural: 'Gigawatts',
             },
-            to_anchor: 1000000000,
+            to_anchor: 1e9,
         },
         PS: {
             name: {
@@ -7218,7 +7736,7 @@
             to_anchor: 735.49875,
         },
     };
-    var imperial$5 = {
+    const imperial$6 = {
         'Btu/s': {
             name: {
                 singular: 'British thermal unit per second',
@@ -7241,10 +7759,10 @@
             to_anchor: 550,
         },
     };
-    var measure$9 = {
+    const measure$a = {
         systems: {
-            metric: metric$5,
-            imperial: imperial$5,
+            metric: metric$6,
+            imperial: imperial$6,
         },
         anchors: {
             metric: {
@@ -7254,19 +7772,25 @@
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 0.737562149,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 0.737562149,
+                    },
                 },
             },
         },
     };
 
-    var metric$4 = {
+    const metric$5 = {
         Pa: {
             name: {
                 singular: 'pascal',
                 plural: 'pascals',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         kPa: {
             name: {
@@ -7280,14 +7804,24 @@
                 singular: 'megapascal',
                 plural: 'megapascals',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         hPa: {
             name: {
                 singular: 'hectopascal',
                 plural: 'hectopascals',
             },
-            to_anchor: 1 / 10,
+            to_anchor: {
+                numerator: 1,
+                denominator: 10,
+            },
+        },
+        mbar: {
+            name: {
+                singular: 'millibar',
+                plural: 'millibar',
+            },
+            to_anchor: 1e-1,
         },
         bar: {
             name: {
@@ -7301,16 +7835,36 @@
                 singular: 'torr',
                 plural: 'torr',
             },
-            to_anchor: 101325 / 760000,
+            to_anchor: {
+                numerator: 101325,
+                denominator: 7.6e5,
+            },
+        },
+        mH2O: {
+            name: {
+                singular: 'meter of water @ 4°C',
+                plural: 'meters of water @ 4°C',
+            },
+            to_anchor: 9.80665,
+        },
+        mmHg: {
+            name: {
+                singular: 'millimeter of mercury',
+                plural: 'millimeters of mercury',
+            },
+            to_anchor: 0.133322,
         },
     };
-    var imperial$4 = {
+    const imperial$5 = {
         psi: {
             name: {
                 singular: 'pound per square inch',
                 plural: 'pounds per square inch',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         ksi: {
             name: {
@@ -7324,29 +7878,32 @@
                 singular: 'Inch of mercury',
                 plural: 'Inches of mercury',
             },
-            to_anchor: 0.000491154,
+            to_anchor: 4.91154e-4,
         },
     };
-    var measure$8 = {
+    const measure$9 = {
         systems: {
-            metric: metric$4,
-            imperial: imperial$4,
+            metric: metric$5,
+            imperial: imperial$5,
         },
         anchors: {
             metric: {
                 imperial: {
-                    ratio: 0.00014503768078,
+                    ratio: 1.4503768078e-4,
                 },
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 0.00014503768078,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 1.4503768078e-4,
+                    },
                 },
             },
         },
     };
 
-    var SI$3 = {
+    const SI$3 = {
         VARh: {
             name: {
                 singular: 'Volt-Ampere Reactive Hour',
@@ -7359,37 +7916,37 @@
                 singular: 'Millivolt-Ampere Reactive Hour',
                 plural: 'Millivolt-Amperes Reactive Hour',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         kVARh: {
             name: {
                 singular: 'Kilovolt-Ampere Reactive Hour',
                 plural: 'Kilovolt-Amperes Reactive Hour',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         MVARh: {
             name: {
                 singular: 'Megavolt-Ampere Reactive Hour',
                 plural: 'Megavolt-Amperes Reactive Hour',
             },
-            to_anchor: 1000000,
+            to_anchor: 1e6,
         },
         GVARh: {
             name: {
                 singular: 'Gigavolt-Ampere Reactive Hour',
                 plural: 'Gigavolt-Amperes Reactive Hour',
             },
-            to_anchor: 1000000000,
+            to_anchor: 1e9,
         },
     };
-    var measure$7 = {
+    const measure$8 = {
         systems: {
             SI: SI$3,
         },
     };
 
-    var SI$2 = {
+    const SI$2 = {
         VAR: {
             name: {
                 singular: 'Volt-Ampere Reactive',
@@ -7402,37 +7959,37 @@
                 singular: 'Millivolt-Ampere Reactive',
                 plural: 'Millivolt-Amperes Reactive',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         kVAR: {
             name: {
                 singular: 'Kilovolt-Ampere Reactive',
                 plural: 'Kilovolt-Amperes Reactive',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         MVAR: {
             name: {
                 singular: 'Megavolt-Ampere Reactive',
                 plural: 'Megavolt-Amperes Reactive',
             },
-            to_anchor: 1000000,
+            to_anchor: 1e6,
         },
         GVAR: {
             name: {
                 singular: 'Gigavolt-Ampere Reactive',
                 plural: 'Gigavolt-Amperes Reactive',
             },
-            to_anchor: 1000000000,
+            to_anchor: 1e9,
         },
     };
-    var measure$6 = {
+    const measure$7 = {
         systems: {
             SI: SI$2,
         },
     };
 
-    var metric$3 = {
+    const metric$4 = {
         'm/s': {
             name: {
                 singular: 'Metre per second',
@@ -7447,8 +8004,15 @@
             },
             to_anchor: 1,
         },
+        'mm/h': {
+            name: {
+                singular: 'Millimeter per hour',
+                plural: 'Millimeters per hour',
+            },
+            to_anchor: 1e-6,
+        },
     };
-    var imperial$3 = {
+    const imperial$4 = {
         mph: {
             name: {
                 singular: 'Mile per hour',
@@ -7475,18 +8039,28 @@
                 singular: 'Foot per minute',
                 plural: 'Feet per minute',
             },
-            to_anchor: 0.0113636,
+            to_anchor: 1.13636e-2,
+        },
+        'in/h': {
+            name: {
+                singular: 'Inch per hour',
+                plural: 'Inches per hour',
+            },
+            to_anchor: 1.578e-5,
         },
     };
-    var measure$5 = {
+    const measure$6 = {
         systems: {
-            metric: metric$3,
-            imperial: imperial$3,
+            metric: metric$4,
+            imperial: imperial$4,
         },
         anchors: {
             metric: {
                 imperial: {
-                    ratio: 1 / 1.609344,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 1.609344,
+                    },
                 },
             },
             imperial: {
@@ -7497,7 +8071,7 @@
         },
     };
 
-    var metric$2 = {
+    const metric$3 = {
         C: {
             name: {
                 singular: 'degree Celsius',
@@ -7508,14 +8082,14 @@
         },
         K: {
             name: {
-                singular: 'degree Kelvin',
-                plural: 'degrees Kelvin',
+                singular: 'Kelvin',
+                plural: 'Kelvins',
             },
             to_anchor: 1,
             anchor_shift: 273.15,
         },
     };
-    var imperial$2 = {
+    const imperial$3 = {
         F: {
             name: {
                 singular: 'degree Fahrenheit',
@@ -7532,51 +8106,61 @@
             anchor_shift: 459.67,
         },
     };
-    var measure$4 = {
+    const measure$5 = {
         systems: {
-            metric: metric$2,
-            imperial: imperial$2,
+            metric: metric$3,
+            imperial: imperial$3,
         },
         anchors: {
             metric: {
                 imperial: {
-                    transform: function (C) {
-                        return C / (5 / 9) + 32;
+                    transform: function (C, cls) {
+                        // C / (5 / 9) + 32;
+                        return cls.add(cls.div(C, cls.div(5, 9)), 32);
                     },
                 },
             },
             imperial: {
                 metric: {
-                    transform: function (F) {
-                        return (F - 32) * (5 / 9);
+                    transform: function (F, cls) {
+                        // (F - 32) * (5 / 9);
+                        return cls.mul(cls.sub(F, 32), cls.div(5, 9));
                     },
                 },
             },
         },
     };
 
-    var daysInYear = 365.25;
-    var SI$1 = {
+    const SI$1 = {
         ns: {
             name: {
                 singular: 'Nanosecond',
                 plural: 'Nanoseconds',
             },
-            to_anchor: 1 / 1000000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e9,
+            },
         },
         mu: {
             name: {
                 singular: 'Microsecond',
                 plural: 'Microseconds',
             },
-            to_anchor: 1 / 1000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e6,
+            },
         },
         ms: {
             name: {
                 singular: 'Millisecond',
                 plural: 'Milliseconds',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         s: {
             name: {
@@ -7597,44 +8181,129 @@
                 singular: 'Hour',
                 plural: 'Hours',
             },
-            to_anchor: 60 * 60,
+            to_anchor: 3.6e3, // 60 * 60
         },
         d: {
             name: {
                 singular: 'Day',
                 plural: 'Days',
             },
-            to_anchor: 60 * 60 * 24,
+            to_anchor: 8.64e4, // 60 * 60 * 24
         },
         week: {
             name: {
                 singular: 'Week',
                 plural: 'Weeks',
             },
-            to_anchor: 60 * 60 * 24 * 7,
+            to_anchor: 6.048e5, // 60 * 60 * 24 * 7
         },
         month: {
             name: {
                 singular: 'Month',
                 plural: 'Months',
             },
-            to_anchor: (60 * 60 * 24 * daysInYear) / 12,
+            to_anchor: {
+                numerator: 3.15576e7, // 60 * 60 * 24 * 365.25
+                denominator: 12,
+            },
         },
         year: {
             name: {
                 singular: 'Year',
                 plural: 'Years',
             },
-            to_anchor: 60 * 60 * 24 * daysInYear,
+            to_anchor: 3.15576e7, // 60 * 60 * 24 * 365.25,
         },
     };
-    var measure$3 = {
+    const measure$4 = {
         systems: {
             SI: SI$1,
         },
     };
 
-    var SI = {
+    const metric$2 = {
+        Nm: {
+            name: {
+                singular: 'Newton-meter',
+                plural: 'Newton-meters',
+            },
+            to_anchor: 1,
+        },
+        cNm: {
+            name: {
+                singular: 'Centinewton-meter',
+                plural: 'Centinewton-meters',
+            },
+            to_anchor: 1e-2,
+        },
+        dNm: {
+            name: {
+                singular: 'Decinewton-meter',
+                plural: 'Decinewton-meters',
+            },
+            to_anchor: 1e-1,
+        },
+        kgm: {
+            name: {
+                singular: 'Kilogram-meter',
+                plural: 'Kilogram-meters',
+            },
+            to_anchor: 9.806649999787735, // 1 / 0.1019716213,
+        },
+        'kg-cm': {
+            name: {
+                singular: 'Kilogram-centimeter',
+                plural: 'Kilogram-centimeters',
+            },
+            to_anchor: 9.806649999787735e-2, // 1 / 10.19716213,
+        },
+    };
+    const imperial$2 = {
+        'lbf-ft': {
+            name: {
+                singular: 'Pound-foot',
+                plural: 'Pound-feet',
+            },
+            to_anchor: 1,
+        },
+        'lbf-in': {
+            name: {
+                singular: 'Pound-inch',
+                plural: 'Pound-inches',
+            },
+            to_anchor: 8.333333333333333e-2, // 1 / 12,
+        },
+        'ozf-in': {
+            name: {
+                singular: 'Ounce-inch',
+                plural: 'Ounce-inches',
+            },
+            to_anchor: 5.208333271755643e-3, // 1 / 192.00000227,
+        },
+    };
+    const measure$3 = {
+        systems: {
+            metric: metric$2,
+            imperial: imperial$2,
+        },
+        anchors: {
+            metric: {
+                imperial: {
+                    ratio: {
+                        numerator: 1,
+                        denominator: 1.355818,
+                    },
+                },
+            },
+            imperial: {
+                metric: {
+                    ratio: 1.355818,
+                },
+            },
+        },
+    };
+
+    const SI = {
         V: {
             name: {
                 singular: 'Volt',
@@ -7642,62 +8311,98 @@
             },
             to_anchor: 1,
         },
+        μV: {
+            name: {
+                singular: 'Microvolt',
+                plural: 'Microvolts',
+            },
+            to_anchor: 1e-6,
+        },
         mV: {
             name: {
                 singular: 'Millivolt',
                 plural: 'Millivolts',
             },
-            to_anchor: 0.001,
+            to_anchor: 1e-3,
         },
         kV: {
             name: {
                 singular: 'Kilovolt',
                 plural: 'Kilovolts',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
+        },
+        MV: {
+            name: {
+                singular: 'Megavolt',
+                plural: 'Megavolts',
+            },
+            to_anchor: 1e6,
         },
     };
-    var measure$2 = {
+    const measure$2 = {
         systems: {
-            SI: SI,
+            SI,
         },
     };
 
-    var metric$1 = {
+    const metric$1 = {
         mm3: {
             name: {
                 singular: 'Cubic Millimeter',
                 plural: 'Cubic Millimeters',
             },
-            to_anchor: 1 / 1000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e6,
+            },
         },
         cm3: {
             name: {
                 singular: 'Cubic Centimeter',
                 plural: 'Cubic Centimeters',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
+        },
+        dm3: {
+            name: {
+                singular: 'Cubic Decimeter',
+                plural: 'Cubic Decimeters',
+            },
+            to_anchor: 1,
         },
         ml: {
             name: {
                 singular: 'Millilitre',
                 plural: 'Millilitres',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         cl: {
             name: {
                 singular: 'Centilitre',
                 plural: 'Centilitres',
             },
-            to_anchor: 1 / 100,
+            to_anchor: {
+                numerator: 1,
+                denominator: 100,
+            },
         },
         dl: {
             name: {
                 singular: 'Decilitre',
                 plural: 'Decilitres',
             },
-            to_anchor: 1 / 10,
+            to_anchor: {
+                numerator: 1,
+                denominator: 10,
+            },
         },
         l: {
             name: {
@@ -7711,21 +8416,35 @@
                 singular: 'Kilolitre',
                 plural: 'Kilolitres',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
+        },
+        Ml: {
+            name: {
+                singular: 'Megalitre',
+                plural: 'Megalitres',
+            },
+            to_anchor: 1e6,
+        },
+        Gl: {
+            name: {
+                singular: 'Gigalitre',
+                plural: 'Gigalitres',
+            },
+            to_anchor: 1e9,
         },
         m3: {
             name: {
                 singular: 'Cubic meter',
                 plural: 'Cubic meters',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         km3: {
             name: {
                 singular: 'Cubic kilometer',
                 plural: 'Cubic kilometers',
             },
-            to_anchor: 1000000000000,
+            to_anchor: 1e12,
         },
         // Swedish units
         krm: {
@@ -7733,35 +8452,50 @@
                 singular: 'Kryddmått',
                 plural: 'Kryddmått',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         tsk: {
             name: {
                 singular: 'Tesked',
                 plural: 'Teskedar',
             },
-            to_anchor: 5 / 1000,
+            to_anchor: {
+                numerator: 5,
+                denominator: 1e3,
+            },
         },
         msk: {
             name: {
                 singular: 'Matsked',
                 plural: 'Matskedar',
             },
-            to_anchor: 15 / 1000,
+            to_anchor: {
+                numerator: 15,
+                denominator: 1e3,
+            },
         },
         kkp: {
             name: {
                 singular: 'Kaffekopp',
                 plural: 'Kaffekoppar',
             },
-            to_anchor: 150 / 1000,
+            to_anchor: {
+                numerator: 150,
+                denominator: 1e3,
+            },
         },
         glas: {
             name: {
                 singular: 'Glas',
                 plural: 'Glas',
             },
-            to_anchor: 200 / 1000,
+            to_anchor: {
+                numerator: 200,
+                denominator: 1e3,
+            },
         },
         kanna: {
             name: {
@@ -7771,20 +8505,26 @@
             to_anchor: 2.617,
         },
     };
-    var imperial$1 = {
+    const imperial$1 = {
         tsp: {
             name: {
                 singular: 'Teaspoon',
                 plural: 'Teaspoons',
             },
-            to_anchor: 1 / 6,
+            to_anchor: {
+                numerator: 1,
+                denominator: 6,
+            },
         },
         Tbs: {
             name: {
                 singular: 'Tablespoon',
                 plural: 'Tablespoons',
             },
-            to_anchor: 1 / 2,
+            to_anchor: {
+                numerator: 1,
+                denominator: 2,
+            },
         },
         in3: {
             name: {
@@ -7843,7 +8583,7 @@
             to_anchor: 25852.7,
         },
     };
-    var measure$1 = {
+    const measure$1 = {
         systems: {
             metric: metric$1,
             imperial: imperial$1,
@@ -7856,47 +8596,100 @@
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 33.8140226,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 33.8140226,
+                    },
                 },
             },
         },
     };
 
-    var metric = {
+    const metric = {
         'mm3/s': {
             name: {
                 singular: 'Cubic Millimeter per second',
                 plural: 'Cubic Millimeters per second',
             },
-            to_anchor: 1 / 1000000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e6,
+            },
         },
         'cm3/s': {
             name: {
                 singular: 'Cubic Centimeter per second',
                 plural: 'Cubic Centimeters per second',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
+        },
+        'dm3/s': {
+            name: {
+                singular: 'Cubic Decimeter per second',
+                plural: 'Cubic Decimeters per second',
+            },
+            to_anchor: 1,
+        },
+        'dm3/min': {
+            name: {
+                singular: 'Cubic Decimeter per minute',
+                plural: 'Cubic Decimeters per minute',
+            },
+            to_anchor: 1 / 60,
+        },
+        'dm3/h': {
+            name: {
+                singular: 'Cubic Decimeter per hour',
+                plural: 'Cubic Decimeters per hour',
+            },
+            to_anchor: 1 / 3600,
+        },
+        'dm3/d': {
+            name: {
+                singular: 'Cubic Decimeter per day',
+                plural: 'Cubic Decimeters per day',
+            },
+            to_anchor: 1 / 86400,
+        },
+        'dm3/a': {
+            name: {
+                singular: 'Cubic Decimeter per year',
+                plural: 'Cubic Decimeters per year',
+            },
+            to_anchor: 1 / 31557600,
         },
         'ml/s': {
             name: {
                 singular: 'Millilitre per second',
                 plural: 'Millilitres per second',
             },
-            to_anchor: 1 / 1000,
+            to_anchor: {
+                numerator: 1,
+                denominator: 1e3,
+            },
         },
         'cl/s': {
             name: {
                 singular: 'Centilitre per second',
                 plural: 'Centilitres per second',
             },
-            to_anchor: 1 / 100,
+            to_anchor: {
+                numerator: 1,
+                denominator: 100,
+            },
         },
         'dl/s': {
             name: {
                 singular: 'Decilitre per second',
                 plural: 'Decilitres per second',
             },
-            to_anchor: 1 / 10,
+            to_anchor: {
+                numerator: 1,
+                denominator: 10,
+            },
         },
         'l/s': {
             name: {
@@ -7910,79 +8703,131 @@
                 singular: 'Litre per minute',
                 plural: 'Litres per minute',
             },
-            to_anchor: 1 / 60,
+            to_anchor: {
+                numerator: 1,
+                denominator: 60,
+            },
         },
         'l/h': {
             name: {
                 singular: 'Litre per hour',
                 plural: 'Litres per hour',
             },
-            to_anchor: 1 / 3600,
+            to_anchor: {
+                numerator: 1,
+                denominator: 3.6e3,
+            },
+        },
+        'l/d': {
+            name: {
+                singular: 'Litre per day',
+                plural: 'Litres per day',
+            },
+            to_anchor: 1 / 86400,
+        },
+        'l/a': {
+            name: {
+                singular: 'Litre per year',
+                plural: 'Litres per year',
+            },
+            to_anchor: 1 / 31557600,
         },
         'kl/s': {
             name: {
                 singular: 'Kilolitre per second',
                 plural: 'Kilolitres per second',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         'kl/min': {
             name: {
                 singular: 'Kilolitre per minute',
                 plural: 'Kilolitres per minute',
             },
-            to_anchor: 50 / 3,
+            to_anchor: {
+                numerator: 50,
+                denominator: 3,
+            },
         },
         'kl/h': {
             name: {
                 singular: 'Kilolitre per hour',
                 plural: 'Kilolitres per hour',
             },
-            to_anchor: 5 / 18,
+            to_anchor: {
+                numerator: 5,
+                denominator: 18,
+            },
         },
         'm3/s': {
             name: {
                 singular: 'Cubic meter per second',
                 plural: 'Cubic meters per second',
             },
-            to_anchor: 1000,
+            to_anchor: 1e3,
         },
         'm3/min': {
             name: {
                 singular: 'Cubic meter per minute',
                 plural: 'Cubic meters per minute',
             },
-            to_anchor: 50 / 3,
+            to_anchor: {
+                numerator: 50,
+                denominator: 3,
+            },
         },
         'm3/h': {
             name: {
                 singular: 'Cubic meter per hour',
                 plural: 'Cubic meters per hour',
             },
-            to_anchor: 5 / 18,
+            to_anchor: {
+                numerator: 5,
+                denominator: 18,
+            },
+        },
+        'm3/d': {
+            name: {
+                singular: 'Cubic meter per day',
+                plural: 'Cubic meters per day',
+            },
+            to_anchor: 5 / 432,
+        },
+        'm3/a': {
+            name: {
+                singular: 'Cubic meter per year',
+                plural: 'Cubic meters per year',
+            },
+            to_anchor: 5 / 157788,
         },
         'km3/s': {
             name: {
                 singular: 'Cubic kilometer per second',
                 plural: 'Cubic kilometers per second',
             },
-            to_anchor: 1000000000000,
+            to_anchor: 1e12,
         },
     };
-    var imperial = {
+    const imperial = {
         'tsp/s': {
             name: {
                 singular: 'Teaspoon per second',
                 plural: 'Teaspoons per second',
             },
-            to_anchor: 1 / 6,
+            to_anchor: {
+                numerator: 1,
+                denominator: 6,
+            },
         },
         'Tbs/s': {
             name: {
                 singular: 'Tablespoon per second',
                 plural: 'Tablespoons per second',
             },
-            to_anchor: 1 / 2,
+            to_anchor: {
+                numerator: 1,
+                denominator: 2,
+            },
         },
         'in3/s': {
             name: {
@@ -7996,14 +8841,20 @@
                 singular: 'Cubic inch per minute',
                 plural: 'Cubic inches per minute',
             },
-            to_anchor: 0.55411 / 60,
+            to_anchor: {
+                numerator: 0.55411,
+                denominator: 60,
+            },
         },
         'in3/h': {
             name: {
                 singular: 'Cubic inch per hour',
                 plural: 'Cubic inches per hour',
             },
-            to_anchor: 0.55411 / 3600,
+            to_anchor: {
+                numerator: 0.55411,
+                denominator: 3.6e3,
+            },
         },
         'fl-oz/s': {
             name: {
@@ -8017,14 +8868,20 @@
                 singular: 'Fluid Ounce per minute',
                 plural: 'Fluid Ounces per minute',
             },
-            to_anchor: 1 / 60,
+            to_anchor: {
+                numerator: 1,
+                denominator: 60,
+            },
         },
         'fl-oz/h': {
             name: {
                 singular: 'Fluid Ounce per hour',
                 plural: 'Fluid Ounces per hour',
             },
-            to_anchor: 1 / 3600,
+            to_anchor: {
+                numerator: 1,
+                denominator: 3.6e3,
+            },
         },
         'cup/s': {
             name: {
@@ -8045,14 +8902,20 @@
                 singular: 'Pint per minute',
                 plural: 'Pints per minute',
             },
-            to_anchor: 4 / 15,
+            to_anchor: {
+                numerator: 4,
+                denominator: 15,
+            },
         },
         'pnt/h': {
             name: {
                 singular: 'Pint per hour',
                 plural: 'Pints per hour',
             },
-            to_anchor: 1 / 225,
+            to_anchor: {
+                numerator: 1,
+                denominator: 225,
+            },
         },
         'qt/s': {
             name: {
@@ -8073,14 +8936,20 @@
                 singular: 'Gallon per minute',
                 plural: 'Gallons per minute',
             },
-            to_anchor: 32 / 15,
+            to_anchor: {
+                numerator: 32,
+                denominator: 15,
+            },
         },
         'gal/h': {
             name: {
                 singular: 'Gallon per hour',
                 plural: 'Gallons per hour',
             },
-            to_anchor: 8 / 225,
+            to_anchor: {
+                numerator: 8,
+                denominator: 225,
+            },
         },
         'ft3/s': {
             name: {
@@ -8094,14 +8963,20 @@
                 singular: 'Cubic foot per minute',
                 plural: 'Cubic feet per minute',
             },
-            to_anchor: 957.506 / 60,
+            to_anchor: {
+                numerator: 957.506,
+                denominator: 60,
+            },
         },
         'ft3/h': {
             name: {
                 singular: 'Cubic foot per hour',
                 plural: 'Cubic feet per hour',
             },
-            to_anchor: 957.506 / 3600,
+            to_anchor: {
+                numerator: 957.506,
+                denominator: 3.6e3,
+            },
         },
         'yd3/s': {
             name: {
@@ -8115,20 +8990,26 @@
                 singular: 'Cubic yard per minute',
                 plural: 'Cubic yards per minute',
             },
-            to_anchor: 25852.7 / 60,
+            to_anchor: {
+                numerator: 25852.7,
+                denominator: 60,
+            },
         },
         'yd3/h': {
             name: {
                 singular: 'Cubic yard per hour',
                 plural: 'Cubic yards per hour',
             },
-            to_anchor: 25852.7 / 3600,
+            to_anchor: {
+                numerator: 25852.7,
+                denominator: 3.6e3,
+            },
         },
     };
-    var measure = {
+    const measure = {
         systems: {
-            metric: metric,
-            imperial: imperial,
+            metric,
+            imperial,
         },
         anchors: {
             metric: {
@@ -8138,43 +9019,48 @@
             },
             imperial: {
                 metric: {
-                    ratio: 1 / 33.8140227,
+                    ratio: {
+                        numerator: 1,
+                        denominator: 33.8140227,
+                    },
                 },
             },
         },
     };
 
-    var allMeasures = {
-        acceleration: measure$q,
-        angle: measure$p,
-        apparentPower: measure$o,
-        area: measure$n,
-        charge: measure$m,
-        current: measure$l,
-        digital: measure$k,
-        each: measure$j,
-        energy: measure$i,
-        force: measure$h,
-        frequency: measure$g,
-        illuminance: measure$f,
-        length: measure$e,
-        mass: measure$d,
-        pace: measure$c,
-        partsPer: measure$b,
-        pieces: measure$a,
-        power: measure$9,
-        pressure: measure$8,
-        reactiveEnergy: measure$7,
-        reactivePower: measure$6,
-        speed: measure$5,
-        temperature: measure$4,
-        time: measure$3,
+    const allMeasures = {
+        acceleration: measure$s,
+        angle: measure$r,
+        apparentPower: measure$q,
+        area: measure$p,
+        charge: measure$o,
+        current: measure$n,
+        digital: measure$m,
+        each: measure$l,
+        energy: measure$k,
+        force: measure$j,
+        frequency: measure$i,
+        illuminance: measure$h,
+        length: measure$g,
+        mass: measure$f,
+        massFlowRate: measure$e,
+        pace: measure$d,
+        partsPer: measure$c,
+        pieces: measure$b,
+        power: measure$a,
+        pressure: measure$9,
+        reactiveEnergy: measure$8,
+        reactivePower: measure$7,
+        speed: measure$6,
+        torque: measure$3,
+        temperature: measure$5,
+        time: measure$4,
         voltage: measure$2,
         volume: measure$1,
         volumeFlowRate: measure,
     };
 
-    const convertUnits = configMeasurements(allMeasures),
+    const convertUnits = configureMeasurements(allMeasures),
         knownUnits = convertUnits().possibilities();
 
 
@@ -9439,4 +10325,4 @@ body {
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
