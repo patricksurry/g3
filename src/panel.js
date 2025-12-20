@@ -46,12 +46,14 @@ export function panel() {
 
     function panel(sel) {
         if (typeof sel === 'string') sel = d3.select(sel);
+        else if (!sel.node) sel = d3.select(sel);
         // draw and start updating panel
         let controller = gaugeController(),  // establish context for gauges
             transition = smooth ?
                 (sel => sel.transition().duration(interval || 250).ease(d3.easeLinear)) :
                 (sel => sel),
-            _ = sel.append('svg')
+            _ = sel.node().tagName.toLowerCase() === 'svg' ? sel : sel.append('svg');
+        _
                 .attr('width', width).attr('height', height);
 
         // insert the global defs now that we know the panel size
@@ -64,6 +66,8 @@ export function panel() {
 
         if (showgrid) grid().width(width).height(height)(_);
 
+        if (interval === 0) return; // static render
+
         console.log('Starting panel expecting metrics for:', controller.indicators());
 
         if (!url) {
@@ -71,7 +75,7 @@ export function panel() {
             setInterval(() => {
                 controller(controller.fakeMetrics(), transition);
             }, interval || 250);
-        } else if (interval) {
+        } else if (interval > 0) {
             // with non-zero interval, poll an endpoint
             let latest=0;
             setInterval(() => {
@@ -89,8 +93,8 @@ export function panel() {
                         latest = data.latest;
                     });
             }, interval);
-        } else {
-            // set interval to 0 or None to use server-sent event endpoint
+        } else { // interval is non-positive but not 0, or something else falsy
+            // use server-sent event endpoint
             let source = new EventSource(url);
             url.search = new URLSearchParams({
                 // server should determine best match metrics

@@ -6,7 +6,7 @@ that display live external metrics from flight (or other) simulators
 like [X-Plane](https://www.x-plane.com/)
 and [Microsoft FS2020](https://www.flightsimulator.com/).
 Here's a screenshot with some of the included flight gauges
-(or try this [live demo](https://patricksurry.github.io/)):
+(or try this [live demo](https://patricksurry.github.io/posts/g3-demo/)):
 
 <div align='center'>
     <img src="doc/flightpanel.png" alt='flight panel screenshot'>
