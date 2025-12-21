@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 import {stylable, appendable, transformable} from './mixin.js';
 import {gaugeController} from './controller.js';
-import {element} from './common.js';
+import {element, d3sel} from './common.js';
 import {grid} from './grid.js';
 
 
@@ -45,7 +45,7 @@ export function panel() {
         url;
 
     function panel(sel) {
-        if (typeof sel === 'string') sel = d3.select(sel);
+        sel = d3sel(sel);
         // draw and start updating panel
         let controller = gaugeController(),  // establish context for gauges
             transition = smooth ?
@@ -68,9 +68,14 @@ export function panel() {
 
         if (!url) {
             // fake metrics
-            setInterval(() => {
+            if (interval < 0) {
+                // set interval < 0 for one-shot metrics, eg. for screenshot
                 controller(controller.fakeMetrics(), transition);
-            }, interval || 250);
+            } else {
+                setInterval(() => {
+                    controller(controller.fakeMetrics(), transition);
+                }, interval || 250);
+            }
         } else if (interval) {
             // with non-zero interval, poll an endpoint
             let latest=0;

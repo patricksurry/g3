@@ -6772,6 +6772,65 @@
 
     Transform.prototype;
 
+    function d3sel(sel) {
+        return (typeof sel === 'string') ? select(sel) : sel;
+    }
+
+
+    function element(elt, attrs_) {
+        var attrs = attrs_ || {};
+
+        function element(sel, g) {
+            var _ = d3sel(sel).append(elt);
+            Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
+            element.stylable(_);
+            element.appendable(_, g);
+            element.interactable(_, g);
+        }
+        element.attr = function(k, _) {
+            return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
+        };
+        return interactable(stylable(appendable(element)));
+    }
+
+
+    function put() {
+        function put(sel, g) {
+            var _ = d3sel(sel).append('g');
+            put.transformable(_);
+            put.stylable(_);
+            put.appendable(_, g);
+            put.interactable(_, g);
+        }
+        interactable(stylable(transformable(appendable(put))));
+        return put;
+    }
+
+
+    function snapScale() {
+        var step = 1,
+            start = 0,
+            strength = 5;
+
+        function snapScale(v) {
+            let v0 = Math.round((v - start)/step)*step + start,
+                w = step/2,
+                dv = pow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
+
+            return v0 + dv;
+        }
+        snapScale.start = function(_) {
+            return arguments.length ? (start = _, snapScale): start;
+        };
+        snapScale.step = function(_) {
+            return arguments.length ? (step = _, snapScale): step;
+        };
+        snapScale.strength = function(_) {
+            return arguments.length ? (strength = _, snapScale): strength;
+        };
+        return snapScale;
+    }
+
     const identity = v => v;
 
 
@@ -6845,6 +6904,7 @@
             kids = [];
 
         f.appendable = function(sel, g) {
+            sel = d3sel(sel);
             if (defs.length) {
                 let _ = select(sel.node().ownerSVGElement).select('defs');
                 if (_.empty()) throw "Couldn't find svg defs element"
@@ -10103,60 +10163,6 @@
         return gaugeController;
     }
 
-    function element(elt, attrs_) {
-        var attrs = attrs_ || {};
-
-        function element(sel, g) {
-            var _ = sel.append(elt);
-            Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
-            element.stylable(_);
-            element.appendable(_, g);
-            element.interactable(_, g);
-        }
-        element.attr = function(k, _) {
-            return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
-        };
-        return interactable(stylable(appendable(element)));
-    }
-
-
-    function put() {
-        function put(sel, g) {
-            var _ = sel.append('g');
-            put.transformable(_);
-            put.stylable(_);
-            put.appendable(_, g);
-            put.interactable(_, g);
-        }
-        interactable(stylable(transformable(appendable(put))));
-        return put;
-    }
-
-
-    function snapScale() {
-        var step = 1,
-            start = 0,
-            strength = 5;
-
-        function snapScale(v) {
-            let v0 = Math.round((v - start)/step)*step + start,
-                w = step/2,
-                dv = pow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
-
-            return v0 + dv;
-        }
-        snapScale.start = function(_) {
-            return arguments.length ? (start = _, snapScale): start;
-        };
-        snapScale.step = function(_) {
-            return arguments.length ? (step = _, snapScale): step;
-        };
-        snapScale.strength = function(_) {
-            return arguments.length ? (strength = _, snapScale): strength;
-        };
-        return snapScale;
-    }
-
     const eps = 1e-6;
 
     function grid() {
@@ -10275,7 +10281,7 @@
             url;
 
         function panel(sel) {
-            if (typeof sel === 'string') sel = select(sel);
+            sel = d3sel(sel);
             // draw and start updating panel
             let controller = gaugeController(),  // establish context for gauges
                 transition = smooth ?
@@ -10298,9 +10304,14 @@
 
             if (!url) {
                 // fake metrics
-                setInterval(() => {
+                if (interval < 0) {
+                    // set interval < 0 for one-shot metrics, eg. for screenshot
                     controller(controller.fakeMetrics(), transition);
-                }, interval || 250);
+                } else {
+                    setInterval(() => {
+                        controller(controller.fakeMetrics(), transition);
+                    }, interval || 250);
+                }
             } else if (interval) {
                 // with non-zero interval, poll an endpoint
                 let latest=0;
@@ -10420,14 +10431,16 @@
             size = 20;
 
         function text(sel, g) {
-            let _ = sel.append('text').attr('font-size', size);
+            let _ = d3sel(sel).append('text').attr('font-size', size);
             text.stylable(_);
             _ = _.text('');
 
-            function update(v, transition) {    // eslint-disable-line no-unused-vars
-                _.text(format(v));
+            if (exports.activeController) {
+                function update(v, transition) {    // eslint-disable-line no-unused-vars
+                    _.text(format(v));
+                }
+                exports.activeController.register(update, g.metric(), g.unit());
             }
-            exports.activeController.register(update, g.metric(), g.unit());
         }
         text.format = function(_) {
             return arguments.length ? (format = _, text) : format;
@@ -10445,7 +10458,7 @@
             shape = 'needle';
 
         function pointer(sel, g) {
-            let _ = sel.append('g').classed('will-change-transform', true);
+            let _ = d3sel(sel).append('g').classed('will-change-transform', true);
 
             pointer.stylable(_);
             if (!pointer.append().length) {
@@ -10453,13 +10466,15 @@
             }
             pointer.appendable(_, g);
 
-            function update(v, transition) {
-                let z = rescale(v);
-                if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
-                if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                transition(_).attr('transform', g.metrictransform(z));
+            if (exports.activeController) {
+                function update(v, transition) {
+                    let z = rescale(v);
+                    if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+                    if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+                    transition(_).attr('transform', g.metrictransform(z));
+                }
+                exports.activeController.register(update, g.metric(), g.unit());
             }
-            exports.activeController.register(update, g.metric(), g.unit());
         }
         pointer.rescale = function(_) {
             return arguments.length ? (rescale = _, pointer) : rescale;
@@ -10483,19 +10498,21 @@
             inset = 0;
 
         function sector(sel, g) {
-            let _ = sel.append('path');
+            let _ = d3sel(sel).append('path');
 
             sector.stylable(_);
 
-            function update(v, transition) {
-                let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
-                if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
-                if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                transition(_)
-                    .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
-                _.classed('g3-indicate-sector-negative', negative);
+            if (exports.activeController) {
+                function update(v, transition) {
+                    let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
+                    if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+                    if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+                    transition(_)
+                        .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
+                    _.classed('g3-indicate-sector-negative', negative);
+                }
+                exports.activeController.register(update, g.metric(), g.unit());
             }
-            exports.activeController.register(update, g.metric(), g.unit());
         }
         sector.rescale = function(_) {
             return arguments.length ? (rescale = _, sector) : rescale;
@@ -10522,15 +10539,17 @@
             trigger = identity;
         function style(sel, g) {
             const tween = interpolate$1(styleOff, styleOn);
-            let _ = sel.append('g').attr('class', 'g3-indicate-style');
+            let _ = d3sel(sel).append('g').attr('class', 'g3-indicate-style');
             style.appendable(_, g);
 
-            function update(v, transition) {    // eslint-disable-line no-unused-vars
-                let s = tween(trigger(v));
-                // Nb. ignore transition for style updates, looks weird for light on/off
-                for (let k in s) _.style(k, s[k]);
+            if (exports.activeController) {
+                function update(v, transition) {    // eslint-disable-line no-unused-vars
+                    let s = tween(trigger(v));
+                    // Nb. ignore transition for style updates, looks weird for light on/off
+                    for (let k in s) _.style(k, s[k]);
+                }
+                exports.activeController.register(update, g.metric(), g.unit());
             }
-            exports.activeController.register(update, g.metric(), g.unit());
         }
         style.styleOn = function(_) {
             return arguments.length ? (styleOn = _, style): styleOn;
@@ -10558,7 +10577,7 @@
             showgrid = false,
             clip;
 
-        function gauge(selection, parent) {
+        function gauge(sel, parent) {
             // we namespace the metric using the instance chain at drawing time
             let ns = parent ? parent._ns.slice() : [];
             if (instance) {
@@ -10576,7 +10595,7 @@
 
             const m = gauge.metric();
 
-            let _ = selection.append('g');
+            let _ = d3sel(sel).append('g');
             gauge.stylable(_);
             _ = _.append('g');
 
@@ -10589,15 +10608,17 @@
 
             if (showgrid) grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2*r).height(2*r)(_);
 
-            if (fake && m) exports.activeController.fake(m, fake);
+            if (exports.activeController) {
+                if (fake && m) exports.activeController.fake(m, fake);
 
-            function update(v, transition) {
-                transition(_).attr('transform', gauge.metrictransform(rescale(v), true));
-            }
+                if (autoindicate) {
+                    function update(v, transition) {
+                        transition(_).attr('transform', gauge.metrictransform(rescale(v), true));
+                    }
 
-            if (autoindicate) {
-                _.classed('will-change-transform', true);
-                exports.activeController.register(update, m, unit);
+                    _.classed('will-change-transform', true);
+                    exports.activeController.register(update, m, unit);
+                }
             }
         }
         gauge._ns = [];
@@ -10683,6 +10704,7 @@
         var r = 100,
             window;
         function face(sel, g) {
+            sel = d3sel(sel);
             var maskId;
             if (typeof window === 'function') {
                 maskId = appendId('gauge-face-window-');
@@ -10751,7 +10773,7 @@
         var s = s_ || '',
             x = 0, y = 0, dx = 0, dy = 0, size = 10;
         function label(sel, /* g */) {
-            let _ = sel.append('text')
+            let _ = d3sel(sel).append('text')
                 .attr('x', x).attr('y', y)
                 .attr('dx', dx).attr('dy', dy)
                 .attr('font-size', size)
@@ -10852,7 +10874,7 @@
             size = 5,
             inset = 0;
         function sector(sel, g) {
-            let _ = sel
+            let _ = d3sel(sel)
                 .append('path')
                 .attr('d', g.sectorpath(...(values || g.measure().domain()), size, inset));
             sector.stylable(_);
@@ -10881,7 +10903,7 @@
             step, start;
         function ticks(sel, g) {
             let vs = tickvals(values, step, start, g);
-            let _ = sel.append('g');
+            let _ = d3sel(sel).append('g');
             ticks.class('g3-axis-ticks-' + shape).stylable(_);
             _ = _.selectAll(null)
                 .data(vs)
@@ -10940,7 +10962,7 @@
                 circPath = orient.endsWith('clockwise'),
                 pathId = circPath ? appendId('axis-label-path-') : undefined;
 
-            let _ = sel.append('g');
+            let _ = d3sel(sel).append('g');
             labels.stylable(_);
             _ = _.selectAll(null)
                 .data(vs)
@@ -12233,6 +12255,7 @@ text {fill: #ccc}
     exports.categoricalSeries = categoricalSeries;
     exports.contrib = contrib;
     exports.convertUnits = convertUnits;
+    exports.d3sel = d3sel;
     exports.datetimeSeries = datetimeSeries;
     exports.elapsedSecondsSeries = elapsedSecondsSeries;
     exports.element = element;

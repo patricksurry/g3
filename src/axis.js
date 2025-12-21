@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { d3sel } from './common.js';
 import { stylable, appendId, identity } from './mixin.js';
 
 
@@ -32,7 +33,7 @@ export function axisSector(vs) {
         size = 5,
         inset = 0;
     function sector(sel, g) {
-        let _ = sel
+        let _ = d3sel(sel)
             .append('path')
             .attr('d', g.sectorpath(...(values || g.measure().domain()), size, inset));
         sector.stylable(_);
@@ -61,7 +62,7 @@ export function axisTicks(vs) {
         step, start;
     function ticks(sel, g) {
         let vs = tickvals(values, step, start, g);
-        let _ = sel.append('g');
+        let _ = d3sel(sel).append('g');
         ticks.class('g3-axis-ticks-' + shape).stylable(_);
         _ = _.selectAll(null)
             .data(vs)
@@ -120,7 +121,7 @@ export function axisLabels(vs) {
             circPath = orient.endsWith('clockwise'),
             pathId = circPath ? appendId('axis-label-path-') : undefined;
 
-        let _ = sel.append('g');
+        let _ = d3sel(sel).append('g');
         labels.stylable(_);
         _ = _.selectAll(null)
             .data(vs)
