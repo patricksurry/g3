@@ -470,6 +470,11 @@ followed by `npm install`.
 I'm currently tracking a few open issues and ideas in [`TODO.md`](TODO.md)
 if you're looking for something to play with.
 
+TODO - update WDS, note about tests
+    - bump version before merge
+    
+    npm test -- --coverage
+
 You can test your changes locally by serving directly from the `src/` tree using
 [Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
 Start it via `npm run start` and you should see the debug panel in your browser,
@@ -487,6 +492,7 @@ git push origin --tags
 npm login
 npm publish --access public
 ```
+
 
 ## Resources
 

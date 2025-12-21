@@ -32,7 +32,7 @@
    },
    "scripts": {
       "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-      "test:visual": "NODE_OPTIONS=--experimental-vm-modules jest tests/contrib.test.js",
+      "test:render": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPattern=\\.render\\.test\\.js$",
       "build": "rollup -c",
       "start": "vite"
    },

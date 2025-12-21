@@ -63,7 +63,7 @@ export function indicatePointer() {
         return arguments.length ? (clamp = _, pointer) : clamp;
     }
     pointer.shape = function(_) {
-        if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
+        if (arguments.length && !(_ in pointers)) throw `pointer: unknown shape ${_}`;
         return arguments.length ? (shape = _, pointer) : shape;
     }
     return stylable(appendable(pointer)).class('g3-indicate-pointer');
@@ -142,4 +142,3 @@ export function indicateStyle() {
     }
     return appendable(style);
 }
-

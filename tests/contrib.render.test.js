@@ -4,21 +4,11 @@ import path from 'path';
 import os from 'os';
 import { fileURLToPath } from 'url';
 import { contrib } from '../src/contrib/__index__.js';
+import { flatten } from '../src/common.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Helper to flatten the contrib object to get all gauge paths
-function flatten(o, ks) {
-    ks = ks || [];
-    return [].concat(
-        ...Object.entries(o).map(([k, v]) => {
-            const kks = ks.concat([k]);
-            return (v !== null && typeof(v) === 'object')
-                ? flatten(v, kks) : [[kks, v]];
-      })
-    );
-}
 
 const gaugeDefs = flatten(contrib).filter(([, f]) => typeof f === 'function');
 const gaugeURIs = gaugeDefs.map(([ks]) => ks.join('.'));

@@ -1,5 +1,7 @@
 ## Open issues
 
+- move these to GH issues
+
 - doc panel        showgrid = false,  smooth = true,
 
 - doc indicateSector, add an example?

@@ -64,3 +64,15 @@ export function snapScale() {
     }
     return snapScale;
 }
+
+
+export function flatten(o, ks) {
+    ks = ks || [];
+    return [].concat(
+        ...Object.entries(o).map(([k, v]) => {
+            const kks = ks.concat([k]);
+            return (v !== null && typeof(v) === 'object')
+                ? flatten(v, kks) : [[kks, v]];
+      })
+    );
+}
