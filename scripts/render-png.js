@@ -5,6 +5,7 @@ import { parseArgs } from 'node:util';
 
 import sharp from 'sharp';
 
+
 async function flood_alpha(img) {
     const { data, info } = await sharp(img)
         .ensureAlpha()
@@ -87,6 +88,22 @@ async function renderSvgToPng(htmlPath, pngPath, options = {}) {
       }
 
       Math.random = mulberry32(12345);
+
+      // Mock Date to a fixed point for deterministic rendering
+      const MOCK_DATE_STRING = '2025-12-28T12:34:56-05:00';
+      const MOCK_TIMESTAMP = new Date(MOCK_DATE_STRING).getTime();
+      const OriginalDate = Date;
+
+      // eslint-disable-next-line no-global-assign
+      Date = class extends OriginalDate {
+        constructor(...args) {
+          // If called with no arguments, return the mock date.
+          // Otherwise, pass arguments to the original Date constructor.
+          super(...(args.length === 0 ? [MOCK_DATE_STRING] : args));
+        }
+
+        static now() { return MOCK_TIMESTAMP; }
+      };
     });
 
     await page.goto(`file://${absoluteHtmlPath}`, { waitUntil: 'networkidle0' });

@@ -37,7 +37,7 @@ describe('Contributed gauge visual regression tests', () => {
 
     gaugeURIs.forEach(gaugeURI => {
         const gaugePath = gaugeURI.replace(/\./g, '-');
-//        if (gaugePath != 'engine-suctionPressure-DHC2') return;
+//        if (gaugePath != 'clocks-casioF91W') return;
         const expectedPngPath = path.join(EXPECTED_DIR, `${gaugePath}.png`);
         const testOrCreate = (compare) => {
             const f = () => {
@@ -68,12 +68,3 @@ describe('Contributed gauge visual regression tests', () => {
         }
     });
 });
-
-
-/*
-rendering issues:
-
-nav.turnCoordinator.generic ball missing
-engine-carbMixtureTemp-DHC2 has an extra letter?
-clocks-casioF91W missing fonts
-*/
