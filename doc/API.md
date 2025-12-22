@@ -5,7 +5,7 @@
 A [panel](#panel) is a container that presents a collection of [gauges](#gauge),
 and orchestrates the display of [metrics](#metrics),
 normally retrieved by polling some external source.
-(G3 can also generate fake time-varying metrics for development purposes.)
+G3 can also generate [fake time-varying metrics](#fake-metrics) for development purposes.
 A simple gauge displays some metric,
 using a scale to transform the raw metric
 and [indicate](#indicate) that value on a local [axis](#axis),
@@ -24,6 +24,8 @@ tracks the metric value with respect to a fixed point,
 for example the pressure reading of an altimeter
 or the "day of month" of some watches
 where the gauge axis rotates to be visible through a fixed window.
+
+<p align='center'><img src="/tests/contrib/nav-altitude-generic.png"></p>
 
 In order to keep things modular, and separate gauge configuration
 from usage in a specific panel,
@@ -75,7 +77,15 @@ provided that both the gauge and external metric source define explicit units,
 and those units are known and compatible in the
 [convert-units](https://github.com/convert-units/convert-units) module.
 For example, a gauge designed to show miles/hour (mph)
-could then correctly display  speeds provided in km/hour (kph).
+could then correctly display speeds provided in km/hour (kph).
+
+<a id="g3-gauge-fake" href="#g3-gauge-fake">#</a>
+*gauge*.**fake**(\[*generator*: function\]) · [source](/src/gauge.js)
+
+If *generator* is specified, it defines a function that produces a sequence of metric values for this gauge.
+This is useful for gauge development and testing when a panel has no external metric source. 
+If *generator* is not specified, the current generator is returned. 
+See [fake metrics](#fake-metrics) for available generators.
 
 *gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.js)
 
@@ -718,25 +728,14 @@ in the next request, allowing the server to only report metrics that changed
 in the intervening period.  
 Simple metrics servers can simply always return `latest=0`.
 
-Any gauge can display fake metrics, as long as a matching metric generator
-has been registered using *g3.fakeMetrics.register()*.
+#### Fake metrics
+
+For development and testing, any gauge can be configured to display fake metrics. 
+This is done by defining a fake metric generator on the gauge itself using the *gauge*.fake() method. 
+When a panel is running without a configured `url`, it will use these generators to produce time-varying data.
+
 A simple set of metric generators is provided,
-or you can provide your own function that produces a new metric value each time it's called.
-
-<a id="g3-fakeMetrics" href="#g3-fakeMetrics">#</a>
-g3.**fakeMetrics** · [source](/src/faketimeseries.js)
-
-The *fakeMetrics* generator is an instance of *metricsRegistry()* used
-by the [panel](#g3-panel) to generate metrics when no external source is configured.
-Calling *fakeMetrics()* returns a dictionary of {metricName: metricValue}
-which simulates the current state of all metrics.
-
-*fakeMetrics*.**register**(\[*metrics*: object\]) · [source](/src/faketimeseries.js)
-
-If *metrics* is defined, it specifies a dictionary of {metricName: metricGenerator}
-which are merged with the current set of fake metrics.
-Each *metricGenerator* is a function that repeatedly provides the next in a sequence of
-metric values for *metricName*.
+or you can define your own function that produces a new metric value each time it's called.
 
 <a id="g3-forceSeries" href="#g3-forceSeries">#</a>
 g3.**forceSeries**(\[*min*: number\[, *max*: number\[, *options*: object\]\]\]) · [source](/src/faketimeseries.js)
@@ -770,7 +769,7 @@ g3.**midnightSecondsSeries**() · [source](/src/faketimeseries.js)
 Returns a time series generator which returns the number of seconds since midnight (in browser local time).
 
 <a id="g3-elapsedSecondsSeries" href="#g3-elapsedSecondsSeries">#</a>
-g3.**midnightSecondsSeries**() · [source](/src/faketimeseries.js)
+g3.**elapsedSecondsSeries**() · [source](/src/faketimeseries.js)
 
 Returns a time series generator which returns the number of seconds since the panel was launched,
 effectively a timer.
