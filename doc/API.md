@@ -132,6 +132,14 @@ Otherwise, it returns the current drawing function, defaulting to undefined.
 For complex nested gauges, like the attitude indicator, it is sometimes convenient to clip to a simple circle
 via *gauge*.clip(g3.gaugeFace()).
 
+*gauge*.**grid**(\[*show*: boolean\]) · [source](/src/gauge.js)
+
+If *show* is defined, update the value.
+Otherwise returns the current value, which defaults to `false`.
+If *show* is true, a background grid will be displayed 
+on the gauge using `g3.grid()`.  
+This can be useful during layout development.
+
 
 <a id="g3-gaugeFace" href="#g3-gaugeFace">#</a>
 g3.**gaugeFace**() · [source](/src/gauge.js)
@@ -628,13 +636,41 @@ with duration equal to *panel.interval()*.
 Otherwise updates will be instantaneous which usually looks worse but
 can be more responsive for less capable clients.
 
-*panel*.**grid**(\[*showgrid*: boolean\]) · [source](/src/panel.js)
+*panel*.**grid**(\[*show*: boolean\]) · [source](/src/panel.js)
 
-If *showgrid* is defined, update the value.
+If *show* is defined, update the value.
 Otherwise returns the current value, which defaults to `false`.
-If *showgrid* is true, a background grid will be displayed 
+If *show* is true, a background grid will be displayed 
 on the panel using `g3.grid()`.  
 This can be useful during layout development.
+
+
+<a id="g3-grid" href="#g3-grid">#</a>
+g3.**grid**() · [source](/src/grid.js)
+
+Returns a stylable *grid* object, which draws a rectangular grid
+useful for layout alignment.
+
+*grid*.**width**(\[*width*: number\]) · [source](/src/grid.js)
+*grid*.**height**(\[*height*: number\]) · [source](/src/grid.js)
+
+Set or return the width and height of the grid in SVG units.
+
+*grid*.**x**(\[*x*: number\]) · [source](/src/grid.js)
+*grid*.**y**(\[*y*: number\]) · [source](/src/grid.js)
+
+Set or return the x and y offset of the grid origin.
+
+*grid*.**xmajor**(\[*spacing*: number\]) · [source](/src/grid.js)
+*grid*.**ymajor**(\[*spacing*: number\]) · [source](/src/grid.js)
+
+Set or return the spacing of major grid lines.
+
+*grid*.**xminor**(\[*spacing*: number\]) · [source](/src/grid.js)
+*grid*.**yminor**(\[*spacing*: number\]) · [source](/src/grid.js)
+
+Set or return the spacing of minor grid lines.
+
 
 ### Metrics
 

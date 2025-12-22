@@ -2,17 +2,16 @@
 
 - move these to GH issues
 
-- doc panel  showgrid = false,  smooth = true,
+- documentation:
+  - contrib (should all be function that works with no args and returns a gauge)
+  - g3.config.test.alignment
+
 
 - fix links like #metrics to API
 
 - update api fakemetrics since it's now inline part of gauge not a separate thing
 
-- doc contrib (should all be function that works with no args and returns a gauge)
-
 - add gauge.instance(qualifier) which returns deferred drawing function setting local qualifiers []
-
-- doc g3.grid(), panel.grid(), gauge.grid(), g3.config.test.alignment
 
 - align tutorial, e.g. g3.panel()...grid(true).append(...)
 
