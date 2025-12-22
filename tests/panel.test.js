@@ -70,14 +70,6 @@ describe('g3.panel', () => {
         // without inspecting internal closure, but this covers the line.
     });
 
-    it('should support one-shot updates with negative interval', () => {
-        const myPanel = g3.panel().interval(-1);
-        myPanel('#panel-container');
-        // Should have called fakeMetrics once immediately
-        // We can verify this by checking if the SVG was populated
-        expect(d3.select('#panel-container svg').empty()).toBe(false);
-    });
-
     it('should support grid configuration', () => {
         const myPanel = g3.panel().grid(true);
         expect(myPanel.grid()).toBe(true);

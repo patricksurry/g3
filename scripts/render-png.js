@@ -89,6 +89,9 @@ async function renderSvgToPng(htmlPath, pngPath, options = {}) {
 
       Math.random = mulberry32(12345);
 
+      // one-shot update for screenshot so browser can exit
+      setInterval = (fn, interval) => { fn(); return 0; };
+
       // Mock Date to a fixed point for deterministic rendering
       const MOCK_DATE_STRING = '2025-12-28T12:34:56-05:00';
       const MOCK_TIMESTAMP = new Date(MOCK_DATE_STRING).getTime();

@@ -21,7 +21,7 @@ const htmlTemplate = (gaugeURI, distPath) => `
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="file://${distPath}"></script>
     <script>
-        g3.panel().interval(-1).width(480).height(480).x(240).y(240).scale(2).append(
+        g3.panel().width(480).height(480).x(240).y(240).scale(2).append(
             g3.contrib.${gaugeURI}()
         )('body')
     </script>
@@ -37,7 +37,7 @@ describe('Contributed gauge visual regression tests', () => {
 
     gaugeURIs.forEach(gaugeURI => {
         const gaugePath = gaugeURI.replace(/\./g, '-');
-//        if (gaugePath != 'clocks-casioF91W') return;
+//        if (gaugePath != 'radionav-ADF-generic') return;
         const expectedPngPath = path.join(EXPECTED_DIR, `${gaugePath}.png`);
         const testOrCreate = (compare) => {
             const f = () => {
