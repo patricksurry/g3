@@ -2,9 +2,7 @@
 
 - move these to GH issues
 
-- doc panel        showgrid = false,  smooth = true,
-
-- doc indicateSector, add an example?
+- doc panel  showgrid = false,  smooth = true,
 
 - fix links like #metrics to API
 
@@ -25,8 +23,6 @@
 - switch to a recursive setTimeout rather than setInterval
 
 - observablehq demo
-
-- add unit tests
 
 - more throw messages. e.g. for g.measure(2) should be g.measure()(2) type of 2 isn't function
 

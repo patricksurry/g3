@@ -467,18 +467,20 @@ or just add your own examples back into the package,
 you should start by forking and cloning the
 [git repo](https://github.com/patricksurry/g3.git)
 followed by `npm install`.
-I'm currently tracking a few open issues and ideas in [`TODO.md`](TODO.md)
+Check the [issue tracker](https://github.com/patricksurry/g3/issues)
 if you're looking for something to play with.
 
-TODO - update WDS, note about tests
-    - bump version before merge
-    
-    npm test -- --coverage
+Check the unit tests after any changes with `npm run test`.
+Ensure new code is tested using `npm test -- --coverage`.
+Before making a PR, also run the rendering tests `npm run test:render`.
+They take longer but generate a screenshot of every contributed gauge 
+and compare it to a reference image in `tests/contrib`.   
+Images for new contributions should be added automatically.
 
-You can test your changes locally by serving directly from the `src/` tree using
-[Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
-Start it via `npm run start` and you should see the debug panel in your browser,
-served from `src/index.html`.
+You can test changes interactively by serving directly from the `src/` tree using
+[Vite](https://vite.dev/).
+Use `npm run start` to launch the gauge gallery panel from `src/index.html`
+in your browser.
 (Note this HTML script uses module style imports unlike the production distribution.)
 
 You can rebuild the bundled package in `dist/` using `rollup` by typing `npm run build`.

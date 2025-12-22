@@ -439,6 +439,47 @@ A similar effect could be achieved by enabling
 [clamping](https://github.com/d3/d3-scale#continuous_clamp) on the gauge's measure,
 but this would also prevent any axis decorations beyond the clamped extent.
 
+<a id="g3-indicateSector" href="#g3-indicateSector">#</a>
+g3.**indicateSector**() · [source](/src/indicate.js)
+
+Returns a [stylable](#stylable) *indicateSector* object,
+which is called to draw a sector on the gauge axis representing the range
+between a fixed anchor point and the current metric value.
+This is useful for things like turn coordinators or deviation indicators.
+
+*indicateSector*.**anchor**(\[*anchor*: number\]) · [source](/src/indicate.js)
+
+If *anchor* is defined, sets the fixed anchor value in the metric domain.
+Otherwise returns the current anchor, defaulting to 0.
+The sector will be drawn from this value to the current metric value.
+If the current value is less than the anchor, the sector is drawn "backwards"
+and the class `g3-indicate-sector-negative` is added, allowing for different styling.
+
+*indicateSector*.**size**(\[*size*: number\]) · [source](/src/indicate.js)
+
+If *size* is defined, sets the width of the sector in SVG units.
+Otherwise returns the current value,
+which defaults to 10. Size is measured inward from the axis line.
+
+*indicateSector*.**inset**(\[*inset*: number\]) · [source](/src/indicate.js)
+
+If *inset* is defined, sets the distance of the outer rim of the sector inside 
+the axis line (outside, if negative).
+Otherwise returns the current value, which defaults to 0.
+
+*indicateSector*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/indicate.js)
+
+If *rescale* is defined, specifies a function that
+rescales the current metric value before indicating.
+Otherwise, returns the current conversion, which defaults to the identity function.
+
+*indicateSector*.**clamp**(\[*extents*: array<number>\]) · [source](/src/indicate.js)
+
+If *extents* is defined, it provides a two-element array defining
+the minimum and maximum extent of the sector domain, after any rescaling.
+Otherwise, return the current limits which default to \[undefined, undefined\].
+
+
 <a id="g3-indicateStyle" href="#g3-indicateStyle">#</a>
 g3.**indicateStyle**() · [source](/src/indicate.js)
 
@@ -578,6 +619,22 @@ otherwise the current interval is returned, defaulting to 250.
 The panel will query the configured URL (or generate fake metrics)
 once each interval.
 
+*panel*.**smooth**(\[*smooth*: boolean\]) · [source](/src/panel.js)
+
+If *smooth* is defined, update the value.
+Otherwise return the current value, which defaults to `true`.
+If *smooth* is truthy, metric updates will use smooth transitions
+with duration equal to *panel.interval()*. 
+Otherwise updates will be instantaneous which usually looks worse but
+can be more responsive for less capable clients.
+
+*panel*.**grid**(\[*showgrid*: boolean\]) · [source](/src/panel.js)
+
+If *showgrid* is defined, update the value.
+Otherwise returns the current value, which defaults to `false`.
+If *showgrid* is true, a background grid will be displayed 
+on the panel using `g3.grid()`.  
+This can be useful during layout development.
 
 ### Metrics
 
