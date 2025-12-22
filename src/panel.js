@@ -68,14 +68,9 @@ export function panel() {
 
         if (!url) {
             // fake metrics
-            if (interval < 0) {
-                // set interval < 0 for one-shot metrics, eg. for screenshot
+            setInterval(() => {
                 controller(controller.fakeMetrics(), transition);
-            } else {
-                setInterval(() => {
-                    controller(controller.fakeMetrics(), transition);
-                }, interval || 250);
-            }
+            }, interval || 250);
         } else if (interval) {
             // with non-zero interval, poll an endpoint
             let latest=0;
