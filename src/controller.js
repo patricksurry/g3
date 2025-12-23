@@ -1,4 +1,5 @@
-import configureMeasurements, {allMeasures} from 'convert-units';
+import configureMeasurements from 'convert-units';
+import allMeasures from 'convert-units/definitions/all';
 
 export const
     convertUnits = configureMeasurements(allMeasures),
@@ -35,7 +36,22 @@ export function gaugeController() {
 
     var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
         fakes = {},         // dict of metric => generator
-        updaters = null;    // dict of metric keys => {metric: unit: updaters: {unit: fns}}
+        updaters = null;    // dict of metric keys => {metric: {unit: updaters: {unit: fns}}}
+        /*
+        After initial set up we build an updaters structure like this which lets us route
+        incoming metrics to clients in appropriate units:
+        {
+            altitude: {                         // incoming metric name
+                unit: meters,                   // incoming unit
+                updaters: {
+                    feet: [ f1, f2, ... ],      // clients segmented by desired unit
+                    meters: [ f3, f4, ... ],
+                    ...
+                }
+            },
+            ...
+        }
+        */
 
     // call the controller to display current metric values
     function gaugeController(data, transition) {
@@ -49,7 +65,7 @@ export function gaugeController() {
             // First call, we establish the mapping from metric keys => callbacks
             updaters = {};
             Object.keys(data.metrics).forEach(m => {
-                updaters[m] = {unit: data.units[m] || '', updaters: null};
+                updaters[m] = {unit: (data.units || {})[m] || '', updaters: null};
             })
 
             Object.entries(callbacks).forEach(([m, ufs]) => {

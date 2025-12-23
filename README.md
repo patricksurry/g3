@@ -123,23 +123,23 @@ above.
 The [contrib folder](src/contrib)
 included with `g3-contrib.js` is where all the predefined gauges live, including
 clocks, flight instruments, as well as engine and electrical gauges.
-The full index of definitions can be found [`__index__.js`](src/contrib/__index__.js) file,
+The full index of definitions can be found in the[`__index__.js`](src/contrib/__index__.js) file,
 and two predefined panels, `g3.gallery.contrib` and `g3.gallery.pointers`,
-will draw a gallery of all known gauges and indicator pointer types respectively as we saw above.
+will draw a gallery of all known gauges and indicator pointers respectively.
 
 Let's create our own panel that shows a clock and a heading gauge side by side.
-Create a new HTML file called `panel.html`:
+Create a new HTML file called `panel.html` (or copy `tutorial/panel.html`):
 ```html
 <html>
   <body>
     <script src="https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js"></script>
     <script>
 var panel = g3.panel()
-        .width(600).height(300)
-        .append(
-            g3.put().x(150).y(150).append(g3.contrib.clocks.simple()),
-            g3.put().x(450).y(150).append(g3.contrib.nav.heading.generic()),
-        );
+    .width(600).height(300)
+    .append(
+        g3.put().x(150).y(150).append(g3.contrib.clocks.simple()),
+        g3.put().x(450).y(150).append(g3.contrib.nav.heading.generic()),
+    );
 panel('body');
     </script>
   </body>
@@ -151,7 +151,7 @@ a 600x300 SVG container, and places two existing gauges
 at (150,150) and (450,150) respectively,
 with names referencing the definitions in `src/contrib/__index__.js`.
 By convention gauges are drawn with a radius of 100 SVG units,
-but you can scale via `put().scale(1.5)...` if (say) you prefer a radius 150.
+but you can scale via `put().scale(1.5)...` if you'd prefer a radius of 150.
 
 Note that the panel specification in the `panel` variable is actually a
 function that will draw the panel when we call it with a CSS selector
@@ -259,7 +259,7 @@ Assuming you've already grabbed the
 you can just modify `panel.html` to point at the demo XPlane endpoint:
 
 ```js
-g3.panel('DHC2FlightPanel').interval(250).url('/metrics/xplane.json')('body');
+g3.panel().interval(250).url('/metrics/xplane.json')('body');
 ```
 
 Now start up a flight in XPlane and open your panel in the browser as above.
@@ -290,7 +290,7 @@ With a few lines of code, we'll end up with a credible facsimile (below right).
 <br />
 
 Let's get started by creating a new HTML file called `jagetach.html`,
-and build a skeleton for our gauge.
+and build a skeleton for our gauge.  (Or copy `tutorial/jagetach0.html`.)
 We'll choose a name for the gauge, specify the external metric it should display
 (with explicit units if possible), then define a measure which
 translates the metric values to the scale on our gauge.
@@ -366,6 +366,7 @@ actually see our RPM measurement (result above right):
 
 Finally, we'll add a few labels and customize the pointer to look closer to the source,
 though the fonts and logo could certainly use more love (result top right of this section).
+You can find the final result in `tutorial/jagetach2.html`.
 The custom pointer is probably the fiddliest part,
 but is not too bad with a basic understanding of
 [SVG paths](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
@@ -431,12 +432,14 @@ For example, modify your panel to look like:
 
 ```js
 var p = g3.panel().width(640).height(640).append(
-            g3.put().x(320).y(320).scale(2).append(
-                g,
-                g3.element('image', {href: 'original.png', x: -100, y: -100, width: 200, opacity: 0.3})
-            )
-        );
+    g3.put().x(320).y(320).scale(2).append(
+        g,
+        g3.element('image', {href: 'original.png', x: -100, y: -100, width: 200, opacity: 0.3})
+    )
+);
 ```
+
+### Create a new gauge
 
 In this tutorial we reused the `engineRPM` metric defined with the
 [sample engine gauges](https://github.com/patricksurry/g3/blob/master/src/contrib/engine.js),
@@ -452,12 +455,17 @@ want to [clamp](/#g3-indicatePointer) the pointer as if there was a physical sto
 var g = g3.gauge()
     .metric('jaguarRPM').unit('rpm')
     .fake(g3.forceSeries(0, 7000))
-    .clamp([0, 6000])
     ...
+    .append(
+        ...
+        g3.put().scale(0.95).append(
+            ...
+            g3.indicatePointer().clamp([0,6000]).append(
+                ...
 ```
 
 **Extra credit** If you want to explore further, try modifying the tachometer to add
-a simple sub-gauge in the bottom quadrant which shows a simple clock with hours and minutes.
+a sub-gauge in the bottom quadrant which shows a simple clock with hours and minutes.
 
 
 ## Contributing
@@ -467,26 +475,34 @@ or just add your own examples back into the package,
 you should start by forking and cloning the
 [git repo](https://github.com/patricksurry/g3.git)
 followed by `npm install`.
-I'm currently tracking a few open issues and ideas in [`TODO.md`](TODO.md)
+Check the [issue tracker](https://github.com/patricksurry/g3/issues)
 if you're looking for something to play with.
 
-You can test your changes locally by serving directly from the `src/` tree using
-[Web Dev Server](https://modern-web.dev/docs/dev-server/overview/).
-Start it via `npm run start` and you should see the debug panel in your browser,
-served from `src/index.html`.
+Check the unit tests after any changes with `npm run test`.
+Ensure new code is tested using `npm test -- --coverage`.
+Before making a PR, also run the rendering tests `npm run test:render`.
+They take longer but generate a screenshot of every contributed gauge 
+and compare it to a reference image in `tests/contrib`.   
+Images for new contributions should be added automatically.
+
+You can test changes interactively by serving directly from the `src/` tree using
+[Vite](https://vite.dev/).
+Use `npm run start` to launch the gauge gallery panel from `src/index.html`
+in your browser.
 (Note this HTML script uses module style imports unlike the production distribution.)
 
 You can rebuild the bundled package in `dist/` using `rollup` by typing `npm run build`.
 Once you're happy with your changes, make a pull request.
 When I want to publish a new release, I also bump the version in `package.json`,
-then commit and tag in github and finally publish with something like:
+then merge and tag in github and finally publish with something like:
 
 ```sh
-git tag v0.1.18
+git tag v0.1.19
 git push origin --tags
 npm login
 npm publish --access public
 ```
+
 
 ## Resources
 

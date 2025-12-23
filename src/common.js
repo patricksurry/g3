@@ -6,11 +6,16 @@ import * as d3 from 'd3';
 import {stylable, interactable, transformable, appendable} from "./mixin.js";
 
 
+export function d3sel(sel) {
+    return (typeof sel === 'string') ? d3.select(sel) : sel;
+}
+
+
 export function element(elt, attrs_) {
     var attrs = attrs_ || {};
 
     function element(sel, g) {
-        var _ = sel.append(elt);
+        var _ = d3sel(sel).append(elt);
         Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
         element.stylable(_);
         element.appendable(_, g);
@@ -25,7 +30,7 @@ export function element(elt, attrs_) {
 
 export function put() {
     function put(sel, g) {
-        var _ = sel.append('g');
+        var _ = d3sel(sel).append('g');
         put.transformable(_);
         put.stylable(_);
         put.appendable(_, g);
@@ -58,4 +63,16 @@ export function snapScale() {
         return arguments.length ? (strength = _, snapScale): strength;
     }
     return snapScale;
+}
+
+
+export function flatten(o, ks) {
+    ks = ks || [];
+    return [].concat(
+        ...Object.entries(o).map(([k, v]) => {
+            const kks = ks.concat([k]);
+            return (v !== null && typeof(v) === 'object')
+                ? flatten(v, kks) : [[kks, v]];
+      })
+    );
 }

@@ -73,6 +73,7 @@ export function tank(lo, hi, arc, instance) {
         .fake(g3.forceSeries(0, hi+2))
         .measure(d3.scaleLinear().domain([lo, hi]).range([180+arc/2,360+180-arc/2]))
         .append(
+            g3.gaugeFace(),
             g3.axisLine(),
             g3.axisTicks().step(4).size(15),
             g3.axisTicks([lo, hi]).size(15),

@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <style>
+div.header {
+    text-align: center;
+    font-size: 250%;
+    margin: 15px 0;
+}
+svg {
+    display: block;
+    margin: 0 auto;
+}
+        </style>
+    </head>
+    <body>
+        <script src="https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js"></script>
+        <div class='header'>g3.contrib gallery</div>
+        <div id='gauge-gallery'></div>
+        <div class='header'>g3.pointers gallery</div>
+        <div id='pointer-gallery'></div>
+        <script>
+// A panel with all contrib gauges
+g3.gallery.contrib('#gauge-gallery');
+
+// A panel showing all the pointer shapes
+g3.gallery.pointers('#pointer-gallery');
+        </script>
+    </body>
+</html>

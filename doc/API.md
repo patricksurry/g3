@@ -5,7 +5,7 @@
 A [panel](#panel) is a container that presents a collection of [gauges](#gauge),
 and orchestrates the display of [metrics](#metrics),
 normally retrieved by polling some external source.
-(G3 can also generate fake time-varying metrics for development purposes.)
+G3 can also generate [fake time-varying metrics](#fake-metrics) for development purposes.
 A simple gauge displays some metric,
 using a scale to transform the raw metric
 and [indicate](#indicate) that value on a local [axis](#axis),
@@ -24,6 +24,8 @@ tracks the metric value with respect to a fixed point,
 for example the pressure reading of an altimeter
 or the "day of month" of some watches
 where the gauge axis rotates to be visible through a fixed window.
+
+<p align='center'><img src="/tests/contrib/nav-altitude-generic.png"></p>
 
 In order to keep things modular, and separate gauge configuration
 from usage in a specific panel,
@@ -53,7 +55,7 @@ Gauges are often decorated with a [*gaugeFace()*](#g3-gaugeFace),
 <a id="g3-gauge" href="#g3-gauge">#</a>
 g3.**gauge**() · [source](/src/gauge.js)
 
-Creates an gauge renderer configured via the
+Creates a gauge renderer configured via the
 *gauge* getter/setter methods described below, e.g. *gauge*.r(100).
 The *gauge* is called to draw it within an SVG document, e.g. *gauge*(d3.select('svg.mygauge')).
 Typically *gauge* is not drawn directly
@@ -75,7 +77,15 @@ provided that both the gauge and external metric source define explicit units,
 and those units are known and compatible in the
 [convert-units](https://github.com/convert-units/convert-units) module.
 For example, a gauge designed to show miles/hour (mph)
-could then correctly display  speeds provided in km/hour (kph).
+could then correctly display speeds provided in km/hour (kph).
+
+<a id="g3-gauge-fake" href="#g3-gauge-fake">#</a>
+*gauge*.**fake**(\[*generator*: function\]) · [source](/src/gauge.js)
+
+If *generator* is specified, it defines a function that produces a sequence of metric values for this gauge.
+This is useful for gauge development and testing when a panel has no external metric source. 
+If *generator* is not specified, the current generator is returned. 
+See [fake metrics](#fake-metrics) for available generators.
 
 *gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.js)
 
@@ -131,6 +141,14 @@ If *clippath* is set, it defines a G3 drawing function that, when called, draws 
 Otherwise, it returns the current drawing function, defaulting to undefined.
 For complex nested gauges, like the attitude indicator, it is sometimes convenient to clip to a simple circle
 via *gauge*.clip(g3.gaugeFace()).
+
+*gauge*.**grid**(\[*show*: boolean\]) · [source](/src/gauge.js)
+
+If *show* is defined, update the value.
+Otherwise returns the current value, which defaults to `false`.
+If *show* is true, a background grid will be displayed 
+on the gauge using `g3.grid()`.  
+This can be useful during layout development.
 
 
 <a id="g3-gaugeFace" href="#g3-gaugeFace">#</a>
@@ -439,6 +457,47 @@ A similar effect could be achieved by enabling
 [clamping](https://github.com/d3/d3-scale#continuous_clamp) on the gauge's measure,
 but this would also prevent any axis decorations beyond the clamped extent.
 
+<a id="g3-indicateSector" href="#g3-indicateSector">#</a>
+g3.**indicateSector**() · [source](/src/indicate.js)
+
+Returns a [stylable](#stylable) *indicateSector* object,
+which is called to draw a sector on the gauge axis representing the range
+between a fixed anchor point and the current metric value.
+This is useful for things like turn coordinators or deviation indicators.
+
+*indicateSector*.**anchor**(\[*anchor*: number\]) · [source](/src/indicate.js)
+
+If *anchor* is defined, sets the fixed anchor value in the metric domain.
+Otherwise returns the current anchor, defaulting to 0.
+The sector will be drawn from this value to the current metric value.
+If the current value is less than the anchor, the sector is drawn "backwards"
+and the class `g3-indicate-sector-negative` is added, allowing for different styling.
+
+*indicateSector*.**size**(\[*size*: number\]) · [source](/src/indicate.js)
+
+If *size* is defined, sets the width of the sector in SVG units.
+Otherwise returns the current value,
+which defaults to 10. Size is measured inward from the axis line.
+
+*indicateSector*.**inset**(\[*inset*: number\]) · [source](/src/indicate.js)
+
+If *inset* is defined, sets the distance of the outer rim of the sector inside 
+the axis line (outside, if negative).
+Otherwise returns the current value, which defaults to 0.
+
+*indicateSector*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/indicate.js)
+
+If *rescale* is defined, specifies a function that
+rescales the current metric value before indicating.
+Otherwise, returns the current conversion, which defaults to the identity function.
+
+*indicateSector*.**clamp**(\[*extents*: array<number>\]) · [source](/src/indicate.js)
+
+If *extents* is defined, it provides a two-element array defining
+the minimum and maximum extent of the sector domain, after any rescaling.
+Otherwise, return the current limits which default to \[undefined, undefined\].
+
+
 <a id="g3-indicateStyle" href="#g3-indicateStyle">#</a>
 g3.**indicateStyle**() · [source](/src/indicate.js)
 
@@ -578,6 +637,50 @@ otherwise the current interval is returned, defaulting to 250.
 The panel will query the configured URL (or generate fake metrics)
 once each interval.
 
+*panel*.**smooth**(\[*smooth*: boolean\]) · [source](/src/panel.js)
+
+If *smooth* is defined, update the value.
+Otherwise return the current value, which defaults to `true`.
+If *smooth* is truthy, metric updates will use smooth transitions
+with duration equal to *panel.interval()*. 
+Otherwise updates will be instantaneous which usually looks worse but
+can be more responsive for less capable clients.
+
+*panel*.**grid**(\[*show*: boolean\]) · [source](/src/panel.js)
+
+If *show* is defined, update the value.
+Otherwise returns the current value, which defaults to `false`.
+If *show* is true, a background grid will be displayed 
+on the panel using `g3.grid()`.  
+This can be useful during layout development.
+
+
+<a id="g3-grid" href="#g3-grid">#</a>
+g3.**grid**() · [source](/src/grid.js)
+
+Returns a stylable *grid* object, which draws a rectangular grid
+useful for layout alignment.
+
+*grid*.**width**(\[*width*: number\]) · [source](/src/grid.js)
+*grid*.**height**(\[*height*: number\]) · [source](/src/grid.js)
+
+Set or return the width and height of the grid in SVG units.
+
+*grid*.**x**(\[*x*: number\]) · [source](/src/grid.js)
+*grid*.**y**(\[*y*: number\]) · [source](/src/grid.js)
+
+Set or return the x and y offset of the grid origin.
+
+*grid*.**xmajor**(\[*spacing*: number\]) · [source](/src/grid.js)
+*grid*.**ymajor**(\[*spacing*: number\]) · [source](/src/grid.js)
+
+Set or return the spacing of major grid lines.
+
+*grid*.**xminor**(\[*spacing*: number\]) · [source](/src/grid.js)
+*grid*.**yminor**(\[*spacing*: number\]) · [source](/src/grid.js)
+
+Set or return the spacing of minor grid lines.
+
 
 ### Metrics
 
@@ -625,25 +728,14 @@ in the next request, allowing the server to only report metrics that changed
 in the intervening period.  
 Simple metrics servers can simply always return `latest=0`.
 
-Any gauge can display fake metrics, as long as a matching metric generator
-has been registered using *g3.fakeMetrics.register()*.
+#### Fake metrics
+
+For development and testing, any gauge can be configured to display fake metrics. 
+This is done by defining a fake metric generator on the gauge itself using the *gauge*.fake() method. 
+When a panel is running without a configured `url`, it will use these generators to produce time-varying data.
+
 A simple set of metric generators is provided,
-or you can provide your own function that produces a new metric value each time it's called.
-
-<a id="g3-fakeMetrics" href="#g3-fakeMetrics">#</a>
-g3.**fakeMetrics** · [source](/src/faketimeseries.js)
-
-The *fakeMetrics* generator is an instance of *metricsRegistry()* used
-by the [panel](#g3-panel) to generate metrics when no external source is configured.
-Calling *fakeMetrics()* returns a dictionary of {metricName: metricValue}
-which simulates the current state of all metrics.
-
-*fakeMetrics*.**register**(\[*metrics*: object\]) · [source](/src/faketimeseries.js)
-
-If *metrics* is defined, it specifies a dictionary of {metricName: metricGenerator}
-which are merged with the current set of fake metrics.
-Each *metricGenerator* is a function that repeatedly provides the next in a sequence of
-metric values for *metricName*.
+or you can define your own function that produces a new metric value each time it's called.
 
 <a id="g3-forceSeries" href="#g3-forceSeries">#</a>
 g3.**forceSeries**(\[*min*: number\[, *max*: number\[, *options*: object\]\]\]) · [source](/src/faketimeseries.js)
@@ -677,7 +769,7 @@ g3.**midnightSecondsSeries**() · [source](/src/faketimeseries.js)
 Returns a time series generator which returns the number of seconds since midnight (in browser local time).
 
 <a id="g3-elapsedSecondsSeries" href="#g3-elapsedSecondsSeries">#</a>
-g3.**midnightSecondsSeries**() · [source](/src/faketimeseries.js)
+g3.**elapsedSecondsSeries**() · [source](/src/faketimeseries.js)
 
 Returns a time series generator which returns the number of seconds since the panel was launched,
 effectively a timer.

@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 
+import { d3sel } from './common.js';
 import { stylable, transformable, appendable, identity, appendId } from './mixin.js';
 import { activeController, convertUnits, knownUnits } from './controller.js';
 import { indicateStyle } from './indicate.js';
@@ -20,7 +21,7 @@ export function gauge() {
         showgrid = false,
         clip;
 
-    function gauge(selection, parent) {
+    function gauge(sel, parent) {
         // we namespace the metric using the instance chain at drawing time
         let ns = parent ? parent._ns.slice() : [];
         if (instance) {
@@ -38,7 +39,7 @@ export function gauge() {
 
         const m = gauge.metric();
 
-        let _ = selection.append('g');
+        let _ = d3sel(sel).append('g');
         gauge.stylable(_);
         _ = _.append('g');
 
@@ -51,15 +52,17 @@ export function gauge() {
 
         if (showgrid) grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2*r).height(2*r)(_);
 
-        if (fake && m) activeController.fake(m, fake);
+        if (activeController) {
+            if (fake && m) activeController.fake(m, fake);
 
-        function update(v, transition) {
-            transition(_).attr('transform', gauge.metrictransform(rescale(v), true))
-        }
+            if (autoindicate) {
+                function update(v, transition) {
+                    transition(_).attr('transform', gauge.metrictransform(rescale(v), true))
+                }
 
-        if (autoindicate) {
-            _.classed('will-change-transform', true);
-            activeController.register(update, m, unit)
+                _.classed('will-change-transform', true);
+                activeController.register(update, m, unit)
+            }
         }
     }
     gauge._ns = [];
@@ -145,6 +148,7 @@ export function gaugeFace() {
     var r = 100,
         window;
     function face(sel, g) {
+        sel = d3sel(sel);
         var maskId;
         if (typeof window === 'function') {
             maskId = appendId('gauge-face-window-');
@@ -213,7 +217,7 @@ export function gaugeLabel(s_, opts) {
     var s = s_ || '',
         x = 0, y = 0, dx = 0, dy = 0, size = 10;
     function label(sel, /* g */) {
-        let _ = sel.append('text')
+        let _ = d3sel(sel).append('text')
             .attr('x', x).attr('y', y)
             .attr('dx', dx).attr('dy', dy)
             .attr('font-size', size)

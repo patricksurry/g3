@@ -13,6 +13,7 @@ sample usage:
 import * as d3 from 'd3';
 import { css } from '@emotion/css';
 
+import { d3sel } from './common.js';
 
 export const identity = v => v;
 
@@ -87,6 +88,7 @@ export function appendable(f) {
         kids = [];
 
     f.appendable = function(sel, g) {
+        sel = d3sel(sel);
         if (defs.length) {
             let _ = d3.select(sel.node().ownerSVGElement).select('defs');
             if (_.empty()) throw "Couldn't find svg defs element"

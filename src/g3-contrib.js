@@ -1,18 +1,8 @@
 import * as g3 from './g3.js';
 // register contributed gauge definitions
 import {contrib} from './contrib/__index__.js';
+import {flatten} from './common.js';
 
-
-function flatten(o, ks) {
-    ks ??= [];
-    return [].concat(
-        ...Object.entries(o).map(([k, v]) => {
-            const kks = ks.concat([k]);
-            return (v !== null && typeof(v) == 'object')
-                ? flatten(v, kks) : [[kks, v]];
-      })
-    )
-}
 
 const gauges = flatten(contrib).map(([ks, f]) => [ks.join('.'), f()]),
     pointers = Object.keys(g3.pointers);

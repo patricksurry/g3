@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 
+import { d3sel } from './common.js';
 import { stylable, appendable, identity } from './mixin.js';
 import { activeController } from './controller.js';
 import { pointers } from './pointers.js';
@@ -10,14 +11,16 @@ export function indicateText() {
         size = 20;
 
     function text(sel, g) {
-        let _ = sel.append('text').attr('font-size', size);
+        let _ = d3sel(sel).append('text').attr('font-size', size);
         text.stylable(_);
         _ = _.text('');
 
-        function update(v, transition) {    // eslint-disable-line no-unused-vars
-            _.text(format(v));
+        if (activeController) {
+            function update(v, transition) {    // eslint-disable-line no-unused-vars
+                _.text(format(v));
+            }
+            activeController.register(update, g.metric(), g.unit())
         }
-        activeController.register(update, g.metric(), g.unit())
     }
     text.format = function(_) {
         return arguments.length ? (format = _, text) : format;
@@ -35,7 +38,7 @@ export function indicatePointer() {
         shape = 'needle';
 
     function pointer(sel, g) {
-        let _ = sel.append('g').classed('will-change-transform', true);
+        let _ = d3sel(sel).append('g').classed('will-change-transform', true);
 
         pointer.stylable(_);
         if (!pointer.append().length) {
@@ -43,13 +46,15 @@ export function indicatePointer() {
         }
         pointer.appendable(_, g);
 
-        function update(v, transition) {
-            let z = rescale(v);
-            if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
-            if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-            transition(_).attr('transform', g.metrictransform(z));
+        if (activeController) {
+            function update(v, transition) {
+                let z = rescale(v);
+                if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+                if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+                transition(_).attr('transform', g.metrictransform(z));
+            }
+            activeController.register(update, g.metric(), g.unit())
         }
-        activeController.register(update, g.metric(), g.unit())
     }
     pointer.rescale = function(_) {
         return arguments.length ? (rescale = _, pointer) : rescale;
@@ -58,7 +63,7 @@ export function indicatePointer() {
         return arguments.length ? (clamp = _, pointer) : clamp;
     }
     pointer.shape = function(_) {
-        if (arguments.length && !(_ in pointers)) throw 'pointer: unknown shape ${_}';
+        if (arguments.length && !(_ in pointers)) throw `pointer: unknown shape ${_}`;
         return arguments.length ? (shape = _, pointer) : shape;
     }
     return stylable(appendable(pointer)).class('g3-indicate-pointer');
@@ -73,19 +78,21 @@ export function indicateSector() {
         inset = 0;
 
     function sector(sel, g) {
-        let _ = sel.append('path');
+        let _ = d3sel(sel).append('path');
 
         sector.stylable(_);
 
-        function update(v, transition) {
-            let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
-            if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
-            if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-            transition(_)
-                .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
-            _.classed('g3-indicate-sector-negative', negative);
+        if (activeController) {
+            function update(v, transition) {
+                let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
+                if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
+                if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
+                transition(_)
+                    .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
+                _.classed('g3-indicate-sector-negative', negative);
+            }
+            activeController.register(update, g.metric(), g.unit());
         }
-        activeController.register(update, g.metric(), g.unit());
     }
     sector.rescale = function(_) {
         return arguments.length ? (rescale = _, sector) : rescale;
@@ -112,15 +119,17 @@ export function indicateStyle() {
         trigger = identity;
     function style(sel, g) {
         const tween = d3.interpolate(styleOff, styleOn);
-        let _ = sel.append('g').attr('class', 'g3-indicate-style');
+        let _ = d3sel(sel).append('g').attr('class', 'g3-indicate-style');
         style.appendable(_, g);
 
-        function update(v, transition) {    // eslint-disable-line no-unused-vars
-            let s = tween(trigger(v));
-            // Nb. ignore transition for style updates, looks weird for light on/off
-            for (let k in s) _.style(k, s[k]);
+        if (activeController) {
+            function update(v, transition) {    // eslint-disable-line no-unused-vars
+                let s = tween(trigger(v));
+                // Nb. ignore transition for style updates, looks weird for light on/off
+                for (let k in s) _.style(k, s[k]);
+            }
+            activeController.register(update, g.metric(), g.unit());
         }
-        activeController.register(update, g.metric(), g.unit());
     }
     style.styleOn = function(_) {
         return arguments.length ? (styleOn = _, style): styleOn;
@@ -133,4 +142,3 @@ export function indicateStyle() {
     }
     return appendable(style);
 }
-
