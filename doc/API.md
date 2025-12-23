@@ -55,7 +55,7 @@ Gauges are often decorated with a [*gaugeFace()*](#g3-gaugeFace),
 <a id="g3-gauge" href="#g3-gauge">#</a>
 g3.**gauge**() · [source](/src/gauge.js)
 
-Creates an gauge renderer configured via the
+Creates a gauge renderer configured via the
 *gauge* getter/setter methods described below, e.g. *gauge*.r(100).
 The *gauge* is called to draw it within an SVG document, e.g. *gauge*(d3.select('svg.mygauge')).
 Typically *gauge* is not drawn directly

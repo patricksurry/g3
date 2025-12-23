@@ -1,0 +1,14 @@
+<html>
+  <body>
+    <script src="https://unpkg.com/@patricksurry/g3/dist/g3-contrib.min.js"></script>
+    <script>
+var panel = g3.panel()
+    .width(600).height(300)
+    .append(
+        g3.put().x(150).y(150).append(g3.contrib.clocks.simple()),
+        g3.put().x(450).y(150).append(g3.contrib.nav.heading.generic()),
+    );
+panel('body');
+    </script>
+  </body>
+</html>
