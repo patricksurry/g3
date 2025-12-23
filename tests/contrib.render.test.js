@@ -17,7 +17,7 @@ const gaugeURIs = gaugeDefs.map(([ks]) => ks.join('.'));
 const htmlTemplate = (gaugeURI, distPath) => `
 <html>
   <head><meta charset="utf-8"></head>
-  <body>
+  <body style="background-color: white !important;">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="file://${distPath}"></script>
     <script>

@@ -10331,14 +10331,9 @@
 
             if (!url) {
                 // fake metrics
-                if (interval < 0) {
-                    // set interval < 0 for one-shot metrics, eg. for screenshot
+                setInterval(() => {
                     controller(controller.fakeMetrics(), transition);
-                } else {
-                    setInterval(() => {
-                        controller(controller.fakeMetrics(), transition);
-                    }, interval || 250);
-                }
+                }, interval || 250);
             } else if (interval) {
                 // with non-zero interval, poll an endpoint
                 let latest=0;
@@ -10510,7 +10505,7 @@
             return arguments.length ? (clamp = _, pointer) : clamp;
         };
         pointer.shape = function(_) {
-            if (arguments.length && !(_ in pointers$1)) throw 'pointer: unknown shape ${_}';
+            if (arguments.length && !(_ in pointers$1)) throw `pointer: unknown shape ${_}`;
             return arguments.length ? (shape = _, pointer) : shape;
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
@@ -11715,6 +11710,7 @@ body {
             .fake(forceSeries(0, hi+2))
             .measure(linear().domain([lo, hi]).range([180+arc/2,360+180-arc/2]))
             .append(
+                gaugeFace(),
                 axisLine(),
                 axisTicks().step(4).size(15),
                 axisTicks([lo, hi]).size(15),
@@ -12135,7 +12131,7 @@ text {fill: #ccc}
             .append(
                 put().rotate(-90).on('click', () => alert('clicked')).append(
                     element('path', {d: 'M 40,40 a 40,40 0 0 0 0,-80 l -80,0 a 40,40 0 0 0 0,80 z'})
-                        .class('g3-fg-stroke').style('stroke-width: 7'),
+                        .class('g3-fg-stroke g3-bg-fill').style('stroke-width: 7'),
                     axisLabels({0: 'off', 1: 'on'}).inset(60).rotate(90),
                     gaugeLabel(label, {size: 20, y: -60}),
                     indicatePointer().append(
