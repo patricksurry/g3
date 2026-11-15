@@ -48,7 +48,7 @@ export function grid() {
           .enter().append('g').attr('class', 'g3-grid-label')
             .attr('transform', x => 'translate(' + (x - x0 + xmajor/2) + ', 0)');
 
-        var labels = d3.selectAll('.g3-grid-label');
+        var labels = _.selectAll('.g3-grid-label');
         labels.append('rect').attr('x', -12).attr('width', 24).attr('y', -4).attr('height', 8).attr('rx', 4);
         labels.append('text').text(function(){ return d3.select(this.parentNode.parentNode).datum()});
     }

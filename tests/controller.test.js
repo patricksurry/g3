@@ -29,12 +29,15 @@ describe('gaugeController', () => {
 
     it('should handle metric qualification', () => {
         const controller = g3.gaugeController();
-        const updater = jest.fn();
+        const updater1 = jest.fn();
+        const updater2 = jest.fn();
         const transition = jest.fn();
-        controller.register(updater, 'test.metric.specific');
+        controller.register(updater1, 'test.metric.first');
+        controller.register(updater2, 'test.metric.second');
 
         controller({ metrics: { 'test.metric': 123 } }, transition);
-        expect(updater).toHaveBeenCalledWith(123, transition);
+        expect(updater1).toHaveBeenCalledWith(123, transition);
+        expect(updater2).toHaveBeenCalledWith(123, transition);
     });
 
     it('should generate fake metrics', () => {

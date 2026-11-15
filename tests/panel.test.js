@@ -77,6 +77,23 @@ describe('g3.panel', () => {
         expect(d3.select('#panel-container .g3-grid').empty()).toBe(false);
     });
 
-    // Note: Testing EventSource (SSE) requires mocking the EventSource API,
-    // which is not present in JSDOM by default.
+    it('should use EventSource with indicators query param when interval is 0', () => {
+        let capturedUrl, instance;
+        global.EventSource = jest.fn(function(url) {
+            capturedUrl = url.toString();
+            instance = this;
+        });
+
+        const myGauge = g3.gauge().metric('heading').append(g3.indicatePointer());
+        const myPanel = g3.panel().url('http://localhost/sse').interval(0).smooth(false).append(myGauge);
+        myPanel('#panel-container');
+
+        expect(global.EventSource).toHaveBeenCalledTimes(1);
+        expect(capturedUrl).toContain('indicators=heading');
+
+        // Simulate receiving an SSE message
+        instance.onmessage({ data: JSON.stringify({ metrics: { heading: 0.25 } }) });
+        expect(d3.select('#panel-container .g3-indicate-pointer').attr('transform')).toBe('rotate(90)');
+        delete global.EventSource;
+    });
 });
