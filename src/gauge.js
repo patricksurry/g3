@@ -56,12 +56,12 @@ export function gauge() {
             if (fake && m) activeController.fake(m, fake);
 
             if (autoindicate) {
-                function update(v, transition) {
-                    transition(_).attr('transform', gauge.metrictransform(rescale(v), true))
-                }
+                const update = (v, transition) => {
+                    transition(_).attr('transform', gauge.metrictransform(rescale(v), true));
+                };
 
                 _.classed('will-change-transform', true);
-                activeController.register(update, m, unit)
+                activeController.register(update, m, unit);
             }
         }
     }
@@ -254,18 +254,22 @@ export function gaugeLabel(s_, opts) {
 
 
 // shorthand to add a status light of given color
-export function statusLight(_) {
-    var g = gauge(_),
+export function statusLight() {
+    var g = gauge(),
         trigger = identity,
         color = 'red';
     function statusLight(sel, parent) {
-        g.append(
-            indicateStyle().trigger(trigger).append(
-                gaugeFace().style(`fill: ${color}`),
-                gaugeFace().class('g3-highlight'),
-            )
-        )
-        g(sel, parent);
+        let _ = gauge()
+            .metric(g.metric())
+            .instance(g.instance())
+            .fake(g.fake())
+            .append(
+                indicateStyle().trigger(trigger).append(
+                    gaugeFace().style(`fill: ${color}`),
+                    gaugeFace().class('g3-highlight'),
+                )
+            );
+        _(sel, parent);
     }
     statusLight.metric = function(_) {
         const v = g.metric(_);

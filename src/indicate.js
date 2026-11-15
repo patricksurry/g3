@@ -16,10 +16,10 @@ export function indicateText() {
         _ = _.text('');
 
         if (activeController) {
-            function update(v, transition) {    // eslint-disable-line no-unused-vars
+            const update = (v) => {
                 _.text(format(v));
-            }
-            activeController.register(update, g.metric(), g.unit())
+            };
+            activeController.register(update, g.metric(), g.unit());
         }
     }
     text.format = function(_) {
@@ -47,13 +47,13 @@ export function indicatePointer() {
         pointer.appendable(_, g);
 
         if (activeController) {
-            function update(v, transition) {
+            const update = (v, transition) => {
                 let z = rescale(v);
                 if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                 if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
                 transition(_).attr('transform', g.metrictransform(z));
-            }
-            activeController.register(update, g.metric(), g.unit())
+            };
+            activeController.register(update, g.metric(), g.unit());
         }
     }
     pointer.rescale = function(_) {
@@ -83,14 +83,14 @@ export function indicateSector() {
         sector.stylable(_);
 
         if (activeController) {
-            function update(v, transition) {
+            const update = (v, transition) => {
                 let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
                 if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                 if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
                 transition(_)
                     .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
                 _.classed('g3-indicate-sector-negative', negative);
-            }
+            };
             activeController.register(update, g.metric(), g.unit());
         }
     }
@@ -123,11 +123,11 @@ export function indicateStyle() {
         style.appendable(_, g);
 
         if (activeController) {
-            function update(v, transition) {    // eslint-disable-line no-unused-vars
+            const update = (v) => {
                 let s = tween(trigger(v));
                 // Nb. ignore transition for style updates, looks weird for light on/off
                 for (let k in s) _.style(k, s[k]);
-            }
+            };
             activeController.register(update, g.metric(), g.unit());
         }
     }

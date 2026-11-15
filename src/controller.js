@@ -81,7 +81,11 @@ export function gaugeController() {
                 while (ks.length && !matched) {
                     let k = ks.join('.');
                     if (k in updaters) {
-                        updaters[k].updaters = ufs
+                        if (!updaters[k].updaters) updaters[k].updaters = {};
+                        Object.entries(ufs).forEach(([u, fs]) => {
+                            if (!(u in updaters[k].updaters)) updaters[k].updaters[u] = [];
+                            updaters[k].updaters[u].push(...fs);
+                        });
                         matched = true;
                     }
                     ks.pop();

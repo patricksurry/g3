@@ -52,10 +52,11 @@ export function panel() {
                 (sel => sel.transition().duration(interval || 250).ease(d3.easeLinear)) :
                 (sel => sel),
             _ = sel.append('svg')
-                .attr('width', width).attr('height', height);
+                .attr('width', width).attr('height', height),
+            defs = _.append('defs');
 
         // insert the global defs now that we know the panel size
-        panel.defs.append(...globalDefs(width, height));
+        globalDefs(width, height).forEach(d => d(defs));
 
         _ = _.append('g');
         panel.stylable(_);
@@ -91,11 +92,11 @@ export function panel() {
             }, interval);
         } else {
             // set interval to 0 or None to use server-sent event endpoint
-            let source = new EventSource(url);
             url.search = new URLSearchParams({
                 // server should determine best match metrics
                 indicators: controller.indicators()
             }).toString();
+            let source = new EventSource(url);
             source.onmessage = function(e) {
                 controller(JSON.parse(e.data), transition);
             };
@@ -119,9 +120,7 @@ export function panel() {
     panel.smooth = function(_) {
         return arguments.length ? (smooth = _, panel): smooth;
     }
-    stylable(appendable(transformable(panel))).class('g3-panel')
-    panel.defs = element('defs')
-    panel.append(panel.defs);
+    stylable(appendable(transformable(panel))).class('g3-panel');
 
     return panel;
 }

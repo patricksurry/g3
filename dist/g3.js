@@ -2946,12 +2946,6 @@
           : new Selection$1([[selector]], root);
     }
 
-    function selectAll(selector) {
-      return typeof selector === "string"
-          ? new Selection$1([document.querySelectorAll(selector)], [document.documentElement])
-          : new Selection$1([array$1(selector)], root);
-    }
-
     function define(constructor, factory, prototype) {
       constructor.prototype = factory.prototype = prototype;
       prototype.constructor = constructor;
@@ -9211,7 +9205,11 @@
                     while (ks.length && !matched) {
                         let k = ks.join('.');
                         if (k in updaters) {
-                            updaters[k].updaters = ufs;
+                            if (!updaters[k].updaters) updaters[k].updaters = {};
+                            Object.entries(ufs).forEach(([u, fs]) => {
+                                if (!(u in updaters[k].updaters)) updaters[k].updaters[u] = [];
+                                updaters[k].updaters[u].push(...fs);
+                            });
                             matched = true;
                         }
                         ks.pop();
@@ -9317,7 +9315,7 @@
               .enter().append('g').attr('class', 'g3-grid-label')
                 .attr('transform', x => 'translate(' + (x - x0 + xmajor/2) + ', 0)');
 
-            var labels = selectAll('.g3-grid-label');
+            var labels = _.selectAll('.g3-grid-label');
             labels.append('rect').attr('x', -12).attr('width', 24).attr('y', -4).attr('height', 8).attr('rx', 4);
             labels.append('text').text(function(){ return select(this.parentNode.parentNode).datum()});
         }
@@ -9396,10 +9394,11 @@
                     (sel => sel.transition().duration(interval || 250).ease(linear$1)) :
                     (sel => sel),
                 _ = sel.append('svg')
-                    .attr('width', width).attr('height', height);
+                    .attr('width', width).attr('height', height),
+                defs = _.append('defs');
 
             // insert the global defs now that we know the panel size
-            panel.defs.append(...globalDefs(width, height));
+            globalDefs(width, height).forEach(d => d(defs));
 
             _ = _.append('g');
             panel.stylable(_);
@@ -9435,11 +9434,11 @@
                 }, interval);
             } else {
                 // set interval to 0 or None to use server-sent event endpoint
-                let source = new EventSource(url);
                 url.search = new URLSearchParams({
                     // server should determine best match metrics
                     indicators: controller.indicators()
                 }).toString();
+                let source = new EventSource(url);
                 source.onmessage = function(e) {
                     controller(JSON.parse(e.data), transition);
                 };
@@ -9464,8 +9463,6 @@
             return arguments.length ? (smooth = _, panel): smooth;
         };
         stylable(appendable(transformable(panel))).class('g3-panel');
-        panel.defs = element('defs');
-        panel.append(panel.defs);
 
         return panel;
     }
@@ -9539,9 +9536,9 @@
             _ = _.text('');
 
             if (exports.activeController) {
-                function update(v, transition) {    // eslint-disable-line no-unused-vars
+                const update = (v) => {
                     _.text(format(v));
-                }
+                };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
@@ -9570,12 +9567,12 @@
             pointer.appendable(_, g);
 
             if (exports.activeController) {
-                function update(v, transition) {
+                const update = (v, transition) => {
                     let z = rescale(v);
                     if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                     if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
                     transition(_).attr('transform', g.metrictransform(z));
-                }
+                };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
@@ -9606,14 +9603,14 @@
             sector.stylable(_);
 
             if (exports.activeController) {
-                function update(v, transition) {
+                const update = (v, transition) => {
                     let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
                     if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
                     if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
                     transition(_)
                         .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
                     _.classed('g3-indicate-sector-negative', negative);
-                }
+                };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
@@ -9646,11 +9643,11 @@
             style.appendable(_, g);
 
             if (exports.activeController) {
-                function update(v, transition) {    // eslint-disable-line no-unused-vars
+                const update = (v) => {
                     let s = tween(trigger(v));
                     // Nb. ignore transition for style updates, looks weird for light on/off
                     for (let k in s) _.style(k, s[k]);
-                }
+                };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
@@ -9715,9 +9712,9 @@
                 if (fake && m) exports.activeController.fake(m, fake);
 
                 if (autoindicate) {
-                    function update(v, transition) {
+                    const update = (v, transition) => {
                         transition(_).attr('transform', gauge.metrictransform(rescale(v), true));
-                    }
+                    };
 
                     _.classed('will-change-transform', true);
                     exports.activeController.register(update, m, unit);
@@ -9913,18 +9910,22 @@
 
 
     // shorthand to add a status light of given color
-    function statusLight(_) {
+    function statusLight() {
         var g = gauge(),
             trigger = identity,
             color = 'red';
         function statusLight(sel, parent) {
-            g.append(
-                indicateStyle().trigger(trigger).append(
-                    gaugeFace().style(`fill: ${color}`),
-                    gaugeFace().class('g3-highlight'),
-                )
-            );
-            g(sel, parent);
+            let _ = gauge()
+                .metric(g.metric())
+                .instance(g.instance())
+                .fake(g.fake())
+                .append(
+                    indicateStyle().trigger(trigger).append(
+                        gaugeFace().style(`fill: ${color}`),
+                        gaugeFace().class('g3-highlight'),
+                    )
+                );
+            _(sel, parent);
         }
         statusLight.metric = function(_) {
             const v = g.metric(_);
@@ -9948,12 +9949,12 @@
     }
 
     function tickvals(vs, step, start, g) {
-        if (typeof vs !== 'undefined') return vs;
+        if (typeof vs !== 'undefined') return vs.slice();
 
-        var values = vs;
+        var values;
 
         if (typeof step === 'number') {
-            let domain = g.measure().domain();
+            let domain = g.measure().domain().slice();
             const range = g.measure().range();
             domain.sort((a, b) => a - b);
             values = [];

@@ -37,4 +37,17 @@ describe('g3.grid', () => {
         expect(gridGroup.selectAll('g.g3-grid-line').size()).toBe(5+7);
         expect(gridGroup.selectAll('line.g3-grid-hairline').size()).toBe(3*(6+4));
     });
+
+    it('should not duplicate labels when multiple grids are rendered', () => {
+        const g1 = g3.grid().width(200).height(200).xmajor(100).ymajor(100);
+        const g2 = g3.grid().width(200).height(200).xmajor(100).ymajor(100);
+        svg.call(g1);
+        svg.call(g2);
+
+        const firstGridLabels = svg.select('g.g3-grid').selectAll('g.g3-grid-label');
+        firstGridLabels.each(function() {
+            expect(d3.select(this).selectAll('text').size()).toBe(1);
+            expect(d3.select(this).selectAll('rect').size()).toBe(1);
+        });
+    });
 });

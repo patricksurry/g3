@@ -31,8 +31,9 @@
       "url": "https://github.com/patricksurry/g3.git"
    },
    "scripts": {
+      "lint": "eslint src/ tests/ scripts/",
       "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-      "test:render": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=tests/contrib.render.test.js --testPathIgnorePatterns=node_modules",
+      "test:render": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPattern=tests/contrib.render.test.js --testPathIgnorePatterns=node_modules",
       "build": "rollup -c",
       "start": "vite"
    },

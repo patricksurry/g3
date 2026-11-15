@@ -4,12 +4,12 @@ import { stylable, appendId, identity } from './mixin.js';
 
 
 function tickvals(vs, step, start, g) {
-    if (typeof vs !== 'undefined') return vs;
+    if (typeof vs !== 'undefined') return vs.slice();
 
-    var values = vs;
+    var values;
 
     if (typeof step === 'number') {
-        let domain = g.measure().domain();
+        let domain = g.measure().domain().slice();
         const range = g.measure().range();
         domain.sort((a, b) => a - b);
         values = [];

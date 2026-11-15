@@ -136,6 +136,17 @@ describe('common module', () => {
       expect(container.querySelector('rect').getAttribute('width')).toBe('100');
       expect(container.querySelector('circle').getAttribute('r')).toBe('25');
     });
+
+    test('should support interactable .on() handlers', () => {
+      let clicked = false;
+      const el = element('rect', { width: 100, height: 50 }).on('click', () => {
+        clicked = true;
+      });
+      expect(el.on()).toHaveProperty('click');
+      el(d3.select('#target'));
+      container.querySelector('rect').dispatchEvent(new MouseEvent('click'));
+      expect(clicked).toBe(true);
+    });
   });
 
   describe('put DOM operations', () => {

@@ -13,7 +13,7 @@ export function speedometerBMW() {
             g3.axisTicks().step(10).inset(2).size(5),
             g3.axisLabels().step(20).size(14).inset(20).format(v => v.toString().padEnd(3, '\u00A0')),
             g3.axisLabels({'-3': 'mph'}).inset(24).size(6),
-            g3.gauge().metric('speed').unit('kph')
+            g3.gauge().metric('speed').unit('km/h')
                 .measure(d3.scaleLinear().domain([0,1.60934*160]).range([-120,120]))
                 .r(66)
                 .append(
