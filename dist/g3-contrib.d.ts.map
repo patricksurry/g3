@@ -1,0 +1,1 @@
+{"version":3,"file":"g3-contrib.d.ts","sourceRoot":"","sources":["../src/g3-contrib.ts"],"names":[],"mappings":"AAIA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,SAAS,CAAC;AAQ9C,eAAO,MAAM,OAAO,EAAE;IAClB,OAAO,EAAE,cAAc,CAAC;IACxB,QAAQ,EAAE,cAAc,CAAC;CA0B5B,CAAC;AAEF,cAAc,MAAM,CAAC;AACrB,cAAc,qBAAqB,CAAC"}

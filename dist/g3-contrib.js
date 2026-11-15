@@ -6769,166 +6769,147 @@
     function d3sel(sel) {
         return (typeof sel === 'string') ? select(sel) : sel;
     }
-
-
     function element(elt, attrs_) {
-        var attrs = attrs_ || {};
-
-        function element(sel, g) {
-            var _ = d3sel(sel).append(elt);
+        const attrs = attrs_ || {};
+        function elementFn(sel, g) {
+            const _ = d3sel(sel).append(elt);
             Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
-            element.stylable(_);
-            element.appendable(_, g);
-            element.interactable(_, g);
+            elementFn.stylable(_);
+            elementFn.appendable(_, g);
+            elementFn.interactable(_, g);
         }
-        element.attr = function(k, _) {
-            return (typeof _ !== 'undefined') ? (attrs[k] = _, element): attrs[k];
+        elementFn.attr = function (k, _) {
+            return (typeof _ !== 'undefined') ? (attrs[k] = _, elementFn) : attrs[k];
         };
-        return interactable(stylable(appendable(element)));
+        return interactable(stylable(appendable(elementFn)));
     }
-
-
     function put() {
-        function put(sel, g) {
-            var _ = d3sel(sel).append('g');
-            put.transformable(_);
-            put.stylable(_);
-            put.appendable(_, g);
-            put.interactable(_, g);
+        function putFn(sel, g) {
+            const _ = d3sel(sel).append('g');
+            putFn.transformable(_);
+            putFn.stylable(_);
+            putFn.appendable(_, g);
+            putFn.interactable(_, g);
         }
-        interactable(stylable(transformable(appendable(put))));
-        return put;
+        interactable(stylable(transformable(appendable(putFn))));
+        return putFn;
     }
-
-
     function snapScale() {
-        var step = 1,
-            start = 0,
-            strength = 5;
-
-        function snapScale(v) {
-            let v0 = Math.round((v - start)/step)*step + start,
-                w = step/2,
-                dv = pow().domain([-w,w]).range([-w,w]).exponent(strength)(v - v0);
-
+        let step = 1, start = 0, strength = 5;
+        function snapScaleFn(v) {
+            const v0 = Math.round((v - start) / step) * step + start, w = step / 2, dv = pow().domain([-w, w]).range([-w, w]).exponent(strength)(v - v0);
             return v0 + dv;
         }
-        snapScale.start = function(_) {
-            return arguments.length ? (start = _, snapScale): start;
+        snapScaleFn.start = function (_) {
+            return arguments.length ? (start = _, snapScaleFn) : start;
         };
-        snapScale.step = function(_) {
-            return arguments.length ? (step = _, snapScale): step;
+        snapScaleFn.step = function (_) {
+            return arguments.length ? (step = _, snapScaleFn) : step;
         };
-        snapScale.strength = function(_) {
-            return arguments.length ? (strength = _, snapScale): strength;
+        snapScaleFn.strength = function (_) {
+            return arguments.length ? (strength = _, snapScaleFn) : strength;
         };
-        return snapScale;
+        return snapScaleFn;
     }
-
-
     function flatten(o, ks) {
-        ks = ks || [];
-        return [].concat(
-            ...Object.entries(o).map(([k, v]) => {
-                const kks = ks.concat([k]);
-                return (v !== null && typeof(v) === 'object')
-                    ? flatten(v, kks) : [[kks, v]];
-          })
-        );
+        const prefix = ks || [];
+        const result = [];
+        Object.entries(o).forEach(([k, v]) => {
+            const kks = prefix.concat([k]);
+            if (v !== null && typeof v === 'object') {
+                result.push(...flatten(v, kks));
+            }
+            else {
+                result.push([kks, v]);
+            }
+        });
+        return result;
     }
 
-    const identity = v => v;
-
-
-    function appendId(typ) {
+    const identity = (v) => v;
+    const appendId = Object.assign(function (typ) {
         return typ + (++appendId.nextId).toString(36);
-    }
-    appendId.nextId = 0;
-
-
+    }, { nextId: 0 });
     function stylable(f) {
-        var kls = [],
-            style;
-
-        f.stylable = function (selection) {
-            if (kls.length) selection.attr('class', f.class());
-            if (style) selection.attr('style', f.style());
+        let kls = [], style;
+        const fn = f;
+        fn.stylable = function (selection) {
+            if (kls.length)
+                selection.attr('class', fn.class());
+            if (style)
+                selection.attr('style', fn.style());
         };
-        f.css = function(_) {
-            return arguments.length ? (kls.push(css(_)), f) : kls.join(' ');
+        fn.css = function (_) {
+            return arguments.length ? (kls.push(css(_)), fn) : kls.join(' ');
         };
-        f.class = function(_) {
-            return arguments.length ? (kls = kls.concat(_.split(' ')), f) : kls.join(' ');
+        fn.class = function (_) {
+            return arguments.length ? (kls = kls.concat(_.split(' ')), fn) : kls.join(' ');
         };
-        f.style = function(_) {
-            return arguments.length ? (style = _, f): style;
+        fn.style = function (_) {
+            return arguments.length ? (style = _, fn) : style;
         };
-        return f;
+        return fn;
     }
-
-
     function transformable(f) {
-        var x=0, y=0, scalex=1, scaley=1, rotate=0;
-
-        f.transformable = function(selection) {
+        let x = 0, y = 0, scalex = 1, scaley = 1, rotate = 0;
+        const fn = f;
+        fn.transformable = function (selection) {
             selection.attr('transform', `translate(${x}, ${y}) rotate(${rotate}) scale(${scalex}, ${scaley})`);
         };
-        f.x = function(_) {
-            return arguments.length ? (x = _, f) : x;
+        fn.x = function (_) {
+            return arguments.length ? (x = _, fn) : x;
         };
-        f.y = function(_) {
-            return arguments.length ? (y = _, f) : y;
+        fn.y = function (_) {
+            return arguments.length ? (y = _, fn) : y;
         };
-        f.scale = function(x, y) {
-            return arguments.length ? (scalex = x, scaley = y ?? x, f) : [scalex, scaley];
+        fn.scale = function (xVal, yVal) {
+            return arguments.length ? (scalex = xVal, scaley = yVal ?? xVal, fn) : [scalex, scaley];
         };
-        f.rotate = function(_) {
-            return arguments.length ? (rotate = _, f) : rotate;
+        fn.rotate = function (_) {
+            return arguments.length ? (rotate = _, fn) : rotate;
         };
-        return f;
+        return fn;
     }
-
-
     function interactable(f) {
-        var handlers = {};
-
-        f.interactable = function(selection, ...args) {
-            Object.entries(handlers).map(([type, v]) => {
-                let [handler, opts] = v;
-                selection.on(type, (e) => handler(e, ...args), opts);
+        const handlers = {};
+        const fn = f;
+        fn.interactable = function (selection, ...args) {
+            Object.entries(handlers).forEach(([_type, v]) => {
+                const [handler, opts] = v;
+                selection.on(_type, (e) => handler(e, ...args), opts);
             });
         };
-        f.on = function(type, handler, opts) {
-            return arguments.length ? (handlers[type] = [handler, opts], f): handlers;
+        fn.on = function (type, handler, opts) {
+            return arguments.length ? (handlers[type] = [handler, opts], fn) : handlers;
         };
-        return f;
+        return fn;
     }
-
-
     function appendable(f) {
-        var defs = [],
-            kids = [];
-
-        f.appendable = function(sel, g) {
-            sel = d3sel(sel);
+        let defs = [], kids = [];
+        const fn = f;
+        fn.appendable = function (sel, g) {
+            const s = d3sel(sel);
             if (defs.length) {
-                let _ = select(sel.node().ownerSVGElement).select('defs');
-                if (_.empty()) throw "Couldn't find svg defs element"
+                const node = s.node();
+                const owner = node && 'ownerSVGElement' in node ? node.ownerSVGElement : null;
+                const _ = select(owner || node).select('defs');
+                if (_.empty())
+                    throw "Couldn't find svg defs element";
                 _.selectAll(null)
                     .data(defs)
-                  .enter().each(function(d) { select(this).call(d, g);});
+                    .enter().each(function (d) { select(this).call(d, g); });
             }
-            sel.selectAll(null)
+            s.selectAll(null)
                 .data(kids)
-              .enter().each(function(d) { select(this).call(d, g); });
+                .enter().each(function (d) { select(this).call(d, g); });
         };
-        f.defs = function(..._) {
-            return arguments.length ? (defs = defs.concat(_), f) : defs;
+        fn.defs = function (..._) {
+            return arguments.length ? (defs = defs.concat(_), fn) : defs;
         };
-        f.append = function(..._) {
-            return arguments.length ? (kids = kids.concat(_), f) : kids;
+        fn.append = function (..._) {
+            return arguments.length ? (kids = kids.concat(_), fn) : kids;
         };
-        return f;
+        return fn;
     }
 
     function isWrapper(wrapper) {
@@ -10045,29 +10026,24 @@
         volumeFlowRate: measure,
     };
 
-    const convertUnits = configureMeasurements(allMeasures),
-        knownUnits = convertUnits().possibilities();
-
-
-    exports.activeController = void 0;  // hack to provide current context for gauges to register with
-
-
+    const convertUnits = configureMeasurements(allMeasures), knownUnits = convertUnits().possibilities();
+    exports.activeController = void 0; // hack to provide current context for gauges to register with
     function maybeConvert(v, fromUnit, toUnit) {
-        var u = v;
+        let u = v;
         if (fromUnit && toUnit) {
             try {
                 u = convertUnits(v).from(fromUnit).to(toUnit);
-            } catch(err) {
+            }
+            catch (err) {
                 console.log('Unit conversion error: ' + err.message);
             }
-        } else if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
+        }
+        else if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
             // convert string-serialized date metrics back to JS objects
             u = new Date(v);
         }
         return u;
     }
-
-
     function gaugeController() {
         /*
         create a gauge controller that we'll use to update values
@@ -10076,28 +10052,11 @@
         which can be more precise than the actual metric name, e.g. fuel.copilot;
         `updaters` is populated after the first call with best match to actual metrics
         */
-
-        var callbacks = {},     // nested dict of metric => (unit || '') => list of update fns
-            fakes = {},         // dict of metric => generator
-            updaters = null;    // dict of metric keys => {metric: {unit: updaters: {unit: fns}}}
-            /*
-            After initial set up we build an updaters structure like this which lets us route
-            incoming metrics to clients in appropriate units:
-            {
-                altitude: {                         // incoming metric name
-                    unit: meters,                   // incoming unit
-                    updaters: {
-                        feet: [ f1, f2, ... ],      // clients segmented by desired unit
-                        meters: [ f3, f4, ... ],
-                        ...
-                    }
-                },
-                ...
-            }
-            */
-
+        const callbacks = {}, // nested dict of metric => (unit || '') => list of update fns
+        fakes = {}; // dict of metric => generator
+        let updaters = null; // dict of metric keys => {metric: {unit: updaters: {unit: fns}}}
         // call the controller to display current metric values
-        function gaugeController(data, transition) {
+        function gaugeControllerFn(data, transition) {
             /*
             data is a dictionary {latest: 1234, metrics: {}, [units: {}]}
             where metrics is a dictionary
@@ -10107,33 +10066,28 @@
             if (!updaters) {
                 // First call, we establish the mapping from metric keys => callbacks
                 updaters = {};
-                Object.keys(data.metrics).forEach(m => {
-                    updaters[m] = {unit: (data.units || {})[m] || '', updaters: null};
+                Object.keys(data.metrics || {}).forEach(m => {
+                    updaters[m] = { unit: (data.units || {})[m] || '', updaters: null };
                 });
-
                 Object.entries(callbacks).forEach(([m, ufs]) => {
-                    /*
-                    for each callback, find best qualified metric from the input values,
-                    which we'll convert to appropriate units
-                    e.g. a gauge requesting fuel.copilot.rear will match
-                    a metric called fuel.copilot.rear,
-                    or else fuel.copilot or else simply fuel but never fuel.pilot
-                    */
-                    var ks = m.split('.'),
-                        matched = false;
+                    const ks = m.split('.');
+                    let matched = false;
                     while (ks.length && !matched) {
-                        let k = ks.join('.');
+                        const k = ks.join('.');
                         if (k in updaters) {
-                            if (!updaters[k].updaters) updaters[k].updaters = {};
+                            if (!updaters[k].updaters)
+                                updaters[k].updaters = {};
                             Object.entries(ufs).forEach(([u, fs]) => {
-                                if (!(u in updaters[k].updaters)) updaters[k].updaters[u] = [];
+                                if (!(u in updaters[k].updaters))
+                                    updaters[k].updaters[u] = [];
                                 updaters[k].updaters[u].push(...fs);
                             });
                             matched = true;
                         }
                         ks.pop();
                     }
-                    if (!matched) console.log('Warning: no source metric matching', m);
+                    if (!matched)
+                        console.log('Warning: no source metric matching', m);
                 });
                 Object.entries(updaters).forEach(([m, d]) => {
                     if (!d.updaters) {
@@ -10142,129 +10096,119 @@
                     }
                 });
             }
-
             // Trigger updates for each source metric
             Object.entries(updaters).forEach(([m, d]) => {
-                if (m in data.metrics) {
-                    Object.entries(d.updaters).forEach(([unit, fs]) => {
-                        let v = maybeConvert(data.metrics[m], d.unit, unit);
-                        if (typeof v == 'undefined') {
-                            console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
-                        } else {
-                            fs.forEach(f => f(v, transition));
-                        }
-                    });
+                if (data.metrics && m in data.metrics) {
+                    if (d.updaters) {
+                        Object.entries(d.updaters).forEach(([unit, fs]) => {
+                            const v = maybeConvert(data.metrics[m], d.unit, unit);
+                            if (typeof v === 'undefined') {
+                                console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
+                            }
+                            else {
+                                fs.forEach(f => f(v, transition));
+                            }
+                        });
+                    }
                 }
             });
         }
-        gaugeController.register = function(updater, metric, unit) {
-            if (!metric) return;
-            unit = unit || '';
-            if (!(metric in callbacks)) callbacks[metric] = {};
-            if (!(unit in callbacks[metric])) callbacks[metric][unit] = [];
-            callbacks[metric][unit].push(updater);
+        gaugeControllerFn.register = function (updater, metric, unit) {
+            if (!metric)
+                return;
+            const u = unit || '';
+            if (!(metric in callbacks))
+                callbacks[metric] = {};
+            if (!(u in callbacks[metric]))
+                callbacks[metric][u] = [];
+            callbacks[metric][u].push(updater);
         };
-        gaugeController.fake = function(metric, generator) {
+        gaugeControllerFn.fake = function (metric, generator) {
             fakes[metric] = generator;
         };
-        gaugeController.fakeMetrics = function() {
+        gaugeControllerFn.fakeMetrics = function () {
             return {
                 latest: 0,
                 units: {},
-                metrics: Object.fromEntries(
-                    Object.entries(fakes).map(([m, g]) => [m, g()])
-                )
-            }
+                metrics: Object.fromEntries(Object.entries(fakes).map(([m, g]) => [m, g()]))
+            };
         };
-        gaugeController.indicators = function() {
+        gaugeControllerFn.indicators = function () {
             // return panel indicator keys, available at startup but possibly more specific than actual metrics
             return Object.keys(callbacks);
         };
-        gaugeController.mappedMetrics = function() {
+        gaugeControllerFn.mappedMetrics = function () {
             // return matched metrics, available after first data update
             return updaters && Object.keys(updaters);
         };
-        exports.activeController = gaugeController;
-        return gaugeController;
+        exports.activeController = gaugeControllerFn;
+        return gaugeControllerFn;
     }
 
     const eps = 1e-6;
-
     function grid() {
-        var x0 = 0, y0 = 0,
-            width = 2000, height = 2000,
-            xmajor=100, ymajor=100, xminor=10, yminor=10;
-
-        function grid(sel) {
-            var _ = sel.append('g').attr('class', 'g3-grid');
-            grid.stylable(_);
-
-            const xs = range(x0, x0 + width + eps, xmajor),
-                  ys = range(y0, y0 + height + eps, ymajor);
-
+        let x0 = 0, y0 = 0, width = 2000, height = 2000, xmajor = 100, ymajor = 100, xminor = 10, yminor = 10;
+        function gridFn(sel) {
+            const _ = sel.append('g').attr('class', 'g3-grid');
+            gridFn.stylable(_);
+            const xs = range(x0, x0 + width + eps, xmajor), ys = range(y0, y0 + height + eps, ymajor);
             _.selectAll(null)
                 .data(range(x0, x0 + width + eps, xminor).filter(x => !xs.includes(x)))
-              .enter().append('line').attr('class', 'g3-grid-hairline')
-                .attr('transform', x => 'translate(' + x + ',' + y0 + ')')
+                .enter().append('line').attr('class', 'g3-grid-hairline')
+                .attr('transform', (x) => 'translate(' + x + ',' + y0 + ')')
                 .attr('y2', height);
             _.selectAll(null)
                 .data(range(y0, y0 + height + eps, yminor).filter(y => !ys.includes(y)))
-              .enter().append('line').attr('class', 'g3-grid-hairline')
-                .attr('transform', y => 'translate(' + x0 + ',' + y + ')')
+                .enter().append('line').attr('class', 'g3-grid-hairline')
+                .attr('transform', (y) => 'translate(' + x0 + ',' + y + ')')
                 .attr('x2', width);
-
-            var vlines = _.selectAll(null)
+            const vlines = _.selectAll(null)
                 .data(xs)
-              .enter().append('g').attr('class', 'g3-grid-line')
-                .attr('transform', x => 'translate(' + x + ',' + y0 + ')');
-            var hlines = _.selectAll(null)
+                .enter().append('g').attr('class', 'g3-grid-line')
+                .attr('transform', (x) => 'translate(' + x + ',' + y0 + ')');
+            const hlines = _.selectAll(null)
                 .data(ys)
-              .enter().append('g').attr('class', 'g3-grid-line')
-                .attr('transform', y => 'translate(' + x0 + ',' + y + ')');
-
+                .enter().append('g').attr('class', 'g3-grid-line')
+                .attr('transform', (y) => 'translate(' + x0 + ',' + y + ')');
             vlines.append('line').attr('y2', height);
             hlines.append('line').attr('x2', width);
-
             vlines.selectAll(null)
                 .data(ys.slice(0, -1))
-              .enter().append('g').attr('class', 'g3-grid-label')
-                .attr('transform', y => 'translate(0,' + (y - y0 + ymajor/2) + ') rotate(-90) ');
+                .enter().append('g').attr('class', 'g3-grid-label')
+                .attr('transform', (y) => 'translate(0,' + (y - y0 + ymajor / 2) + ') rotate(-90) ');
             hlines.selectAll(null)
                 .data(xs.slice(0, -1))
-              .enter().append('g').attr('class', 'g3-grid-label')
-                .attr('transform', x => 'translate(' + (x - x0 + xmajor/2) + ', 0)');
-
-            var labels = _.selectAll('.g3-grid-label');
+                .enter().append('g').attr('class', 'g3-grid-label')
+                .attr('transform', (x) => 'translate(' + (x - x0 + xmajor / 2) + ', 0)');
+            const labels = _.selectAll('.g3-grid-label');
             labels.append('rect').attr('x', -12).attr('width', 24).attr('y', -4).attr('height', 8).attr('rx', 4);
-            labels.append('text').text(function(){ return select(this.parentNode.parentNode).datum()});
+            labels.append('text').text(function () { return select(this.parentNode.parentNode).datum(); });
         }
-
-        grid.x = function(_) {
-            return arguments.length ? (x0 = _, grid) : x0;
+        gridFn.x = function (_) {
+            return arguments.length ? (x0 = _, gridFn) : x0;
         };
-        grid.y = function(_) {
-            return arguments.length ? (y0 = _, grid) : y0;
+        gridFn.y = function (_) {
+            return arguments.length ? (y0 = _, gridFn) : y0;
         };
-        grid.width = function(_) {
-            return arguments.length ? (width = _, grid) : width;
+        gridFn.width = function (_) {
+            return arguments.length ? (width = _, gridFn) : width;
         };
-        grid.height = function(_) {
-            return arguments.length ? (height = _, grid) : height;
+        gridFn.height = function (_) {
+            return arguments.length ? (height = _, gridFn) : height;
         };
-        grid.xmajor = function(_) {
-            return arguments.length ? (xmajor = _, grid) : xmajor;
+        gridFn.xmajor = function (_) {
+            return arguments.length ? (xmajor = _, gridFn) : xmajor;
         };
-        grid.ymajor = function(_) {
-            return arguments.length ? (ymajor = _, grid) : ymajor;
+        gridFn.ymajor = function (_) {
+            return arguments.length ? (ymajor = _, gridFn) : ymajor;
         };
-        grid.xminor = function(_) {
-            return arguments.length ? (xminor = _, grid) : xminor;
+        gridFn.xminor = function (_) {
+            return arguments.length ? (xminor = _, gridFn) : xminor;
         };
-        grid.yminor = function(_) {
-            return arguments.length ? (yminor = _, grid) : yminor;
+        gridFn.yminor = function (_) {
+            return arguments.length ? (yminor = _, gridFn) : yminor;
         };
-
-        return stylable(grid);
+        return stylable(gridFn);
     }
 
     // global defs we append to panel's svg element
@@ -10274,186 +10218,125 @@
             cx: '50%', cy: '50%',
             fx: '25%', fy: '40%',
             r: '50%',
-        }).append(
-            ...['white', 'black'].map(
-                d => element('stop', {'stop-color': d, offset: d == 'white' ? '0%': '100%'})
-            )
-        ),
-        ...[1, 2, 3].map(d =>
-            element('filter', {
-                id: 'dropShadow' + d,
-                // need userSpaceOnUse for drop-shadow to work on 0-width items
-                // but then need explicit extent in target units?
-                filterUnits: 'userSpaceOnUse',
-                x: -width, width: 2*width,
-                y: -height, height: 2*height,
-            }).append(element('feDropShadow', {stdDeviation: d, dx: 0, dy: 0}))
-        ),
-        ...[1, 2, 3].map(d =>
-            element('filter', {
-                id: 'gaussianBlur' + d,
-            }).append(element('feGaussianBlur', {in: 'SourceGraphic', stdDeviation: d}))
-        ),
+        }).append(...['white', 'black'].map(d => element('stop', { 'stop-color': d, offset: d == 'white' ? '0%' : '100%' }))),
+        ...[1, 2, 3].map(d => element('filter', {
+            id: 'dropShadow' + d,
+            // need userSpaceOnUse for drop-shadow to work on 0-width items
+            // but then need explicit extent in target units?
+            filterUnits: 'userSpaceOnUse',
+            x: -width, width: 2 * width,
+            y: -height, height: 2 * height,
+        }).append(element('feDropShadow', { stdDeviation: d, dx: 0, dy: 0 }))),
+        ...[1, 2, 3].map(d => element('filter', {
+            id: 'gaussianBlur' + d,
+        }).append(element('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: d }))),
     ];
-
-
     function panel() {
-        var width = 1024,
-            height = 768,
-            interval = 250,
-            showgrid = false,
-            smooth = true,
-            url;
-
-        function panel(sel) {
-            sel = d3sel(sel);
+        let width = 1024, height = 768, interval = 250, showgrid = false, smooth = true, url;
+        function panelFn(sel) {
+            const s = d3sel(sel);
             // draw and start updating panel
-            let controller = gaugeController(),  // establish context for gauges
-                transition = smooth ?
-                    (sel => sel.transition().duration(interval || 250).ease(linear$1)) :
-                    (sel => sel),
-                _ = sel.append('svg')
-                    .attr('width', width).attr('height', height),
-                defs = _.append('defs');
-
+            const controller = gaugeController(), // establish context for gauges
+            transition = smooth ?
+                ((selection) => selection.transition().duration(interval || 250).ease(linear$1)) :
+                ((selection) => selection), svg = s.append('svg')
+                .attr('width', width).attr('height', height), defs = svg.append('defs');
             // insert the global defs now that we know the panel size
             globalDefs(width, height).forEach(d => d(defs));
-
-            _ = _.append('g');
-            panel.stylable(_);
-            panel.transformable(_);
-            panel.appendable(_);
-
-            if (showgrid) grid().width(width).height(height)(_);
-
+            const _ = svg.append('g');
+            panelFn.stylable(_);
+            panelFn.transformable(_);
+            panelFn.appendable(_);
+            if (showgrid)
+                grid().width(width).height(height)(_);
             console.log('Starting panel expecting metrics for:', controller.indicators());
-
             if (!url) {
                 // fake metrics
                 setInterval(() => {
                     controller(controller.fakeMetrics(), transition);
                 }, interval || 250);
-            } else if (interval) {
+            }
+            else if (interval) {
                 // with non-zero interval, poll an endpoint
-                let latest=0;
+                let latest = 0;
                 setInterval(() => {
-                    let params = {
+                    const params = {
                         latest: latest,
                         units: latest == 0,
                     };
                     // add the matched metrics once we've determined them
-                    if (latest) params.metrics = controller.mappedMetrics();
+                    if (latest) {
+                        const mapped = controller.mappedMetrics();
+                        if (mapped)
+                            params.metrics = mapped;
+                    }
                     url.search = new URLSearchParams(params).toString();
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            controller(data, transition);
-                            latest = data.latest;
-                        });
+                        controller(data, transition);
+                        latest = data.latest;
+                    });
                 }, interval);
-            } else {
+            }
+            else {
                 // set interval to 0 or None to use server-sent event endpoint
                 url.search = new URLSearchParams({
                     // server should determine best match metrics
-                    indicators: controller.indicators()
+                    indicators: controller.indicators().join(','),
                 }).toString();
-                let source = new EventSource(url);
-                source.onmessage = function(e) {
+                const source = new EventSource(url);
+                source.onmessage = function (e) {
                     controller(JSON.parse(e.data), transition);
                 };
             }
         }
-        panel.width = function(_) {
-            return arguments.length ? (width = _, panel): width;
+        panelFn.width = function (_) {
+            return arguments.length ? (width = _, panelFn) : width;
         };
-        panel.height = function(_) {
-            return arguments.length ? (height = _, panel): height;
+        panelFn.height = function (_) {
+            return arguments.length ? (height = _, panelFn) : height;
         };
-        panel.grid = function(_) {
-            return arguments.length ? (showgrid = !!_, panel): showgrid;
+        panelFn.grid = function (_) {
+            return arguments.length ? (showgrid = !!_, panelFn) : showgrid;
         };
-        panel.url = function(_) {
-            return arguments.length ? (url = new URL(_, document.location), panel): url;
+        panelFn.url = function (_) {
+            const base = typeof document !== 'undefined' && document.location ? document.location.href : 'http://localhost';
+            return arguments.length ? (url = new URL(_.toString(), base), panelFn) : url;
         };
-        panel.interval = function(_) {
-            return arguments.length ? (interval = _, panel): interval;
+        panelFn.interval = function (_) {
+            return arguments.length ? (interval = _, panelFn) : interval;
         };
-        panel.smooth = function(_) {
-            return arguments.length ? (smooth = _, panel): smooth;
+        panelFn.smooth = function (_) {
+            return arguments.length ? (smooth = _, panelFn) : smooth;
         };
-        stylable(appendable(transformable(panel))).class('g3-panel');
-
-        return panel;
+        stylable(appendable(transformable(panelFn))).class('g3-panel');
+        return panelFn;
     }
 
     //TODO more pointer shapes, standard names https://upload.wikimedia.org/wikipedia/commons/b/bc/Watch_hands_styles_fr.svg
-
-
-    var pointers$1 = {
-        needle: put().append(
-            element('rect', {x: -1, y: -90, width: 2, height: 100}).class('g3-pointer-needle'),
-            element('circle', {r: 5}).class('g3-pointer-hub'),
-        ),
-        blade: put().scale(5.625, -5.625).append(
-            element('path', {d: 'M 0,9 L 0.6,7 l 0,-7 l -1.2,0 l 0,7 z'}).class('g3-pointer-blade'),
-            element('circle', {r: 1.25}).class('g3-pointer-hub'),
-        ),
-        dagger: put().scale(5.625, -5.625).append(
-            element('path', {d: 'M 0,6 L 1.2,3 L 0.6,0 L -0.6,0 L -1.2,3 Z'}).class('g3-pointer-blade'),
-            element('path', {d: 'M 0.6, 0 L 1.6,-3 A 3,3,0,0,0,-1.6,-3 L -0.6,0 Z'}).class('g3-pointer-handle'),
-            element('circle', {r: 1.25}).class('g3-pointer-hub'),
-        ),
-        rondel: put().scale(5.625, -5.625).append(
-            element('path', {d: 'M 0,15 L 1,0 l -2,0 z'}).class('g3-pointer-blade'),
-            element('circle', {r: 2.4}).class('g3-pointer-hub'),
-        ),
-        sword: put().scale(5.625, -5.625).append(
-            element('path', {d: 'M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z'}).class('g3-pointer-blade'),
-            element('rect', {x: -0.6, y: -6, height: 8, width: 1.2}).class('g3-pointer-handle'),
-            element('circle', {r: 1.2}).class('g3-pointer-hub'),
-            element('circle', {r: 0.5}).class('g3-highlight'),
-            element('circle', {r: 1.2, cy: -6}).class('g3-pointer-pommel'),
-        ),
-        wedge: put().append(
-            element('path', {d: 'M 5,25 l -10,0 l 5,-120 z'}).class('g3-pointer-blade'),
-            element('circle', {r: 10}).class('g3-pointer-hub'),
-            element('circle', {r: 4}).class('g3-highlight'),
-        ),
-        'omega-second': put().append(
-            element('path', {d: 'M 3,25 l -6,0 l 3,-115 z M 0,-72 l 4,15 l -4,5 l -4,-5 z'}).class('g3-pointer-blade'),
-            element('path', {d: 'M 0,-69 l 3,12 l -3,3 l -3,-3 z'}).class('g3-pointer-luminous'),
-            element('circle', {r: 4}).class('g3-pointer-hub'),
-            element('circle', {r: 2}).class('g3-highlight'),
-        ),
-        'omega-baton-long': put().append(
-            element('path', {d: 'M 3,0 l 0,-80 l -3,-10 l -3,10 l 0,80 z'}).class('g3-pointer-blade'),
-            element('path', {d: 'M 2,0 l 0,-80 l -4,0 l 0,80 z'}).class('g3-pointer-luminous'),
-            element('circle', {r: 6.5}).class('g3-pointer-hub'),
-        ),
-        'omega-baton-short': put().append(
-            element('path', {d: 'M 3.5,0 l 0,-55 l -3.5,-10 l -3.5,10 l 0,55 z'}).class('g3-pointer-blade'),
-            element('path', {d: 'M 2.5,0 l 0,-55 l -5,0 l 0,55 z'}).class('g3-pointer-luminous'),
-            element('circle', {r: 9}).class('g3-pointer-hub'),
-        ),
-        'aircraft-heading': put().x(-160).y(-160).scale(0.8).append(
-            element('path', {d: "M 200.45288,260.80553 L 203.16177,253.84124 L 225.12833,263.88589 C 227.03295,264.83725 228.33805,264.53956 228.33805,262.63589 L 228.40255,256.61982 C 228.40255,250.22869 224.75105,247.90625 219.51131,243.70732 L 208.47788,235.31446 L 211.28639,196.92161 L 261.23772,213.1716 C 263.62163,213.95469 264.64806,212.98991 264.64806,211.20732 L 264.82432,201.9216 C 264.82432,194.61271 260.92135,191.45797 255.6207,187.81446 L 213.09186,157.27875 C 212.31569,139.15817 210.07741,119.6713 200.45288,103.52874 C 190.82836,119.6713 188.59008,139.15817 187.81391,157.27875 L 145.28507,187.81446 C 139.98442,191.45797 136.08145,194.61271 136.08145,201.9216 L 136.25771,211.20732 C 136.25771,212.98991 137.28414,213.95469 139.66805,213.1716 L 189.61938,196.92161 L 192.42789,235.31446 L 181.39446,243.70732 C 176.15472,247.90625 172.50322,250.22869 172.50322,256.61982 L 172.56772,262.63589 C 172.56772,264.53956 173.87282,264.83725 175.77744,263.88589 L 197.744,253.84124 L 200.45288,260.80553 z"})
-                .class('g3-highlight-stroke g3-no-fill')
-        ),
-        'aircraft-turn': put().x(-218).y(-157.5).scale(0.5).append(  // 436, 315
-            element('path', {d: "m 435.64988,289.47018 c -12.33394,0 -22.41326,9.69394 -23.03125,21.875 l -121.9375,-0.22694 c -4.43702,0.0318 -5.34776,6.2322 -0.5,7.0625 l 126.375,7.25819 c 4.14867,6.10563 11.15189,10.125 19.09375,10.125 7.92634,0 14.91358,-4.00188 19.0625,-10.09375 l 126.9375,-7.28944 c 4.84776,-0.8303 3.93702,-7.0307 -0.5,-7.0625 l -122.46875,0.25819 c -0.6019,-12.19506 -10.68685,-21.90625 -23.03125,-21.90625 z"}),
-            element('path', {d: "m 382.64058,299.50149 c 4.38251,0.0518 102.16734,0.0518 106.54985,0 4.38251,-0.0518 5.82754,-6.6971 -0.25253,-7.17567 l -44.44671,-2.12492 c -3.68642,-0.66946 -4.02856,-2.28053 -4.29315,-4.3671 l -0.50508,-25.22318 c 0,-3.88798 -7.42864,-3.96105 -7.42864,0 l -0.50508,25.22318 c -0.26459,2.08657 -0.60673,3.69764 -4.29315,4.3671 l -44.57298,2.12492 c -6.08007,0.47857 -4.63504,7.12387 -0.25253,7.17567 z"}),
-        ).class('g3-fg-fill'),
+    const pointers$1 = {
+        needle: put().append(element('rect', { x: -1, y: -90, width: 2, height: 100 }).class('g3-pointer-needle'), element('circle', { r: 5 }).class('g3-pointer-hub')),
+        blade: put().scale(5.625, -5.625).append(element('path', { d: 'M 0,9 L 0.6,7 l 0,-7 l -1.2,0 l 0,7 z' }).class('g3-pointer-blade'), element('circle', { r: 1.25 }).class('g3-pointer-hub')),
+        dagger: put().scale(5.625, -5.625).append(element('path', { d: 'M 0,6 L 1.2,3 L 0.6,0 L -0.6,0 L -1.2,3 Z' }).class('g3-pointer-blade'), element('path', { d: 'M 0.6, 0 L 1.6,-3 A 3,3,0,0,0,-1.6,-3 L -0.6,0 Z' }).class('g3-pointer-handle'), element('circle', { r: 1.25 }).class('g3-pointer-hub')),
+        rondel: put().scale(5.625, -5.625).append(element('path', { d: 'M 0,15 L 1,0 l -2,0 z' }).class('g3-pointer-blade'), element('circle', { r: 2.4 }).class('g3-pointer-hub')),
+        sword: put().scale(5.625, -5.625).append(element('path', { d: 'M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z' }).class('g3-pointer-blade'), element('rect', { x: -0.6, y: -6, height: 8, width: 1.2 }).class('g3-pointer-handle'), element('circle', { r: 1.2 }).class('g3-pointer-hub'), element('circle', { r: 0.5 }).class('g3-highlight'), element('circle', { r: 1.2, cy: -6 }).class('g3-pointer-pommel')),
+        wedge: put().append(element('path', { d: 'M 5,25 l -10,0 l 5,-120 z' }).class('g3-pointer-blade'), element('circle', { r: 10 }).class('g3-pointer-hub'), element('circle', { r: 4 }).class('g3-highlight')),
+        'omega-second': put().append(element('path', { d: 'M 3,25 l -6,0 l 3,-115 z M 0,-72 l 4,15 l -4,5 l -4,-5 z' }).class('g3-pointer-blade'), element('path', { d: 'M 0,-69 l 3,12 l -3,3 l -3,-3 z' }).class('g3-pointer-luminous'), element('circle', { r: 4 }).class('g3-pointer-hub'), element('circle', { r: 2 }).class('g3-highlight')),
+        'omega-baton-long': put().append(element('path', { d: 'M 3,0 l 0,-80 l -3,-10 l -3,10 l 0,80 z' }).class('g3-pointer-blade'), element('path', { d: 'M 2,0 l 0,-80 l -4,0 l 0,80 z' }).class('g3-pointer-luminous'), element('circle', { r: 6.5 }).class('g3-pointer-hub')),
+        'omega-baton-short': put().append(element('path', { d: 'M 3.5,0 l 0,-55 l -3.5,-10 l -3.5,10 l 0,55 z' }).class('g3-pointer-blade'), element('path', { d: 'M 2.5,0 l 0,-55 l -5,0 l 0,55 z' }).class('g3-pointer-luminous'), element('circle', { r: 9 }).class('g3-pointer-hub')),
+        'aircraft-heading': put().x(-160).y(-160).scale(0.8).append(element('path', { d: "M 200.45288,260.80553 L 203.16177,253.84124 L 225.12833,263.88589 C 227.03295,264.83725 228.33805,264.53956 228.33805,262.63589 L 228.40255,256.61982 C 228.40255,250.22869 224.75105,247.90625 219.51131,243.70732 L 208.47788,235.31446 L 211.28639,196.92161 L 261.23772,213.1716 C 263.62163,213.95469 264.64806,212.98991 264.64806,211.20732 L 264.82432,201.9216 C 264.82432,194.61271 260.92135,191.45797 255.6207,187.81446 L 213.09186,157.27875 C 212.31569,139.15817 210.07741,119.6713 200.45288,103.52874 C 190.82836,119.6713 188.59008,139.15817 187.81391,157.27875 L 145.28507,187.81446 C 139.98442,191.45797 136.08145,194.61271 136.08145,201.9216 L 136.25771,211.20732 C 136.25771,212.98991 137.28414,213.95469 139.66805,213.1716 L 189.61938,196.92161 L 192.42789,235.31446 L 181.39446,243.70732 C 176.15472,247.90625 172.50322,250.22869 172.50322,256.61982 L 172.56772,262.63589 C 172.56772,264.53956 173.87282,264.83725 175.77744,263.88589 L 197.744,253.84124 L 200.45288,260.80553 z" })
+            .class('g3-highlight-stroke g3-no-fill')),
+        'aircraft-turn': put().x(-218).y(-157.5).scale(0.5).append(// 436, 315
+        element('path', { d: "m 435.64988,289.47018 c -12.33394,0 -22.41326,9.69394 -23.03125,21.875 l -121.9375,-0.22694 c -4.43702,0.0318 -5.34776,6.2322 -0.5,7.0625 l 126.375,7.25819 c 4.14867,6.10563 11.15189,10.125 19.09375,10.125 7.92634,0 14.91358,-4.00188 19.0625,-10.09375 l 126.9375,-7.28944 c 4.84776,-0.8303 3.93702,-7.0307 -0.5,-7.0625 l -122.46875,0.25819 c -0.6019,-12.19506 -10.68685,-21.90625 -23.03125,-21.90625 z" }), element('path', { d: "m 382.64058,299.50149 c 4.38251,0.0518 102.16734,0.0518 106.54985,0 4.38251,-0.0518 5.82754,-6.6971 -0.25253,-7.17567 l -44.44671,-2.12492 c -3.68642,-0.66946 -4.02856,-2.28053 -4.29315,-4.3671 l -0.50508,-25.22318 c 0,-3.88798 -7.42864,-3.96105 -7.42864,0 l -0.50508,25.22318 c -0.26459,2.08657 -0.60673,3.69764 -4.29315,4.3671 l -44.57298,2.12492 c -6.08007,0.47857 -4.63504,7.12387 -0.25253,7.17567 z" })).class('g3-fg-fill'),
     };
 
     function indicateText() {
-        var format = identity,
-            size = 20;
-
+        let format = identity, size = 20;
         function text(sel, g) {
             let _ = d3sel(sel).append('text').attr('font-size', size);
             text.stylable(_);
             _ = _.text('');
-
             if (exports.activeController) {
                 const update = (v) => {
                     _.text(format(v));
@@ -10461,302 +10344,257 @@
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
-        text.format = function(_) {
+        text.format = function (_) {
             return arguments.length ? (format = _, text) : format;
         };
-        text.size = function(_) {
+        text.size = function (_) {
             return arguments.length ? (size = _, text) : size;
         };
         return stylable(text).class('g3-indicate-text');
     }
-
-
     function indicatePointer() {
-        var rescale = identity,
-            clamp = [undefined, undefined],
-            shape = 'needle';
-
+        let rescale = identity, clamp = [undefined, undefined], shape = 'needle';
         function pointer(sel, g) {
-            let _ = d3sel(sel).append('g').classed('will-change-transform', true);
-
+            const _ = d3sel(sel).append('g').classed('will-change-transform', true);
             pointer.stylable(_);
             if (!pointer.append().length) {
                 pointer.append(pointers$1[shape]);
             }
             pointer.appendable(_, g);
-
             if (exports.activeController) {
                 const update = (v, transition) => {
                     let z = rescale(v);
-                    if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
-                    if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                    transition(_).attr('transform', g.metrictransform(z));
+                    if (typeof (clamp[0]) === 'number')
+                        z = Math.max(z, clamp[0]);
+                    if (typeof (clamp[1]) === 'number')
+                        z = Math.min(z, clamp[1]);
+                    const t = typeof transition === 'function' ? transition(_) : _;
+                    t.attr('transform', g.metrictransform(z));
                 };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
-        pointer.rescale = function(_) {
+        pointer.rescale = function (_) {
             return arguments.length ? (rescale = _, pointer) : rescale;
         };
-        pointer.clamp = function(_) {
-            return arguments.length ? (clamp = _, pointer) : clamp;
+        pointer.clamp = function (_) {
+            return arguments.length ? (clamp = _ ? [_[0] ?? undefined, _[1] ?? undefined] : [undefined, undefined], pointer) : clamp;
         };
-        pointer.shape = function(_) {
-            if (arguments.length && !(_ in pointers$1)) throw `pointer: unknown shape ${_}`;
+        pointer.shape = function (_) {
+            if (arguments.length && !(_ in pointers$1))
+                throw `pointer: unknown shape ${_}`;
             return arguments.length ? (shape = _, pointer) : shape;
         };
         return stylable(appendable(pointer)).class('g3-indicate-pointer');
     }
-
-
     function indicateSector() {
-        var rescale = identity,
-            clamp = [undefined, undefined],
-            anchor = 0,
-            size = 10,
-            inset = 0;
-
+        let rescale = identity, clamp = [undefined, undefined], anchor = 0, size = 10, inset = 0;
         function sector(sel, g) {
-            let _ = d3sel(sel).append('path');
-
+            const _ = d3sel(sel).append('path');
             sector.stylable(_);
-
             if (exports.activeController) {
                 const update = (v, transition) => {
-                    let z = rescale(v), z0 = rescale(anchor), negative = v < anchor;
-                    if (typeof(clamp[0]) == 'number') z = Math.max(z, clamp[0]);
-                    if (typeof(clamp[1]) == 'number') z = Math.min(z, clamp[1]);
-                    transition(_)
-                        .attr('d', g.sectorpath(negative ? z: z0, negative ? z0: z, size, inset));
+                    let z = rescale(v);
+                    const z0 = rescale(anchor), negative = v < anchor;
+                    if (typeof (clamp[0]) === 'number')
+                        z = Math.max(z, clamp[0]);
+                    if (typeof (clamp[1]) === 'number')
+                        z = Math.min(z, clamp[1]);
+                    const t = typeof transition === 'function' ? transition(_) : _;
+                    t.attr('d', g.sectorpath(negative ? z : z0, negative ? z0 : z, size, inset));
                     _.classed('g3-indicate-sector-negative', negative);
                 };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
-        sector.rescale = function(_) {
+        sector.rescale = function (_) {
             return arguments.length ? (rescale = _, sector) : rescale;
         };
-        sector.clamp = function(_) {
-            return arguments.length ? (clamp = _, sector) : clamp;
+        sector.clamp = function (_) {
+            return arguments.length ? (clamp = _ ? [_[0] ?? undefined, _[1] ?? undefined] : [undefined, undefined], sector) : clamp;
         };
-        sector.anchor = function(_) {
+        sector.anchor = function (_) {
             return arguments.length ? (anchor = _, sector) : anchor;
         };
-        sector.size = function(_) {
+        sector.size = function (_) {
             return arguments.length ? (size = _, sector) : size;
         };
-        sector.inset = function(_) {
+        sector.inset = function (_) {
             return arguments.length ? (inset = _, sector) : inset;
         };
         return stylable(sector).class('g3-indicate-sector');
     }
-
-
     function indicateStyle() {
-        var styleOn = {opacity: 1},
-            styleOff = {opacity: 0},
-            trigger = identity;
+        let styleOn = { opacity: 1 }, styleOff = { opacity: 0 }, trigger = identity;
         function style(sel, g) {
             const tween = interpolate$1(styleOff, styleOn);
-            let _ = d3sel(sel).append('g').attr('class', 'g3-indicate-style');
+            const _ = d3sel(sel).append('g').attr('class', 'g3-indicate-style');
             style.appendable(_, g);
-
             if (exports.activeController) {
                 const update = (v) => {
-                    let s = tween(trigger(v));
+                    const s = tween(trigger(v));
                     // Nb. ignore transition for style updates, looks weird for light on/off
-                    for (let k in s) _.style(k, s[k]);
+                    for (const k in s)
+                        _.style(k, s[k]);
                 };
                 exports.activeController.register(update, g.metric(), g.unit());
             }
         }
-        style.styleOn = function(_) {
-            return arguments.length ? (styleOn = _, style): styleOn;
+        style.styleOn = function (_) {
+            return arguments.length ? (styleOn = _, style) : styleOn;
         };
-        style.styleOff = function(_) {
-            return arguments.length ? (styleOff = _, style): styleOff;
+        style.styleOff = function (_) {
+            return arguments.length ? (styleOff = _, style) : styleOff;
         };
-        style.trigger = function(_) {
-            return arguments.length ? (trigger = _, style): trigger;
+        style.trigger = function (_) {
+            return arguments.length ? (trigger = _, style) : trigger;
         };
         return appendable(style);
     }
 
-    function gauge() {
-
-        var metric,
-            rescale = identity,
-            unit,
-            instance,
-            fake,
-            measure = linear().range([0,360]),
-            kind = 'circular',
-            autoindicate = false,
-            r = 100,  // the axis radius, when applicable
-            showgrid = false,
-            clip;
-
-        function gauge(sel, parent) {
+    function gauge(initialMetric) {
+        let metric = initialMetric, rescale = identity, unit, instance, fake, measure = linear().range([0, 360]), kind = 'circular', autoindicate = false, r = 100, // the axis radius, when applicable
+        showgrid = false, clip;
+        function gaugeFn(sel, parent) {
             // we namespace the metric using the instance chain at drawing time
             let ns = parent ? parent._ns.slice() : [];
             if (instance) {
                 // instances like '...foo' removes two items from parent chain
                 if (instance.startsWith('.')) {
-                    let m = instance.match(/^\.+(.*)/);
-                    let s = m[1];
+                    const m = instance.match(/^\.+(.*)/);
+                    const s = m ? m[1] : '';
                     ns = ns.slice(0, -(instance.length - s.length - 1));
-                    if (s) ns.push(s);
-                } else {
+                    if (s)
+                        ns.push(s);
+                }
+                else {
                     ns.push(instance);
                 }
             }
-            gauge._ns = ns;
-
-            const m = gauge.metric();
-
-            let _ = d3sel(sel).append('g');
-            gauge.stylable(_);
-            _ = _.append('g');
-
+            gaugeFn._ns = ns;
+            const m = gaugeFn.metric();
+            const selElement = d3sel(sel);
+            const outerG = selElement.append('g');
+            gaugeFn.stylable(outerG);
+            const _ = outerG.append('g');
             if (typeof clip === 'function') {
-                let clipId = appendId('gauge-clip');
+                const clipId = appendId('gauge-clip');
                 clip(_.append('clipPath').attr('id', clipId));
                 _.attr('clip-path', `url(#${clipId})`);
             }
-            gauge.appendable(_, gauge);
-
-            if (showgrid) grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2*r).height(2*r)(_);
-
+            gaugeFn.appendable(_, gaugeFn);
+            if (showgrid)
+                grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2 * r).height(2 * r)(_);
             if (exports.activeController) {
-                if (fake && m) exports.activeController.fake(m, fake);
-
-                if (autoindicate) {
+                if (fake && m)
+                    exports.activeController.fake(m, fake);
+                if (autoindicate && m) {
                     const update = (v, transition) => {
-                        transition(_).attr('transform', gauge.metrictransform(rescale(v), true));
+                        const t = typeof transition === 'function' ? transition(_) : _;
+                        t.attr('transform', gaugeFn.metrictransform(rescale(v), true));
                     };
-
                     _.classed('will-change-transform', true);
                     exports.activeController.register(update, m, unit);
                 }
             }
         }
-        gauge._ns = [];
-
-        gauge.metric = function(_) {
+        gaugeFn._ns = [];
+        gaugeFn.metric = function (_) {
             // with an argument, sets metric,
             // with no argument, returns qualified metric, e.g. fuel.copilot.rear
             return arguments.length
-                ? (metric = _, gauge)
-                : (metric && [metric].concat(gauge._ns).join('.'));
+                ? (metric = _, gaugeFn)
+                : (metric && [metric].concat(gaugeFn._ns).join('.'));
         };
-        gauge.rescale = function(_) {
-            return arguments.length ? (rescale = _, gauge) : rescale;
+        gaugeFn.rescale = function (_) {
+            return arguments.length ? (rescale = _, gaugeFn) : rescale;
         };
-        gauge.unit = function(_) {
+        gaugeFn.unit = function (_) {
             if (_ && !knownUnits.includes(_)) {
                 console.log(`WARNING: gauge.unit ${_} not a known unit, see https://github.com/convert-units/convert-units`);
             }
-            return arguments.length ? (unit = _, gauge) : unit;
+            return arguments.length ? (unit = _, gaugeFn) : unit;
         };
-        gauge.instance = function(_) {
-            return arguments.length ? (instance = _, gauge): instance;
+        gaugeFn.instance = function (_) {
+            return arguments.length ? (instance = _, gaugeFn) : instance;
         };
-        gauge.fake = function(_) {
-            return arguments.length ? (fake = _, gauge): fake;
+        gaugeFn.fake = function (_) {
+            return arguments.length ? (fake = _, gaugeFn) : fake;
         };
-        gauge.kind = function(_) {
-            return arguments.length ? (kind = _, gauge) : kind;
+        gaugeFn.kind = function (_) {
+            return arguments.length ? (kind = _, gaugeFn) : kind;
         };
-        gauge.clip = function(_) {
-            return arguments.length ? (clip = _, gauge) : clip;
+        gaugeFn.clip = function (_) {
+            return arguments.length ? (clip = _, gaugeFn) : clip;
         };
-        gauge.r = function(_) {
-            return arguments.length ? (r = _, gauge) : r;
+        gaugeFn.r = function (_) {
+            return arguments.length ? (r = _, gaugeFn) : r;
         };
-        gauge.measure = function(_) {
-            return arguments.length ? (measure = _, gauge) : measure;
+        gaugeFn.measure = function (_) {
+            return arguments.length ? (measure = _, gaugeFn) : measure;
         };
-        gauge.autoindicate = function(_) {
-            return arguments.length ? (autoindicate = _, gauge) : autoindicate;
+        gaugeFn.autoindicate = function (_) {
+            return arguments.length ? (autoindicate = _, gaugeFn) : autoindicate;
         };
-        gauge.grid = function(_) {
-            return arguments.length ? (showgrid = !!_, gauge): showgrid;
+        gaugeFn.grid = function (_) {
+            return arguments.length ? (showgrid = !!_, gaugeFn) : showgrid;
         };
-
-        gauge.metrictransform = function(v, invert) {
-            const
-                circular = kind == 'circular',
-                z = invert ? -measure(v) : measure(v);
+        gaugeFn.metrictransform = function (v, invert) {
+            const circular = kind == 'circular', z = invert ? -measure(v) : measure(v);
             return circular ? `rotate(${z})` : `translate(${z}, 0)`;
         };
-        gauge.marktransform = function(v, inset) {
-            const
-                circular = kind == 'circular',
-                z = measure(v),
-                y = inset + (circular ? -r : 0);
+        gaugeFn.marktransform = function (v, inset) {
+            const circular = kind == 'circular', insetVal = inset ?? 0, z = measure(v), y = insetVal + (circular ? -r : 0);
             return circular ? `rotate(${z}) translate(0, ${y})` : `translate(${z}, ${y})`;
         };
-        gauge.sectorpath = function(v0, v1, _size, _inset) {
-            const
-                size = _size ?? 0,
-                inset = _inset ?? 0,
-                r = gauge.r(),
-                m = gauge.measure(),
-                z0 = m(v0),
-                z1 = m(v1),
-                path = gauge.kind() == 'circular'
-                    ? arc()({
-                        innerRadius: r - inset - size,
-                        outerRadius: r - inset,
-                        startAngle: convertUnits(z0).from('deg').to('rad'),
-                        endAngle: convertUnits(z1).from('deg').to('rad'),
-                    })
-                    : `M ${z0},${inset} l 0,${size} l ${z1-z0},0 l 0,${-size} z`;
+        gaugeFn.sectorpath = function (v0, v1, _size, _inset) {
+            const size = _size ?? 0, inset = _inset ?? 0, rVal = gaugeFn.r(), m = gaugeFn.measure(), z0 = m(v0), z1 = m(v1), path = gaugeFn.kind() == 'circular'
+                ? arc()({
+                    innerRadius: rVal - inset - size,
+                    outerRadius: rVal - inset,
+                    startAngle: convertUnits(z0).from('deg').to('rad'),
+                    endAngle: convertUnits(z1).from('deg').to('rad'),
+                })
+                : `M ${z0},${inset} l 0,${size} l ${z1 - z0},0 l 0,${-size} z`;
             return path;
         };
-
-        return stylable(appendable(gauge)).class('g3-gauge');
+        return stylable(appendable(gaugeFn)).class('g3-gauge');
     }
-
-
     function gaugeFace() {
-        var r = 100,
-            window;
+        let r = 100, windowFn;
         function face(sel, g) {
-            sel = d3sel(sel);
-            var maskId;
-            if (typeof window === 'function') {
+            const s = d3sel(sel);
+            let maskId;
+            if (typeof windowFn === 'function') {
                 maskId = appendId('gauge-face-window-');
-                let _ = sel.append('mask').attr('id', maskId);
-                _.append('circle').attr('r', r).style('fill', 'white');
-                _ = _.append('g').attr('style', 'fill: black');
-                window(_, g);
+                const mask = s.append('mask').attr('id', maskId);
+                mask.append('circle').attr('r', r).style('fill', 'white');
+                const windowGroup = mask.append('g').attr('style', 'fill: black');
+                windowFn(windowGroup, g);
             }
-            let _ = sel.append('circle')
+            const circle = s.append('circle')
                 .attr('r', r);
-            face.stylable(_);
-            if (maskId) _.attr('mask', `url(#${maskId})`);
+            face.stylable(circle);
+            if (maskId)
+                circle.attr('mask', `url(#${maskId})`);
         }
-        face.r = function(_) {
+        face.r = function (_) {
             return arguments.length ? (r = _, face) : r;
         };
-        face.window = function(_) {
-            return arguments.length ? (window = _, face): window;
+        face.window = function (_) {
+            return arguments.length ? (windowFn = _, face) : windowFn;
         };
         return stylable(face).class('g3-gauge-face');
     }
-
-
     function gaugeScrew() {
-        var r = 8,
-            shape = 'slotted';  // or phillips, robertson
-        function screw(_, /* g */) {
-            let rotate = Math.random()*360;
-            _ = _.append('g').attr('class', 'g3-gauge-screw');
+        let r = 8, shape = 'slotted'; // or phillips, robertson
+        function screw(sel) {
+            const rotate = Math.random() * 360;
+            const _ = sel.append('g').attr('class', 'g3-gauge-screw');
             screw.transformable(_);
             screw.stylable(_);
             _.append('circle').attr('r', r).attr('class', 'g3-gauge-screw-head');
-            _.append('circle').attr('r', r) .attr('class', 'g3-highlight');
+            _.append('circle').attr('r', r).attr('class', 'g3-highlight');
             switch (shape) {
                 case 'robertson':
                     _.append('rect')
@@ -10766,355 +10604,306 @@
                     break;
                 case 'phillips':
                     _.append('rect')
-                        .attr('transform', `scale(${r}) rotate(${rotate+90})`)
+                        .attr('transform', `scale(${r}) rotate(${rotate + 90})`)
                         .attr('x', -1).attr('width', 2)
                         .attr('y', -0.2).attr('height', 0.4);
-                    // eslint-disable-next-line no-fallthrough
-                default:  // slotted
+                // eslint-disable-next-line no-fallthrough
+                default: // slotted
                     _.append('rect')
                         .attr('transform', `scale(${r}) rotate(${rotate})`)
                         .attr('x', -1).attr('width', 2)
                         .attr('y', -0.2).attr('height', 0.4);
             }
         }
-        screw.r = function(_) {
-            return arguments.length ? (r = _, screw): r;
+        screw.r = function (_) {
+            return arguments.length ? (r = _, screw) : r;
         };
-        screw.shape = function(_) {
-            return arguments.length ? (shape = _, screw): shape;
+        screw.shape = function (_) {
+            return arguments.length ? (shape = _, screw) : shape;
         };
         return stylable(transformable(screw));
     }
-
-
-
     function gaugeLabel(s_, opts) {
-        var s = s_ || '',
-            x = 0, y = 0, dx = 0, dy = 0, size = 10;
-        function label(sel, /* g */) {
-            let _ = d3sel(sel).append('text')
+        let s = s_ || '', x = 0, y = 0, dx = 0, dy = 0, size = 10;
+        function label(sel) {
+            const _ = d3sel(sel).append('text')
                 .attr('x', x).attr('y', y)
                 .attr('dx', dx).attr('dy', dy)
                 .attr('font-size', size)
                 .text(s);
             label.stylable(_);
         }
-        label.value = function(_) {
-            return arguments.length ? (s = _, label): s;
+        label.value = function (_) {
+            return arguments.length ? (s = _, label) : s;
         };
-        label.size = function(_) {
-            return arguments.length ? (size = _, label): size;
+        label.size = function (_) {
+            return arguments.length ? (size = _, label) : size;
         };
-        label.x = function(_) {
-            return arguments.length ? (x = _, label): x;
+        label.x = function (_) {
+            return arguments.length ? (x = _, label) : x;
         };
-        label.y = function(_) {
-            return arguments.length ? (y = _, label): y;
+        label.y = function (_) {
+            return arguments.length ? (y = _, label) : y;
         };
-        label.dx = function(_) {
-            return arguments.length ? (dx = _, label): dx;
+        label.dx = function (_) {
+            return arguments.length ? (dx = _, label) : dx;
         };
-        label.dy = function(_) {
-            return arguments.length ? (dy = _, label): dy;
+        label.dy = function (_) {
+            return arguments.length ? (dy = _, label) : dy;
         };
         stylable(label).class('g3-gauge-label');
         if (typeof opts === 'object') {
-            Object.entries(opts).forEach(([k,v]) => {
-                if (typeof label[k] !== 'function') throw `label: unknown attribute ${k}`;
+            Object.entries(opts).forEach(([k, v]) => {
+                if (typeof label[k] !== 'function')
+                    throw `label: unknown attribute ${k}`;
                 label[k](v);
             });
         }
         return label;
     }
-
-
     // shorthand to add a status light of given color
     function statusLight() {
-        var g = gauge(),
-            trigger = identity,
-            color = 'red';
-        function statusLight(sel, parent) {
-            let _ = gauge()
+        const g = gauge();
+        let trigger = identity, color = 'red';
+        function statusLightFn(sel, parent) {
+            const _ = gauge()
                 .metric(g.metric())
                 .instance(g.instance())
                 .fake(g.fake())
-                .append(
-                    indicateStyle().trigger(trigger).append(
-                        gaugeFace().style(`fill: ${color}`),
-                        gaugeFace().class('g3-highlight'),
-                    )
-                );
+                .append(indicateStyle().trigger(trigger).append(gaugeFace().style(`fill: ${color}`), gaugeFace().class('g3-highlight')));
             _(sel, parent);
         }
-        statusLight.metric = function(_) {
+        statusLightFn.metric = function (_) {
             const v = g.metric(_);
-            return arguments.length ? statusLight: v;
+            return arguments.length ? statusLightFn : v;
         };
-        statusLight.instance = function(_) {
+        statusLightFn.instance = function (_) {
             const v = g.instance(_);
-            return arguments.length ? statusLight: v;
+            return arguments.length ? statusLightFn : v;
         };
-        statusLight.fake = function(_) {
+        statusLightFn.fake = function (_) {
             const v = g.fake(_);
-            return arguments.length ? statusLight: v;
+            return arguments.length ? statusLightFn : v;
         };
-        statusLight.trigger = function(_) {
-            return arguments.length ? (trigger = _, statusLight): trigger;
+        statusLightFn.trigger = function (_) {
+            return arguments.length ? (trigger = _, statusLightFn) : trigger;
         };
-        statusLight.color = function(_) {
-            return arguments.length ? (color = _, statusLight): color;
+        statusLightFn.color = function (_) {
+            return arguments.length ? (color = _, statusLightFn) : color;
         };
-        return statusLight;
+        return statusLightFn;
     }
 
     function tickvals(vs, step, start, g) {
-        if (typeof vs !== 'undefined') return vs.slice();
-
-        var values;
-
-        if (typeof step === 'number') {
-            let domain = g.measure().domain().slice();
+        if (typeof vs !== 'undefined')
+            return vs.slice();
+        let values;
+        if (typeof step === 'number' && g) {
+            const domain = g.measure().domain().slice();
             const range = g.measure().range();
             domain.sort((a, b) => a - b);
             values = [];
-            for (var v = start ?? Math.ceil(domain[0]/step)*step; v <= domain[1]; v += step)
+            for (let v = start ?? Math.ceil(domain[0] / step) * step; v <= domain[1]; v += step)
                 values.push(v);
-            if (
-                g.kind() == 'circular'
+            if (g.kind() == 'circular'
                 && ((range[0] - range[1]) % 360 == 0)
                 && values.includes(domain[0])
-                && values.includes(domain[1])
-            ) values.pop();
-        } else {
+                && values.includes(domain[1]))
+                values.pop();
+        }
+        else if (g) {
             values = g.measure().ticks();
+        }
+        else {
+            values = [];
         }
         return values;
     }
-
-
     function axisSector(vs) {
-        var values = vs ? vs.slice(): null,
-            size = 5,
-            inset = 0;
+        const values = vs ? vs.slice() : null;
+        let size = 5, inset = 0;
         function sector(sel, g) {
-            let _ = d3sel(sel)
+            const _ = d3sel(sel)
                 .append('path')
                 .attr('d', g.sectorpath(...(values || g.measure().domain()), size, inset));
             sector.stylable(_);
         }
-        sector.size = function(_) {
+        sector.size = function (_) {
             return arguments.length ? (size = _, sector) : size;
         };
-        sector.inset = function(_) {
+        sector.inset = function (_) {
             return arguments.length ? (inset = _, sector) : inset;
         };
         return stylable(sector).class('g3-axis-sector');
     }
-
-
     function axisLine() {
         return axisSector().size(0).class('g3-axis-line');
     }
-
-
     function axisTicks(vs) {
-        var shape = 'tick',
-            size = 10,
-            width = 1,
-            inset = 0,
-            values = vs && vs.slice(),
-            step, start;
+        let shape = 'tick', size = 10, width = 1, inset = 0, step, start;
+        const values = vs && vs.slice();
         function ticks(sel, g) {
-            let vs = tickvals(values, step, start, g);
-            let _ = d3sel(sel).append('g');
+            const tickValues = tickvals(values, step, start, g);
+            const _ = d3sel(sel).append('g');
             ticks.class('g3-axis-ticks-' + shape).stylable(_);
-            _ = _.selectAll(null)
-                .data(vs)
-              .enter().append('g')
-                .attr('transform', d => g.marktransform(d, inset));
-
-            switch(shape) {
+            const entered = _.selectAll(null)
+                .data(tickValues)
+                .enter().append('g')
+                .attr('transform', (d) => g.marktransform(d, inset));
+            switch (shape) {
                 case 'dot':
-                    _.append('circle').attr('r', size);
+                    entered.append('circle').attr('r', size);
                     break;
                 case 'wedge':
-                    _.append('path').attr('d', `M 0,${size} L ${width/2},0 L ${-width/2},0 z`);
+                    entered.append('path').attr('d', `M 0,${size} L ${width / 2},0 L ${-width / 2},0 z`);
                     break;
                 case 'rect':
-                    _.append('rect').attr('width', width).attr('height', size).attr('x', -width/2);
+                    entered.append('rect').attr('width', width).attr('height', size).attr('x', -width / 2);
                     break;
                 default:
-                    _.append('path').attr('d', line()([[0, 0], [0, size]]));
+                    entered.append('path').attr('d', line()([[0, 0], [0, size]]));
             }
         }
-        ticks.step = function(_) {
+        ticks.step = function (_) {
             return arguments.length ? (step = _, ticks) : step;
         };
-        ticks.start = function(_) {
+        ticks.start = function (_) {
             return arguments.length ? (start = _, ticks) : start;
         };
-        ticks.shape = function(_) {
+        ticks.shape = function (_) {
             return arguments.length ? (shape = _, ticks) : shape;
         };
-        ticks.size = function(_) {
+        ticks.size = function (_) {
             return arguments.length ? (size = _, ticks) : size;
         };
-        ticks.width = function(_) {
+        ticks.width = function (_) {
             return arguments.length ? (width = _, ticks) : width;
         };
-        ticks.inset = function(_) {
+        ticks.inset = function (_) {
             return arguments.length ? (inset = _, ticks) : inset;
         };
         return stylable(ticks).class('g3-axis-ticks');
     }
-
-
     function axisLabels(vs) {
-        const isMap = typeof vs === 'object' && !Array.isArray(vs),
-            orientations = ['fixed', 'relative', 'upward', 'clockwise', 'counterclockwise'];
-
-        var orient = 'fixed',
-            size = 20,
-            inset = 25,
-            rotate = 0,
-            values = isMap ? Object.keys(vs) : vs,
-            format = isMap ? v => vs[v] : identity,
-            step, start;
+        const isMap = typeof vs === 'object' && vs !== null && !Array.isArray(vs), orientations = ['fixed', 'relative', 'upward', 'clockwise', 'counterclockwise'];
+        let orient = 'fixed', size = 20, inset = 25, rotate = 0, step, start, format = isMap ? (v) => vs[v] : identity;
+        const values = isMap ? Object.keys(vs) : vs;
         function labels(sel, g) {
-            const vs = tickvals(values, step, start, g),
-                circPath = orient.endsWith('clockwise'),
-                pathId = circPath ? appendId('axis-label-path-') : undefined;
-
-            let _ = d3sel(sel).append('g');
+            const labelValues = tickvals(values, step, start, g), circPath = orient.endsWith('clockwise'), pathId = circPath ? appendId('axis-label-path-') : undefined;
+            const _ = d3sel(sel).append('g');
             labels.stylable(_);
-            _ = _.selectAll(null)
-                .data(vs)
-              .enter().append('g');
+            const entered = _.selectAll(null)
+                .data(labelValues)
+                .enter().append('g');
             if (circPath) {
-                const r = g.r() - inset,
-                    cw = orient == 'clockwise' ? 1: 0;
-                _.append('path')
-                    .attr('id', (d, i) => `${pathId}-${i}`)
+                const r = g.r() - inset, cw = orient == 'clockwise' ? 1 : 0;
+                entered.append('path')
+                    .attr('id', (_d, i) => `${pathId}-${i}`)
                     .attr('d', `M 0,${r} A ${r},${r},0,1,${cw},0,-${r} A ${r},${r},0,1,${cw},0,${r}`)
                     .attr('style', 'visibility: hidden')
-                    .attr('transform', d => g.metrictransform(d));
+                    .attr('transform', (d) => g.metrictransform(d));
             }
-            _ = _.append('text')
+            let textSel = entered.append('text')
                 .attr('font-size', size);
             if (circPath) {
-                _ = _.append('textPath')
+                textSel = textSel.append('textPath')
                     .attr('startOffset', '50%')
-                    .attr('href', (d, i) => `#${pathId}-${i}`);
-            } else {
-                _.attr('transform', d => {
-                    let xform = g.marktransform(d, inset),
-                        rot = rotate;
+                    .attr('href', (_d, i) => `#${pathId}-${i}`);
+            }
+            else {
+                textSel.attr('transform', (d) => {
+                    let xform = g.marktransform(d, inset), rot = rotate;
                     if (g.kind() == 'circular') {
-                        if (orient == 'fixed') xform += ' ' + g.metrictransform(d, true);
+                        if (orient == 'fixed')
+                            xform += ' ' + g.metrictransform(d, true);
                         else if (orient == 'upward') {
                             const v = ((g.measure()(d + rot) % 360) + 360) % 360;
-                            if (90 < v && v < 270) rot += 180;
+                            if (90 < v && v < 270)
+                                rot += 180;
                         }
                     }
-                    if (rot) xform += ` rotate(${rot})`;
+                    if (rot)
+                        xform += ` rotate(${rot})`;
                     return `${xform}`;
                 });
             }
-            _.text(format);
+            textSel.text(format);
         }
-        labels.step = function(_) {
+        labels.step = function (_) {
             return arguments.length ? (step = _, labels) : step;
         };
-        labels.start = function(_) {
+        labels.start = function (_) {
             return arguments.length ? (start = _, labels) : start;
         };
-        labels.orient = function(_) {
+        labels.orient = function (_) {
             if (_ && !orientations.includes(_))
-                throw `g3.axisLabels().orient() unknown orientation '${_}'`
+                throw `g3.axisLabels().orient() unknown orientation '${_}'`;
             return arguments.length ? (orient = _, labels) : orient;
         };
-        labels.size = function(_) {
+        labels.size = function (_) {
             return arguments.length ? (size = _, labels) : size;
         };
-        labels.inset = function(_) {
+        labels.inset = function (_) {
             return arguments.length ? (inset = _, labels) : inset;
         };
-        labels.rotate = function(_) {
+        labels.rotate = function (_) {
             return arguments.length ? (rotate = _, labels) : rotate;
         };
-        labels.format = function(_) {
+        labels.format = function (_) {
             return arguments.length ? (format = _, labels) : format;
         };
         return stylable(labels).class('g3-axis-labels');
     }
 
     function forceSeries(min_, max_, opts_) {
-        var min = min_ ?? 0,
-            max = max_ ?? 1,
-            opts = opts_ ?? {},
-            fmax = opts.fmax ?? 0.01,
-            damping = opts.damping ?? 0.9,
-            wrap = opts.wrap ?? false,
-            x = Math.random(),
-            v = 0;
-
+        const min = min_ ?? 0, max = max_ ?? 1, opts = opts_ ?? {}, fmax = opts.fmax ?? 0.01, damping = opts.damping ?? 0.9, wrap = opts.wrap ?? false;
+        let x = Math.random(), v = 0;
         function next() {
             x += v;
-            v += (2*Math.random()-1)*fmax;
+            v += (2 * Math.random() - 1) * fmax;
             v *= damping;
             if (x < 0 || x > 1) {
                 if (!wrap) {
                     v = -v;
-                    x = x < 0 ? -x : 2-x;
-                } else {
+                    x = x < 0 ? -x : 2 - x;
+                }
+                else {
                     x = x > 1 ? x - 1 : x + 1;
                 }
             }
             return x * (max - min) + min;
-
         }
         return next;
     }
-
-
     function categoricalSeries(values) {
-        var n = values.length,
-            vs = forceSeries(0, n, {wrap: true});
-
+        const n = values.length, vs = forceSeries(0, n, { wrap: true });
         function next() {
-            return values[Math.min(Math.floor(vs()), n-1)];
+            return values[Math.min(Math.floor(vs()), n - 1)];
         }
         return next;
     }
-
-
     function datetimeSeries() {
         function next() {
             return new Date();
         }
         return next;
     }
-
-
     function midnightSecondsSeries() {
         function next() {
-            let dt = new Date(),
-                msSinceMidnight = dt.getTime() - dt.setHours(0,0,0,0);
-            return msSinceMidnight/1000;
+            const dt = new Date(), msSinceMidnight = dt.getTime() - dt.setHours(0, 0, 0, 0);
+            return msSinceMidnight / 1000;
         }
         return next;
     }
-
-
     function elapsedSecondsSeries() {
         const dt = new Date();
         function next() {
-            return (new Date() - dt)/1000;
+            return (new Date().getTime() - dt.getTime()) / 1000;
         }
         return next;
     }
 
-    injectGlobal`
+    injectGlobal `
 /* Declare 7 and 14 segment LCD fonts, many other variants at https://www.keshikan.net/fonts-e.html */
 
 @font-face {
@@ -11259,223 +11048,126 @@ body {
 }
 `; // end of CSS injectGlobal
 
-    const
-        // format a heading in degrees like 270 => W, 240 => 24
-        headingFormat = (v) => (v%90==0)?'NESW'.charAt(v/90):(v/10),
-        deviationScale = linear().domain([-10,10]).range([-50,50]);
-
-
+    const 
+    // format a heading in degrees like 270 => W, 240 => 24
+    headingFormat = (v) => (v % 90 == 0) ? 'NESW'.charAt(v / 90) : (v / 10), deviationScale = linear().domain([-10, 10]).range([-50, 50]);
     function altitudeGeneric() {
         return gauge()
             .metric('altitude').unit('ft')
-            .fake(forceSeries(0, 30000, {fmax: 0.001}))
+            .fake(forceSeries(0, 30000, { fmax: 0.001 }))
             .measure(linear().domain([0, 1000]).range([0, 360]))
-            .defs(
-                element('pattern', {
-                    id: 'altitudeDangerPattern',
-                    width: 10, height: 10,
-                    patternTransform: 'rotate(45)',
-                    patternUnits: 'userSpaceOnUse'
-                }).append(element('rect', {width: 10, height: 5}).class('g3-fg-fill')),
-            )
+            .defs(element('pattern', {
+            id: 'altitudeDangerPattern',
+            width: 10, height: 10,
+            patternTransform: 'rotate(45)',
+            patternUnits: 'userSpaceOnUse'
+        }).append(element('rect', { width: 10, height: 5 }).class('g3-fg-fill')))
             .append(
-                // self-indicating gauge for pressure, to view through window
-                put().rotate(90).append(
-                    gauge()
-                        .metric('pressureSetting').unit('hPa')
-                        .fake(forceSeries(955, 1075))
-                        .measure(linear().domain([955,1075]).range([0, 360]))
-                        .autoindicate(true)
-                        .append(
-                            gaugeFace().style('fill: #111'),
-                            axisTicks().step(5).size(5).inset(10),
-                            axisTicks().step(1).size(3).inset(10),
-                            axisTicks([1013.25]).size(5).inset(10).class('g3-danger-stroke'),
-                            axisLabels(range(955, 1075, 5)).size(10).orient('relative').rotate(-90),
-                        )
-                ),
-                // add an inner circle with danger hatching
-                element('circle', {r: 65, fill: 'url(#altitudeDangerPattern)'}),
-                // rotating cover for danger stripes, behind the main face
-                // see https://www.cfinotebook.net/notebook/avionics-and-instruments/altimeter
-                // A striped segment is visible below 10,000', when mask starts to cover, fully covered at 15,000'
-                indicatePointer().rescale(v => 3*v/100).append(
-                    axisSector([625, 1125]).inset(40).size(60).class('g3-bg-fill')
-                ).style('filter: url(#dropShadow1)'),
-                // add a face with two see-through windows
-                gaugeFace().window((_, g) => {
-                    axisSector([225, 275]).inset(11).size(24).style('fill: black')(_, g); // pressure window
-                    axisSector([425, 575]).inset(40).size(40).style('fill: black')(_, g); // low-altitude danger window
-                }).style('filter: url(#dropShadow3)'),  //TODO doesn't drop shadow windows properly?
-                axisTicks([250]).shape('wedge').size(10).width(3),
-                axisTicks().step(20),
-                axisTicks().step(100).size(15).style('stroke-width: 2'),
-                axisLabels().step(100).format(v => v/100).size(25),
-                axisLabels({950: '100', 50: 'FEET'}).orient('relative').size(8).inset(16),
-                // g3.gaugeLabel("ALTITUDE").y(-10).size(15),
-                axisLabels({0: '1000 FEET'}).orient('clockwise').inset(50).size(8),
-                axisLabels({0: '10000 FEET'}).orient('clockwise').inset(62).size(8),
-                gaugeLabel("CALIBRATED").x(-40).y(-8).size(6),
-                gaugeLabel("TO").x(-40).y(0).size(6),
-                gaugeLabel("20,000 FEET").x(-40).y(8).size(6),
-                indicatePointer().shape('dagger').rescale(v => v/100),
-                indicatePointer().shape('blade').rescale(v => v/10),
-                indicatePointer().shape('sword'),
-            );
+        // self-indicating gauge for pressure, to view through window
+        put().rotate(90).append(gauge()
+            .metric('pressureSetting').unit('hPa')
+            .fake(forceSeries(955, 1075))
+            .measure(linear().domain([955, 1075]).range([0, 360]))
+            .autoindicate(true)
+            .append(gaugeFace().style('fill: #111'), axisTicks().step(5).size(5).inset(10), axisTicks().step(1).size(3).inset(10), axisTicks([1013.25]).size(5).inset(10).class('g3-danger-stroke'), axisLabels(range(955, 1075, 5)).size(10).orient('relative').rotate(-90))), 
+        // add an inner circle with danger hatching
+        element('circle', { r: 65, fill: 'url(#altitudeDangerPattern)' }), 
+        // rotating cover for danger stripes, behind the main face
+        // see https://www.cfinotebook.net/notebook/avionics-and-instruments/altimeter
+        // A striped segment is visible below 10,000', when mask starts to cover, fully covered at 15,000'
+        indicatePointer().rescale(v => 3 * v / 100).append(axisSector([625, 1125]).inset(40).size(60).class('g3-bg-fill')).style('filter: url(#dropShadow1)'), 
+        // add a face with two see-through windows
+        gaugeFace().window((_, g) => {
+            axisSector([225, 275]).inset(11).size(24).style('fill: black')(_, g); // pressure window
+            axisSector([425, 575]).inset(40).size(40).style('fill: black')(_, g); // low-altitude danger window
+        }).style('filter: url(#dropShadow3)'), //TODO doesn't drop shadow windows properly?
+        axisTicks([250]).shape('wedge').size(10).width(3), axisTicks().step(20), axisTicks().step(100).size(15).style('stroke-width: 2'), axisLabels().step(100).format(v => v / 100).size(25), axisLabels({ 950: '100', 50: 'FEET' }).orient('relative').size(8).inset(16), 
+        // g3.gaugeLabel("ALTITUDE").y(-10).size(15),
+        axisLabels({ 0: '1000 FEET' }).orient('clockwise').inset(50).size(8), axisLabels({ 0: '10000 FEET' }).orient('clockwise').inset(62).size(8), gaugeLabel("CALIBRATED").x(-40).y(-8).size(6), gaugeLabel("TO").x(-40).y(0).size(6), gaugeLabel("20,000 FEET").x(-40).y(8).size(6), indicatePointer().shape('dagger').rescale(v => v / 100), indicatePointer().shape('blade').rescale(v => v / 10), indicatePointer().shape('sword'));
     }
-
-
     function attitudeGeneric() {
         return gauge()
             // outer gauge is invisible other than the indicator marks
             .append(
-                // the outer dial is a self-indicating roll gauge
-                gauge()
-                    .metric('roll').unit('deg')
-                    .fake(forceSeries(-25, 25))
-                    .measure(linear().domain([-90,90]).range([-90,90]))
-                    .autoindicate(true)
-                    .clip(gaugeFace())
-                    .append(
-                        // the inner dial is a self-indicating pitch gauge with a linear scale
-                        put().rotate(-90).append(
-                            gauge()
-                                .metric('pitch').unit('deg')
-                                .fake(forceSeries(-25, 25))
-                                .measure(linear().domain([-20, 20]).range([-25,25]))
-                                .kind('linear').autoindicate(true)
-                                .css('text {fill: #ddd}')
-                                .append(
-                                    element('rect', {height: 200, width: 150, y: -100}) // sky
-                                        .class('g3-sky-fill g3-fg-stroke'),
-                                    element('rect', {height: 200, width: 150, x: -150, y: -100}) // ground
-                                        .class('g3-ground-fill g3-fg-stroke'),
-                                    axisTicks([-20,20]).size(50).inset(-25),
-                                    axisTicks([-10,10]).size(30).inset(-15),
-                                    axisTicks().start(-15).step(10).size(20).inset(-10),
-                                    axisLabels([-20,20]).inset(35).format(Math.abs).rotate(90).size(12),
-                                    axisLabels([-20,20]).inset(-35).format(Math.abs).rotate(90).size(12),
-                                    axisLabels([-10,10]).inset(25).format(Math.abs).rotate(90).size(12),
-                                    axisLabels([-10,10]).inset(-25).format(Math.abs).rotate(90).size(12),
-                                )
-                        ),
-                        axisSector([0, 360]).size(20).style('filter: url(#dropShadow3)'),
-                        axisSector([-90,90]).size(20).class('g3-sky-fill g3-fg-stroke'),
-                        axisSector([90,270]).size(20).class('g3-ground-fill g3-fg-stroke'),
-                        axisTicks().step(30).size(20),
-                        axisTicks([-45, 45]).shape('wedge').inset(10).size(10).width(10),
-                        axisTicks([-20,-10,10,20]).inset(10).size(10),
-                    ),
-                // add outline, post-clipping to avoid losing half the exterior
-                element('circle', {r: 100}).class('g3-fg-stroke'),
-                put().append(
-                    // top pointer
-                    element('path', {d: 'M 0,-80 l 5,15 l -10,0 z'})
-                        .class('g3-highlight-stroke g3-no-fill'),
-                    // grey handlebar support
-                    element('path', {d: 'M -15,0 a 15,10 0 0 0 30,0 M 0,10 l 0,35'})
-                        .class('g3-bg-stroke').style('stroke-width: 2'),
-                    element('path', {d: 'M 0,40 l 15,38 a 100,100 0 0 1 -30,0 z'})
-                        .class('g3-bg-fill').style('stroke-width: 2'),
-                    // handlebar arms and dot
-                    element('path', {d: 'M -50,0 l 35,0 m 30,0 l 35,0'})
-                        .class('g3-highlight-stroke g3-no-fill').style('filter: url(#dropShadow1)'),
-                    element('circle', {r: 2}).class('g3-highlight-fill'),
-                ).style('filter: url(#dropShadow1)')
-            );
+        // the outer dial is a self-indicating roll gauge
+        gauge()
+            .metric('roll').unit('deg')
+            .fake(forceSeries(-25, 25))
+            .measure(linear().domain([-90, 90]).range([-90, 90]))
+            .autoindicate(true)
+            .clip(gaugeFace())
+            .append(
+        // the inner dial is a self-indicating pitch gauge with a linear scale
+        put().rotate(-90).append(gauge()
+            .metric('pitch').unit('deg')
+            .fake(forceSeries(-25, 25))
+            .measure(linear().domain([-20, 20]).range([-25, 25]))
+            .kind('linear').autoindicate(true)
+            .css('text {fill: #ddd}')
+            .append(element('rect', { height: 200, width: 150, y: -100 }) // sky
+            .class('g3-sky-fill g3-fg-stroke'), element('rect', { height: 200, width: 150, x: -150, y: -100 }) // ground
+            .class('g3-ground-fill g3-fg-stroke'), axisTicks([-20, 20]).size(50).inset(-25), axisTicks([-10, 10]).size(30).inset(-15), axisTicks().start(-15).step(10).size(20).inset(-10), axisLabels([-20, 20]).inset(35).format(Math.abs).rotate(90).size(12), axisLabels([-20, 20]).inset(-35).format(Math.abs).rotate(90).size(12), axisLabels([-10, 10]).inset(25).format(Math.abs).rotate(90).size(12), axisLabels([-10, 10]).inset(-25).format(Math.abs).rotate(90).size(12))), axisSector([0, 360]).size(20).style('filter: url(#dropShadow3)'), axisSector([-90, 90]).size(20).class('g3-sky-fill g3-fg-stroke'), axisSector([90, 270]).size(20).class('g3-ground-fill g3-fg-stroke'), axisTicks().step(30).size(20), axisTicks([-45, 45]).shape('wedge').inset(10).size(10).width(10), axisTicks([-20, -10, 10, 20]).inset(10).size(10)), 
+        // add outline, post-clipping to avoid losing half the exterior
+        element('circle', { r: 100 }).class('g3-fg-stroke'), put().append(
+        // top pointer
+        element('path', { d: 'M 0,-80 l 5,15 l -10,0 z' })
+            .class('g3-highlight-stroke g3-no-fill'), 
+        // grey handlebar support
+        element('path', { d: 'M -15,0 a 15,10 0 0 0 30,0 M 0,10 l 0,35' })
+            .class('g3-bg-stroke').style('stroke-width: 2'), element('path', { d: 'M 0,40 l 15,38 a 100,100 0 0 1 -30,0 z' })
+            .class('g3-bg-fill').style('stroke-width: 2'), 
+        // handlebar arms and dot
+        element('path', { d: 'M -50,0 l 35,0 m 30,0 l 35,0' })
+            .class('g3-highlight-stroke g3-no-fill').style('filter: url(#dropShadow1)'), element('circle', { r: 2 }).class('g3-highlight-fill')).style('filter: url(#dropShadow1)'));
     }
-
-
     function headingGeneric() {
         return gauge()
             .metric('heading').unit('deg')
-            .fake(forceSeries(0, 360, {wrap: true}))
+            .fake(forceSeries(0, 360, { wrap: true }))
             .measure(linear().domain([0, 360]).range([0, 360]))
             .autoindicate(true)
-            .append(
-                gaugeFace(),
-                axisTicks().step(5).size(5),
-                axisTicks().step(10).size(10),
-                axisTicks().step(30).size(10).style('stroke-width: 2'),
-                axisLabels().step(30).orient('relative').format(headingFormat),
-                indicatePointer().shape('aircraft-heading'),
-            );
+            .append(gaugeFace(), axisTicks().step(5).size(5), axisTicks().step(10).size(10), axisTicks().step(30).size(10).style('stroke-width: 2'), axisLabels().step(30).orient('relative').format(headingFormat), indicatePointer().shape('aircraft-heading'));
     }
-
-
     function VSIGeneric() {
         return gauge()
             .metric('verticalSpeed').unit('ft/min')
             .fake(forceSeries(-2500, 2500))
-            .measure(linear().domain([-2000, 2000]).range([90, 90+360]))
-            .append(
-                gaugeFace(),
-                axisTicks().step(100).size(5),
-                axisTicks().step(500).size(15).style('stroke-width: 2'),
-                axisLabels().step(1000).format(v => Math.abs(v/100)),
-                axisLabels().step(1000).start(-1500).format(v => Math.abs(v/100)).size(16),
-                gaugeLabel("VERTICAL SPEED").y(-25).size(12),
-                gaugeLabel("100 FEET PER MIMUTE").y(-10).size(10),
-                // add up/down arrows as sector lines plus custom tick marks
-                axisSector([100,400]).size(0).inset(25).class('g3-fg-stroke').style('stroke-width: 2'),
-                axisSector([-100,-400]).size(0).inset(25).class('g3-fg-stroke').style('stroke-width: 2'),
-                // TODO this should be a custom tick mark shape, with access to current tick val?
-                (_, g) => {
-                    _.selectAll(null).data([-400, 400])
-                    .enter().append('path')
-                        .attr('d', "M 2,0 l -7,4 l 0,-8 Z")
-                        .attr('transform', d => g.marktransform(d, 25) + (d < 0 ? ' rotate(-180)':''))
-                        .attr('class', 'g3-fg-fill');
-                },
-                gaugeLabel("UP").x(-57).y(-37).size(8).style('text-anchor: start'),
-                gaugeLabel("DOWN").x(-57).y(37).size(8).style('text-anchor: start'),
-                indicatePointer().shape('sword').clamp([-1950, 1950]),
-            );
+            .measure(linear().domain([-2000, 2000]).range([90, 90 + 360]))
+            .append(gaugeFace(), axisTicks().step(100).size(5), axisTicks().step(500).size(15).style('stroke-width: 2'), axisLabels().step(1000).format(v => Math.abs(v / 100)), axisLabels().step(1000).start(-1500).format(v => Math.abs(v / 100)).size(16), gaugeLabel("VERTICAL SPEED").y(-25).size(12), gaugeLabel("100 FEET PER MIMUTE").y(-10).size(10), 
+        // add up/down arrows as sector lines plus custom tick marks
+        axisSector([100, 400]).size(0).inset(25).class('g3-fg-stroke').style('stroke-width: 2'), axisSector([-100, -400]).size(0).inset(25).class('g3-fg-stroke').style('stroke-width: 2'), 
+        // TODO this should be a custom tick mark shape, with access to current tick val?
+        (_, g) => {
+            _.selectAll(null).data([-400, 400])
+                .enter().append('path')
+                .attr('d', "M 2,0 l -7,4 l 0,-8 Z")
+                .attr('transform', (d) => g.marktransform(d, 25) + (d < 0 ? ' rotate(-180)' : ''))
+                .attr('class', 'g3-fg-fill');
+        }, gaugeLabel("UP").x(-57).y(-37).size(8).style('text-anchor: start'), gaugeLabel("DOWN").x(-57).y(37).size(8).style('text-anchor: start'), indicatePointer().shape('sword').clamp([-1950, 1950]));
     }
-
-
     function turnCoordinatorGeneric() {
         return gauge()
             .metric('turnrate').unit('deg/s')
             .fake(forceSeries(-10, 10))
             .measure(linear().domain([-3, 3]).range([-20, 20]))
             .append(
-                // gaguge for slip, degrees of ball deflection
-                gauge()
-                    .metric('slip').unit('deg')
-                    .fake(forceSeries(-25, 25))
-                    .measure(linear().domain([-20,20]).range([170,190]))
-                    .r(300)
-                    .append(
-                        gaugeFace(),
-                        gaugeLabel('TURN COORDINATOR').size(11).y(22),
-                        gaugeLabel('2 MIN').size(14).y(65),
-                        put().y(-255).append(
-                            // background for the tube
-                            axisSector([-30,30]).inset(-9).size(18).style('fill: #c0c0a8; filter: url(#dropShadow3)'),
-                            // add ball as pointer
-                            indicatePointer().clamp([-20,20]).append(
-                                put().scale(0.8,1).y(-300).rotate(-180).append(
-                                    // add ball background plus a highlight, with the rotate(-180) to avoid having
-                                    // the highlight flipped since the ball is tyipcally indicating near 180 rotation
-                                    element('circle', {r: 8}).style('fill: #333'),
-                                    element('circle', {r: 8}).class('g3-highlight'),
-                                )
-                            ),
-                            axisTicks([-3,3]).inset(-9).size(18).style('stroke-width: 2; stroke: #666'),
-                            // add a blurred highlight to the tube
-                            axisSector([-30,30]).inset(0).size(6)
-                                .style('fill: white; filter: url(#gaussianBlur1); fill-opacity: 0.33')
-                        )
-                    ),
-                axisSector([0,360]).size(24).class('g3-bg-fill').style('filter: url(#dropShadow2)'),
-                axisTicks([-16.5, -13.5, 13.5, 16.5]).size(24).style('stroke-width: 4'),
-                gaugeLabel('D.C.').y(-92),
-                gaugeLabel('ELEC.').y(-82),
-                gaugeLabel('NO PITCH').y(80).size(8),
-                gaugeLabel('INFORMATION').y(90).size(8),
-                indicatePointer().clamp([-9,9]).shape('aircraft-turn'),
-            );
+        // gaguge for slip, degrees of ball deflection
+        gauge()
+            .metric('slip').unit('deg')
+            .fake(forceSeries(-25, 25))
+            .measure(linear().domain([-20, 20]).range([170, 190]))
+            .r(300)
+            .append(gaugeFace(), gaugeLabel('TURN COORDINATOR').size(11).y(22), gaugeLabel('2 MIN').size(14).y(65), put().y(-255).append(
+        // background for the tube
+        axisSector([-30, 30]).inset(-9).size(18).style('fill: #c0c0a8; filter: url(#dropShadow3)'), 
+        // add ball as pointer
+        indicatePointer().clamp([-20, 20]).append(put().scale(0.8, 1).y(-300).rotate(-180).append(
+        // add ball background plus a highlight, with the rotate(-180) to avoid having
+        // the highlight flipped since the ball is tyipcally indicating near 180 rotation
+        element('circle', { r: 8 }).style('fill: #333'), element('circle', { r: 8 }).class('g3-highlight'))), axisTicks([-3, 3]).inset(-9).size(18).style('stroke-width: 2; stroke: #666'), 
+        // add a blurred highlight to the tube
+        axisSector([-30, 30]).inset(0).size(6)
+            .style('fill: white; filter: url(#gaussianBlur1); fill-opacity: 0.33'))), axisSector([0, 360]).size(24).class('g3-bg-fill').style('filter: url(#dropShadow2)'), axisTicks([-16.5, -13.5, 13.5, 16.5]).size(24).style('stroke-width: 4'), gaugeLabel('D.C.').y(-92), gaugeLabel('ELEC.').y(-82), gaugeLabel('NO PITCH').y(80).size(8), gaugeLabel('INFORMATION').y(90).size(8), indicatePointer().clamp([-9, 9]).shape('aircraft-turn'));
     }
 
     function VORGeneric() {
@@ -11486,116 +11178,62 @@ body {
             .measure(deviationScale)
             .kind('linear')
             .clip(gaugeFace())
-            .append(
-                gaugeFace(),
-                // dots show every two degrees of deviation, with an extra central dot
-                axisTicks([-10,-8,-6,-4,0,4,6,8,10]).shape('dot').size(3),
-                element('circle', {r: deviationScale(2)}).class('g3-axis-ticks').style('stroke-width: 2; fill: none'),
-                gaugeLabel('TO').x(35).y(-35).size(8),
-                gaugeLabel('FR').x(35).y(35).size(8),
-                // use a single styled gauge to flip to/from/unreliable
-                // draw the 'to' state with a greyed out 'from' state
-                element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-highlight-fill'),
-                element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
-                gauge()
-                    .metric('toFromVOR')  // 1: to, -1: from, 0: off
-                    .fake(categoricalSeries([1, 0, -1]))
-                    .append(
-                        indicateStyle().trigger(v => v == -1 ? 0.9 : 0.1).append(
-                            // overlay a slightly (or very) transparent 'from' state
-                            element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
-                            element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-highlight-fill'),
-                        ),
-                    ),
-                // similarly, show unreliability by drawing background over to/from plus the NAV indicator
-                gauge()
-                    .metric('toFromVOR')
-                    .append(
-                        indicateStyle().trigger(v => v == 0 ? 1 : 0).append(
-                            element('path', {d: 'M 35,-25 l 8,14 l -16,0 z'}).class('g3-bg-fill'),
-                            element('path', {d: 'M 35,25 l 8,-14 l -16,0 z'}).class('g3-bg-fill'),
-                            element('rect', {x: 10, width: 12, y: -50, height: 30}).style('fill: red'),
-                        ),
-                    ),
-                put().y(-35).x(16).css('text {fill: black}').append(
-                    gaugeLabel('N').y(-9),
-                    gaugeLabel('A'),
-                    gaugeLabel('V').y(9),
-                ),
-                indicatePointer().append(
-                    element('path', {d: 'M 0,-100 L 0,100'}).class('g3-fg-stroke').style('stroke-width: 4')
-                ),
-                gauge()
-                    // the outer ring auto-indicates to show the radial heading
-                    .metric('radialVOR').unit('deg')
-                    .fake(forceSeries(0, 360, {wrap: true}))
-                    .measure(linear().domain([0, 360]).range([0, 360]))
-                    .autoindicate(true)
-                    .append(
-                        axisSector([0,360]).size(30).style('filter: url(#dropShadow3)').class('g3-bg-fill'),
-                        axisTicks().step(5).inset(30).size(-5),
-                        axisTicks().step(10).inset(30).size(-10),
-                        axisTicks().step(30).inset(30).size(-10).style('stroke-width: 2'),
-                        axisLabels().step(30).inset(10).size(16).orient('relative').format(headingFormat),
-                    ),
-                // top triangular indicator
-                element('path', {d: 'M 0,-80 l 0,10 l 8,14 l -16,0 l 8,-14 z'})
-                    .class('g3-highlight-fill g3-highlight-stroke'),
-            );
+            .append(gaugeFace(), 
+        // dots show every two degrees of deviation, with an extra central dot
+        axisTicks([-10, -8, -6, -4, 0, 4, 6, 8, 10]).shape('dot').size(3), element('circle', { r: deviationScale(2) }).class('g3-axis-ticks').style('stroke-width: 2; fill: none'), gaugeLabel('TO').x(35).y(-35).size(8), gaugeLabel('FR').x(35).y(35).size(8), 
+        // use a single styled gauge to flip to/from/unreliable
+        // draw the 'to' state with a greyed out 'from' state
+        element('path', { d: 'M 35,25 l 8,-14 l -16,0 z' }).class('g3-highlight-fill'), element('path', { d: 'M 35,-25 l 8,14 l -16,0 z' }).class('g3-bg-fill'), gauge()
+            .metric('toFromVOR') // 1: to, -1: from, 0: off
+            .fake(categoricalSeries([1, 0, -1]))
+            .append(indicateStyle().trigger(v => v == -1 ? 0.9 : 0.1).append(
+        // overlay a slightly (or very) transparent 'from' state
+        element('path', { d: 'M 35,25 l 8,-14 l -16,0 z' }).class('g3-bg-fill'), element('path', { d: 'M 35,-25 l 8,14 l -16,0 z' }).class('g3-highlight-fill'))), 
+        // similarly, show unreliability by drawing background over to/from plus the NAV indicator
+        gauge()
+            .metric('toFromVOR')
+            .append(indicateStyle().trigger(v => v == 0 ? 1 : 0).append(element('path', { d: 'M 35,-25 l 8,14 l -16,0 z' }).class('g3-bg-fill'), element('path', { d: 'M 35,25 l 8,-14 l -16,0 z' }).class('g3-bg-fill'), element('rect', { x: 10, width: 12, y: -50, height: 30 }).style('fill: red'))), put().y(-35).x(16).css('text {fill: black}').append(gaugeLabel('N').y(-9), gaugeLabel('A'), gaugeLabel('V').y(9)), indicatePointer().append(element('path', { d: 'M 0,-100 L 0,100' }).class('g3-fg-stroke').style('stroke-width: 4')), gauge()
+            // the outer ring auto-indicates to show the radial heading
+            .metric('radialVOR').unit('deg')
+            .fake(forceSeries(0, 360, { wrap: true }))
+            .measure(linear().domain([0, 360]).range([0, 360]))
+            .autoindicate(true)
+            .append(axisSector([0, 360]).size(30).style('filter: url(#dropShadow3)').class('g3-bg-fill'), axisTicks().step(5).inset(30).size(-5), axisTicks().step(10).inset(30).size(-10), axisTicks().step(30).inset(30).size(-10).style('stroke-width: 2'), axisLabels().step(30).inset(10).size(16).orient('relative').format(headingFormat)), 
+        // top triangular indicator
+        element('path', { d: 'M 0,-80 l 0,10 l 8,14 l -16,0 l 8,-14 z' })
+            .class('g3-highlight-fill g3-highlight-stroke'));
     }
-
-
     function ADFGeneric() {
         return gauge()
             .metric('relativeADF').unit('deg')
-            .fake(forceSeries(0, 360, {wrap: true}))
+            .fake(forceSeries(0, 360, { wrap: true }))
             .measure(linear().domain([0, 360]).range([0, 360]))
             .append(
-                // pilot set heading gauge
-                gauge()
-                    .metric('headingADF').unit('deg')
-                    .fake(forceSeries(0, 360, {wrap: true}))
-                    .measure(linear().domain([0, 360]).range([0, 360]))
-                    .autoindicate(true)
-                    .append(
-                        axisSector([0,360]).size(30).class('g3-bg-fill'),
-                        axisTicks().step(5).inset(30).size(-5),
-                        axisTicks().step(10).inset(30).size(-10),
-                        axisTicks().step(30).inset(30).size(-10).style('stroke-width: 2'),
-                        axisLabels().step(30).inset(10).size(16).orient('relative').format(headingFormat),
-                    ),
-                gaugeFace().r(70),
-                // arrow ADF bearing indicator
-                indicatePointer().append(
-                    element('path', {d: 'M 0,-65 L 0,60'}).class('g3-fg-stroke').style('stroke-width: 4'),
-                    element('path', {d: 'M 0,65 l 5,-15 l -10,0 z'}).class('g3-fg-fill'),
-                ),
-                // heading marks
-                axisTicks().step(45).shape('wedge').size(15).width(6).class('g3-highlight-fill g3-no-stroke'),
-                // aircraft marker
-                element('path', {d: 'M 0,-10 l 0,30 m 5,-5 l -10,0 M 15,0 l -30,0'})
-                    .class('g3-highlight-stroke').style('stroke-width: 3'),
-            );
+        // pilot set heading gauge
+        gauge()
+            .metric('headingADF').unit('deg')
+            .fake(forceSeries(0, 360, { wrap: true }))
+            .measure(linear().domain([0, 360]).range([0, 360]))
+            .autoindicate(true)
+            .append(axisSector([0, 360]).size(30).class('g3-bg-fill'), axisTicks().step(5).inset(30).size(-5), axisTicks().step(10).inset(30).size(-10), axisTicks().step(30).inset(30).size(-10).style('stroke-width: 2'), axisLabels().step(30).inset(10).size(16).orient('relative').format(headingFormat)), gaugeFace().r(70), 
+        // arrow ADF bearing indicator
+        indicatePointer().append(element('path', { d: 'M 0,-65 L 0,60' }).class('g3-fg-stroke').style('stroke-width: 4'), element('path', { d: 'M 0,65 l 5,-15 l -10,0 z' }).class('g3-fg-fill')), 
+        // heading marks
+        axisTicks().step(45).shape('wedge').size(15).width(6).class('g3-highlight-fill g3-no-stroke'), 
+        // aircraft marker
+        element('path', { d: 'M 0,-10 l 0,30 m 5,-5 l -10,0 M 15,0 l -30,0' })
+            .class('g3-highlight-stroke').style('stroke-width: 3'));
     }
 
     function airspeed() {
         return gauge()
             .metric('airspeed').unit('knot')
             .fake(forceSeries(40, 200))
-            .measure(linear().domain([40,200]).range([30, 350]))
-            .append(
-                gaugeFace(),
-                axisSector([60, 105]).inset(10).size(5),  // flaps
-                axisSector([60, 145]).size(5).class('g3-normal-fill'),  // normal
-                axisSector([145, 180]).size(5).class('g3-danger-fill'),  // max
-                axisTicks().step(5).size(10),
-                axisTicks().step(10).size(15).style('stroke-width: 2'),
-                axisTicks([180]).size(15).class('g3-danger-stroke'),
-                axisLabels().step(20).inset(30),
-                gaugeLabel("AIRSPEED").size(12).y(-33),
-                gaugeLabel("MPH").y(33),
-                indicatePointer().shape('sword'),
-            );
+            .measure(linear().domain([40, 200]).range([30, 350]))
+            .append(gaugeFace(), axisSector([60, 105]).inset(10).size(5), // flaps
+        axisSector([60, 145]).size(5).class('g3-normal-fill'), // normal
+        axisSector([145, 180]).size(5).class('g3-danger-fill'), // max
+        axisTicks().step(5).size(10), axisTicks().step(10).size(15).style('stroke-width: 2'), axisTicks([180]).size(15).class('g3-danger-stroke'), axisLabels().step(20).inset(30), gaugeLabel("AIRSPEED").size(12).y(-33), gaugeLabel("MPH").y(33), indicatePointer().shape('sword'));
     }
 
     function ammeter() {
@@ -11603,265 +11241,106 @@ body {
             .metric('alternatorLoad').unit('proportion')
             .fake(forceSeries(-0.1, 1.25))
             .measure(linear().domain([-0.1, 1.2]).range([-45, 45]))
-            .append(
-                gaugeFace(),
-                gaugeLabel('ALT. LOAD').size(15).y(-30),
-                put().y(50).append(
-                    axisLine(),
-                    axisTicks().step(0.1).size(5).inset(-5),
-                    axisTicks().step(0.5).start(0).size(10).inset(-10),
-                    axisTicks([1.0]).size(10).inset(-10).class('g3-danger-stroke'),
-                    axisLabels().start(0).step(0.5).inset(-20).size(15).format(v => v.toFixed(1)),
-                    axisLabels({'-0.2': 'D', 1.3: 'C'}).size(15).inset(0),
-                    indicatePointer().shape('rondel'),
-                )
-            );
+            .append(gaugeFace(), gaugeLabel('ALT. LOAD').size(15).y(-30), put().y(50).append(axisLine(), axisTicks().step(0.1).size(5).inset(-5), axisTicks().step(0.5).start(0).size(10).inset(-10), axisTicks([1.0]).size(10).inset(-10).class('g3-danger-stroke'), axisLabels().start(0).step(0.5).inset(-20).size(15).format(v => v.toFixed(1)), axisLabels({ '-0.2': 'D', 1.3: 'C' }).size(15).inset(0), indicatePointer().shape('rondel')));
     }
-
-
     function voltmeter() {
         return gauge()
             .metric('alternatorVolts').unit('V')
             .fake(forceSeries(0, 30))
-            .measure(linear().domain([0,30]).range([-45,45]))
-            .append(
-                gaugeFace(),
-                gaugeLabel('VOLTS').size(15).y(-35),
-                gaugeLabel('DC').size(15).y(-20),
-                put().y(50).append(
-                    axisLine(),
-                    axisTicks().step(1).inset(-5).size(5),
-                    axisTicks().step(5).inset(-8).size(8),
-                    axisTicks().step(10).inset(-10).size(10),
-                    axisLabels([10,20]).size(15).inset(-20),
-                    axisLabels([0,30]).size(15).inset(10),
-                    indicatePointer().shape('rondel'),
-                )
-            );
+            .measure(linear().domain([0, 30]).range([-45, 45]))
+            .append(gaugeFace(), gaugeLabel('VOLTS').size(15).y(-35), gaugeLabel('DC').size(15).y(-20), put().y(50).append(axisLine(), axisTicks().step(1).inset(-5).size(5), axisTicks().step(5).inset(-8).size(8), axisTicks().step(10).inset(-10).size(10), axisLabels([10, 20]).size(15).inset(-20), axisLabels([0, 30]).size(15).inset(10), indicatePointer().shape('rondel')));
     }
 
     function suctionPressure() {
         return gauge()
             .metric('suctionPressure').unit('inHg')
             .fake(forceSeries(0, 10))
-            .measure(linear().domain([0, 10]).range([7*30, 17*30]))
-            .append(
-                gaugeFace(),
-                axisTicks(range(0, 10.1, 0.2)).size(10),
-                axisTicks(range(0, 10.1)).size(20).style('stroke-width: 2'),
-                axisTicks([4.5, 5.4]).size(20).class('g3-danger-stroke'),
-                axisLabels(range(0, 10.1, 2)).inset(33),
-                gaugeLabel("SUCTION").size(15).y(-33),
-                gaugeLabel("INCHES OF MERCURY").y(25),
-                indicatePointer().shape('sword'),
-            );
+            .measure(linear().domain([0, 10]).range([7 * 30, 17 * 30]))
+            .append(gaugeFace(), axisTicks(range(0, 10.1, 0.2)).size(10), axisTicks(range(0, 10.1)).size(20).style('stroke-width: 2'), axisTicks([4.5, 5.4]).size(20).class('g3-danger-stroke'), axisLabels(range(0, 10.1, 2)).inset(33), gaugeLabel("SUCTION").size(15).y(-33), gaugeLabel("INCHES OF MERCURY").y(25), indicatePointer().shape('sword'));
     }
-
-
     function manifoldPressure() {
         return gauge()
             .metric('manifoldPressure').unit('inHg')
             .fake(forceSeries(10, 50))
-            .measure(linear().domain([10,50]).range([-1000/9, 1000/9]))
-            .append(
-                gaugeFace(),
-                axisSector([30, 35]).size(7).class('g3-normal-fill'),  // normal
-                axisSector([18, 30]).size(7).class('g3-cold-fill'),     // idle
-                axisTicks(range(10,51)).size(10),
-                axisTicks(range(10,51,5)).size(15).style('stroke-width: 2'),
-                axisTicks([30, 36.5]).size(17).class('g3-danger-stroke'),
-                axisLabels(range(10,51,10)).inset(30).size(25),
-                axisLabels(range(15,51,10)).size(15),
-                gaugeLabel("MANIFOLD").size(12).y(-45),
-                gaugeLabel("PRESSURE").size(12).y(-30),
-                gaugeLabel("INCHES OF MERCURY").size(8).y(50),
-                indicatePointer().shape('sword'),
-            )
+            .measure(linear().domain([10, 50]).range([-1000 / 9, 1000 / 9]))
+            .append(gaugeFace(), axisSector([30, 35]).size(7).class('g3-normal-fill'), // normal
+        axisSector([18, 30]).size(7).class('g3-cold-fill'), // idle
+        axisTicks(range(10, 51)).size(10), axisTicks(range(10, 51, 5)).size(15).style('stroke-width: 2'), axisTicks([30, 36.5]).size(17).class('g3-danger-stroke'), axisLabels(range(10, 51, 10)).inset(30).size(25), axisLabels(range(15, 51, 10)).size(15), gaugeLabel("MANIFOLD").size(12).y(-45), gaugeLabel("PRESSURE").size(12).y(-30), gaugeLabel("INCHES OF MERCURY").size(8).y(50), indicatePointer().shape('sword'));
     }
-
-
     function tachometer$1() {
         return gauge()
             .metric('engineRPM').unit('rpm')
             .fake(forceSeries(300, 3500))
             .measure(linear().domain([300, 3500]).range([225, 495]))
-            .append(
-                gaugeFace(),
-                axisSector([1600, 2000]).size(7).class('g3-cold-fill'), // idle
-                axisSector([2000, 2200]).size(7).class('g3-normal-fill'), // normal
-                axisTicks().step(100).size(10),
-                axisTicks().step(500).size(15).style('stroke-width: 2'),
-                axisTicks([2300]).size(15).class('g3-danger-stroke'),
-                axisLabels().step(500).inset(30).format(v => v/100),
-                axisLabels([300]).format(v => v/100),
-                gaugeLabel('RPM').size(12).y(-45),
-                gaugeLabel('HUNDREDS').size(8).y(-30),
-                indicatePointer().shape('rondel'),
-            );
+            .append(gaugeFace(), axisSector([1600, 2000]).size(7).class('g3-cold-fill'), // idle
+        axisSector([2000, 2200]).size(7).class('g3-normal-fill'), // normal
+        axisTicks().step(100).size(10), axisTicks().step(500).size(15).style('stroke-width: 2'), axisTicks([2300]).size(15).class('g3-danger-stroke'), axisLabels().step(500).inset(30).format(v => v / 100), axisLabels([300]).format(v => v / 100), gaugeLabel('RPM').size(12).y(-45), gaugeLabel('HUNDREDS').size(8).y(-30), indicatePointer().shape('rondel'));
     }
-
-
     function tank(lo, hi, arc, instance) {
-        lo ??= 2;
-        hi ??= 19;
-        arc ??= 96;
-        const dx = (hi-lo)*0.05;
+        const loVal = lo ?? 2;
+        const hiVal = hi ?? 19;
+        const arcVal = arc ?? 96;
+        const dx = (hiVal - loVal) * 0.05;
         return gauge()
             .metric('fuel').unit('gal').instance(instance)
-            .fake(forceSeries(0, hi+2))
-            .measure(linear().domain([lo, hi]).range([180+arc/2,360+180-arc/2]))
-            .append(
-                gaugeFace(),
-                axisLine(),
-                axisTicks().step(4).size(15),
-                axisTicks([lo, hi]).size(15),
-                axisLabels().inset(30).size(25).step(4),
-                axisLabels({[lo-dx]: 'E', [hi+dx]: 'F'}).inset(10).size(25),
-                gaugeLabel((instance ?? '').toUpperCase()).size(25).y(-30),
-                put().y(40).scale(0.1).append(
-                    statusLight()
-                        .metric('fuelSelector').instance(instance ? '..':null)
-                        //TODO don't want qualified instance here, just generic
-                        .fake(categoricalSeries(['front', 'center', 'rear']))
-                        .trigger(v => v == instance ? 1: 0.1)
-                        .color('orange')
-                ),
-                indicatePointer().shape('rondel'),
-            );
+            .fake(forceSeries(0, hiVal + 2))
+            .measure(linear().domain([loVal, hiVal]).range([180 + arcVal / 2, 360 + 180 - arcVal / 2]))
+            .append(gaugeFace(), axisLine(), axisTicks().step(4).size(15), axisTicks([loVal, hiVal]).size(15), axisLabels().inset(30).size(25).step(4), axisLabels({ [loVal - dx]: 'E', [hiVal + dx]: 'F' }).inset(10).size(25), gaugeLabel((instance ?? '').toUpperCase()).size(25).y(-30), put().y(40).scale(0.1).append(statusLight()
+            .metric('fuelSelector').instance(instance ? '..' : '')
+            //TODO don't want qualified instance here, just generic
+            .fake(categoricalSeries(['front', 'center', 'rear']))
+            .trigger(v => v == instance ? 1 : 0.1)
+            .color('orange')), indicatePointer().shape('rondel'));
     }
-
-
     function fuel() {
         return gauge()
-            .append(
-                gaugeFace(),
-                gaugeLabel('FUEL').size(15).y(75),
-                put().scale(0.4).x(-45).y(30*0.866).append(
-                    // 29 gal capacity
-                    tank(3, 25, 96, 'front'),
-                ),
-                put().scale(0.4).x(45).y(30*0.866).append(
-                    // 29 gal capacity
-                    tank(3, 25, 96, 'center'),
-                ),
-                put().scale(0.4).y(-60*0.866).append(
-                    // 21 gal capacity
-                    tank(2, 19, 88, 'rear'),
-                ),
-            );
+            .append(gaugeFace(), gaugeLabel('FUEL').size(15).y(75), put().scale(0.4).x(-45).y(30 * 0.866).append(
+        // 29 gal capacity
+        tank(3, 25, 96, 'front')), put().scale(0.4).x(45).y(30 * 0.866).append(
+        // 29 gal capacity
+        tank(3, 25, 96, 'center')), put().scale(0.4).y(-60 * 0.866).append(
+        // 21 gal capacity
+        tank(2, 19, 88, 'rear')));
     }
-
-
     function oilFuelStatus() {
         return gauge()
-            .append(
-                gaugeFace(),
-                gaugeLabel('LBS').y(50),
-                gaugeLabel('SQ.IN').size(7).y(60),
-                put().scale(0.5).x(-15).y(40).append(
-                    gauge().r(90)
-                        .metric('oilPressure').unit('psi')
-                        .fake(forceSeries(0, 200))
-                        .measure(linear().domain([0,200]).range([180, 360]))
-                        .append(
-                            axisLine(),
-                            axisSector([70, 90]).inset(-5).class('g3-normal-fill'), // normal
-                            axisTicks().step(50).inset(-15).size(15),
-                            axisTicks().step(10).inset(-10).size(10),
-                            axisTicks([50,100]).inset(-15).size(15).class('g3-danger-stroke'),
-                            axisLabels().step(50),
-                            gaugeLabel('OIL').size(20).x(-5).y(-20),
-                            indicatePointer().shape('sword'),
-                        ),
-                ),
-                put().scale(0.5).x(15).y(40).append(
-                    gauge().r(90)
-                        .metric('fuelPressure').unit('psi')
-                        .fake(forceSeries(0, 10))
-                        .measure(linear().domain([0,10]).range([180, 0]))
-                        .append(
-                            axisLine(),
-                            axisSector([4, 5]).inset(-5).class('g3-normal-fill'), // normal
-                            axisTicks().step(1).inset(-15).size(15),
-                            axisTicks([3, 6]).inset(-15).size(15).class('g3-danger-stroke'),
-                            axisLabels().step(5),
-                            gaugeLabel('FUEL').size(20).x(5).y(-20),
-                            indicatePointer().shape('sword'),
-                        ),
-                ),
-                put().scale(0.9).y(-5).append(
-                    gauge().r(90)
-                        .metric('oilTemperature').unit('C')
-                        .fake(forceSeries(0, 100))
-                        .measure(linear().domain([0, 100]).range([-90, 90]))
-                        .append(
-                            axisLine(),
-                            axisSector([60, 75]).inset(-3).size(3).class('g3-normal-fill'), // normal
-                            axisTicks().step(10).inset(-10).size(10),
-                            axisTicks().step(5).inset(-5).size(5),
-                            axisTicks([40, 85]).inset(-10).size(10).class('g3-danger-stroke'),
-                            axisLabels().step(20).inset(20),
-                            gaugeLabel('TEMP°C').size(11).y(-45),
-                            indicatePointer().shape('sword'),
-                        ),
-                ),
-            );
+            .append(gaugeFace(), gaugeLabel('LBS').y(50), gaugeLabel('SQ.IN').size(7).y(60), put().scale(0.5).x(-15).y(40).append(gauge().r(90)
+            .metric('oilPressure').unit('psi')
+            .fake(forceSeries(0, 200))
+            .measure(linear().domain([0, 200]).range([180, 360]))
+            .append(axisLine(), axisSector([70, 90]).inset(-5).class('g3-normal-fill'), // normal
+        axisTicks().step(50).inset(-15).size(15), axisTicks().step(10).inset(-10).size(10), axisTicks([50, 100]).inset(-15).size(15).class('g3-danger-stroke'), axisLabels().step(50), gaugeLabel('OIL').size(20).x(-5).y(-20), indicatePointer().shape('sword'))), put().scale(0.5).x(15).y(40).append(gauge().r(90)
+            .metric('fuelPressure').unit('psi')
+            .fake(forceSeries(0, 10))
+            .measure(linear().domain([0, 10]).range([180, 0]))
+            .append(axisLine(), axisSector([4, 5]).inset(-5).class('g3-normal-fill'), // normal
+        axisTicks().step(1).inset(-15).size(15), axisTicks([3, 6]).inset(-15).size(15).class('g3-danger-stroke'), axisLabels().step(5), gaugeLabel('FUEL').size(20).x(5).y(-20), indicatePointer().shape('sword'))), put().scale(0.9).y(-5).append(gauge().r(90)
+            .metric('oilTemperature').unit('C')
+            .fake(forceSeries(0, 100))
+            .measure(linear().domain([0, 100]).range([-90, 90]))
+            .append(axisLine(), axisSector([60, 75]).inset(-3).size(3).class('g3-normal-fill'), // normal
+        axisTicks().step(10).inset(-10).size(10), axisTicks().step(5).inset(-5).size(5), axisTicks([40, 85]).inset(-10).size(10).class('g3-danger-stroke'), axisLabels().step(20).inset(20), gaugeLabel('TEMP°C').size(11).y(-45), indicatePointer().shape('sword'))));
     }
-
-
     function carbMixtureTemp() {
         return gauge()
             .metric('carbMixtureTemp').unit('C')
             .fake(forceSeries(-50, 50))
-            .measure(linear().domain([-50,50]).range([225,315]))
-            .append(
-                gaugeFace(),
-                gaugeLabel('°C').size(20).x(-10),
-                gaugeScrew().shape('phillips').x(30).y(60),
-                gaugeScrew().shape('phillips').x(30).y(-60),
-                put().x(50).append(
-                    axisSector([-10,5]).inset(-10).size(10).class('g3-warning-fill'),
-                    axisSector([5,15]).inset(-10).size(10).class('g3-normal-fill'),
-                    axisTicks().step(5).inset(-10).size(10),
-                    axisTicks().step(10).inset(-20).size(20),
-                    axisTicks([20]).inset(-20).size(20).class('g3-danger-stroke'),
-                    axisLabels().step(20).inset(15).size(15).format(v => {let z = Math.abs(v); return z + (z==40 ? (v > 0 ? '+':'-'): '');}),
-                    indicatePointer().shape('needle'),
-                ),
-            );
+            .measure(linear().domain([-50, 50]).range([225, 315]))
+            .append(gaugeFace(), gaugeLabel('°C').size(20).x(-10), gaugeScrew().shape('phillips').x(30).y(60), gaugeScrew().shape('phillips').x(30).y(-60), put().x(50).append(axisSector([-10, 5]).inset(-10).size(10).class('g3-warning-fill'), axisSector([5, 15]).inset(-10).size(10).class('g3-normal-fill'), axisTicks().step(5).inset(-10).size(10), axisTicks().step(10).inset(-20).size(20), axisTicks([20]).inset(-20).size(20).class('g3-danger-stroke'), axisLabels().step(20).inset(15).size(15).format(v => { const z = Math.abs(v); return z + (z == 40 ? (v > 0 ? '+' : '-') : ''); }), indicatePointer().shape('needle')));
     }
-
-
     function cylinderHeadTemp() {
         return gauge()
             .metric('cylinderHeadTemp').unit('C')
             .fake(forceSeries(0, 350))
-            .measure(linear().domain([0,350]).range([-70,70]))
+            .measure(linear().domain([0, 350]).range([-70, 70]))
             .r(90)
-            .append(
-                gaugeFace(),
-                gaugeLabel('°C').size(12).y(-45),
-                gaugeLabel('CYL.TEMP.').size(12).y(-25),
-                gaugeScrew().shape('phillips').x(50).y(50),
-                gaugeScrew().shape('phillips').x(-50).y(50),
-                put().y(30).append(
-                    axisSector([150,230]).inset(-5).size(5).class('g3-cold-fill'),
-                    axisSector([230,260]).inset(-5).size(5).class('g3-normal-fill'),
-                    axisTicks().step(10).size(5).inset(-5),
-                    axisTicks().step(50).size(10).inset(-10),
-                    axisTicks([100,260]).size(10).inset(-10).class('g3-danger-stroke'),
-                    axisLabels().step(100).start(100).inset(-20).size(15).format(v => v/100),
-                    axisLabels([50,150,250]).inset(-18).size(8),
-                    axisLabels({'-10': 0, '360': 350}).inset(0).size(10),
-                    indicatePointer().shape('needle'),
-                ),
-            )
+            .append(gaugeFace(), gaugeLabel('°C').size(12).y(-45), gaugeLabel('CYL.TEMP.').size(12).y(-25), gaugeScrew().shape('phillips').x(50).y(50), gaugeScrew().shape('phillips').x(-50).y(50), put().y(30).append(axisSector([150, 230]).inset(-5).size(5).class('g3-cold-fill'), axisSector([230, 260]).inset(-5).size(5).class('g3-normal-fill'), axisTicks().step(10).size(5).inset(-5), axisTicks().step(50).size(10).inset(-10), axisTicks([100, 260]).size(10).inset(-10).class('g3-danger-stroke'), axisLabels().step(100).start(100).inset(-20).size(15).format(v => v / 100), axisLabels([50, 150, 250]).inset(-18).size(8), axisLabels({ '-10': 0, '360': 350 }).inset(0).size(10), indicatePointer().shape('needle')));
     }
 
     function tachometer() {
         return gauge()
             .metric('engineRPM').unit('rpm')
-            .measure(linear().domain([0,6000]).range([-125,125]))
+            .measure(linear().domain([0, 6000]).range([-125, 125]))
             .css(`
 text.g3-gauge-label, .g3-axis-labels text {
     font-stretch: normal;
@@ -11870,289 +11349,137 @@ text.g3-gauge-label, .g3-axis-labels text {
 }
 .g3-gauge-face { fill: #282828 }
 `)
-            .append(
-                gaugeFace(),
-                gaugeFace().r(50).style('filter: url(#dropShadow2)'),
-                axisSector([5000,6000]).inset(50).size(35).style('fill: #800'),
-                gaugeLabel('SMITHS').y(-45).size(7),
-                gaugeLabel('8 CYL').y(40).size(7),
-                // a trick to put a circular path label opposite the 3000RPM top of the gauge
-                put().rotate(180).append(
-                    axisLabels({3000: 'POSITIVE EARTH'}).orient('counterclockwise').size(3.5).inset(52)
-                ),
-                gaugeLabel('RPM').y(65).size(12),
-                gaugeLabel('X 100').y(75).size(8),
-                gaugeScrew().shape('phillips').r(3).x(-20),
-                gaugeScrew().shape('phillips').r(3).x(20),
-                put().scale(0.95).append(
-                    axisSector().style('fill: none; stroke: white'),
-                    axisTicks().step(500).style('stroke-width: 5'),
-                    axisTicks().step(100).size(5),
-                    axisLabels().inset(20).size(15).format(v => v/100),
-                    indicatePointer().append(
-                        // the full pointer blade
-                        element('path', {d: 'M 3,0 l -1.5,-90 l -1.5,-5 l -1.5,5 l -1.5,90 z'})
-                            .style('fill: #ddd'),
-                        // the bottom half of the pointer, drawn over the full blade
-                        element('path', {d: 'M 3,0 l -0.75,-45 l -4.5,0 l -0.75,45 z'})
-                            .style('fill: #333'),
-                        // a blurred highlight on the blade to give a bit of 3D effect
-                        element('path', {d: 'M -1,0 l 0,-90 l 2,0 z'})
-                            .style('fill: white; filter: url(#gaussianBlur1); opacity: 0.5'),
-                        // the central hub, with a highlight
-                        element('circle', {r: 15}).style('fill: #ccd'),
-                        element('circle', {r: 15}).class('g3-highlight'),
-                        // the central pin
-                        element('circle', {r: 5}).style('fill: #333'),
-                    ),
-                ),
-            );
+            .append(gaugeFace(), gaugeFace().r(50).style('filter: url(#dropShadow2)'), axisSector([5000, 6000]).inset(50).size(35).style('fill: #800'), gaugeLabel('SMITHS').y(-45).size(7), gaugeLabel('8 CYL').y(40).size(7), 
+        // a trick to put a circular path label opposite the 3000RPM top of the gauge
+        put().rotate(180).append(axisLabels({ 3000: 'POSITIVE EARTH' }).orient('counterclockwise').size(3.5).inset(52)), gaugeLabel('RPM').y(65).size(12), gaugeLabel('X 100').y(75).size(8), gaugeScrew().shape('phillips').r(3).x(-20), gaugeScrew().shape('phillips').r(3).x(20), put().scale(0.95).append(axisSector().style('fill: none; stroke: white'), axisTicks().step(500).style('stroke-width: 5'), axisTicks().step(100).size(5), axisLabels().inset(20).size(15).format(v => v / 100), indicatePointer().append(
+        // the full pointer blade
+        element('path', { d: 'M 3,0 l -1.5,-90 l -1.5,-5 l -1.5,5 l -1.5,90 z' })
+            .style('fill: #ddd'), 
+        // the bottom half of the pointer, drawn over the full blade
+        element('path', { d: 'M 3,0 l -0.75,-45 l -4.5,0 l -0.75,45 z' })
+            .style('fill: #333'), 
+        // a blurred highlight on the blade to give a bit of 3D effect
+        element('path', { d: 'M -1,0 l 0,-90 l 2,0 z' })
+            .style('fill: white; filter: url(#gaussianBlur1); opacity: 0.5'), 
+        // the central hub, with a highlight
+        element('circle', { r: 15 }).style('fill: #ccd'), element('circle', { r: 15 }).class('g3-highlight'), 
+        // the central pin
+        element('circle', { r: 5 }).style('fill: #333'))));
     }
 
-    const dowFormat = v => timeFormat('%a')(v).slice(0,2).toUpperCase();
-
-
+    const dowFormat = (v) => timeFormat('%a')(v).slice(0, 2).toUpperCase();
     function simple() {
         return gauge()
             .metric('time').unit('s')
             .fake(midnightSecondsSeries())
             .measure(linear().domain([0, 60]).range([0, 360]))
-            .append(
-                gaugeFace(),
-                axisTicks().step(5).size(10),
-                axisTicks(range(0, 60).filter(v => v % 5)).shape('dot').size(1).inset(2).style('stroke: none; fill: white'),
-                axisLabels().step(5).start(5).format(v => v/5).inset(20),
-                indicatePointer().shape('blade').rescale(v => v/60/12),
-                indicatePointer().shape('sword').rescale(v => v/60),
-                indicatePointer().rescale(snapScale()),
-            );
+            .append(gaugeFace(), axisTicks().step(5).size(10), axisTicks(range(0, 60).filter(v => v % 5)).shape('dot').size(1).inset(2).style('stroke: none; fill: white'), axisLabels().step(5).start(5).format(v => v / 5).inset(20), indicatePointer().shape('blade').rescale(v => v / 60 / 12), indicatePointer().shape('sword').rescale(v => v / 60), indicatePointer().rescale(snapScale()));
     }
-
-
     function casioF91W() {
         return gauge()
             .metric('date').unit('dateTime')
             .fake(datetimeSeries())
             .css('text.g3-indicate-text { fill: #20282C }')
-            .append(
-                element('rect', {width: 200, height: 80, x: -100, y: -43}).attr('rx', 10).style('fill: #BCDCD8'),
-                // am/pm
-                put().x(-65).y(-20).append(
-                    indicateText().format(timeFormat('%p')).size(15).style('font-family: Gill Sans; font-weight: normal;')
-                ),
-                // day of week
-                put().x(-5).y(-25).append(
-                    indicateText().format(dowFormat).style('font-family: DSEG14-Classic')
-                ),
-                // day of month
-                put().x(70).y(-25).append(
-                    indicateText().format(timeFormat('%e')).style('font-family: DSEG14-Classic')
-                ),
-                put().x(-20).y(10).append(
-                    indicateText().format(timeFormat('%_I:%M')).size(36).style('font-family: DSEG7-Classic')
-                ),
-                put().x(65).y(14).append(
-                    indicateText().format(timeFormat('%S')).size(27).style('font-family: DSEG7-Classic')
-                ),
-            );
+            .append(element('rect', { width: 200, height: 80, x: -100, y: -43 }).attr('rx', 10).style('fill: #BCDCD8'), 
+        // am/pm
+        put().x(-65).y(-20).append(indicateText().format(timeFormat('%p')).size(15).style('font-family: Gill Sans; font-weight: normal;')), 
+        // day of week
+        put().x(-5).y(-25).append(indicateText().format(dowFormat).style('font-family: DSEG14-Classic')), 
+        // day of month
+        put().x(70).y(-25).append(indicateText().format(timeFormat('%e')).style('font-family: DSEG14-Classic')), put().x(-20).y(10).append(indicateText().format(timeFormat('%_I:%M')).size(36).style('font-family: DSEG7-Classic')), put().x(65).y(14).append(indicateText().format(timeFormat('%S')).size(27).style('font-family: DSEG7-Classic')));
     }
 
     function speedometerBMW() {
         return gauge()
             .metric('speed').unit('mph').fake(forceSeries(9, 160))
-            .measure(linear().domain([0,160]).range([-120,120]))
-            .append(
-                gaugeFace(),
-                axisSector([-3,163]).size(1).inset(-1).class('g3-axis-line'),
-                axisSector([-3,163]).inset(2).size(5).style('fill: #333'),
-                axisTicks().step(10).inset(2).size(5),
-                axisLabels().step(20).size(14).inset(20).format(v => v.toString().padEnd(3, '\u00A0')),
-                axisLabels({'-3': 'mph'}).inset(24).size(6),
-                gauge().metric('speed').unit('km/h')
-                    .measure(linear().domain([0,1.60934*160]).range([-120,120]))
-                    .r(66)
-                    .append(
-                        axisTicks(range(0,261,10)).step(10).size(3),
-                        axisLabels(range(0,261,20)).size(8).inset(12).format(v => v.toString().padEnd(3, '\u00A0')),
-                        axisLabels({'-5': '\u00A0km/h'}).inset(16).size(5),
-                    ),
-                indicatePointer(),
-                gauge().metric('range').unit('mi').fake(forceSeries(0, 500))
-                    .measure(linear().domain([-100,600]).range([240,120]))
-                    .r(90)
-                    .append(
-                        axisSector([-50,550]).size(1).inset(-3).class('g3-axis-line'),
-                        axisTicks(range(0,500,10)).style('stroke: #800').size(5),
-                        axisLabels(range(0,500,200)).size(10).inset(15),
-                        indicateSector().size(5).style('fill: red'),
-                        axisTicks(range(0,501,100)).size(8).style('stroke-width: 2'),
-                        axisLabels({500: 'miles'}).orient('counterclockwise').size(6).inset(-7),
-                    ),
-                gauge().metric('destination').unit('mi').fake(forceSeries(0, 500))
-                    .measure(linear().domain([-100,600]).range([240,120]))
-                    .append(
-                        indicatePointer().append(element('circle', {cy: -85, r: 4})).style('fill: white; stroke: black; filter: none;')
-                    ),
-            );
+            .measure(linear().domain([0, 160]).range([-120, 120]))
+            .append(gaugeFace(), axisSector([-3, 163]).size(1).inset(-1).class('g3-axis-line'), axisSector([-3, 163]).inset(2).size(5).style('fill: #333'), axisTicks().step(10).inset(2).size(5), axisLabels().step(20).size(14).inset(20).format(v => v.toString().padEnd(3, '\u00A0')), axisLabels({ '-3': 'mph' }).inset(24).size(6), gauge().metric('speed').unit('km/h')
+            .measure(linear().domain([0, 1.60934 * 160]).range([-120, 120]))
+            .r(66)
+            .append(axisTicks(range(0, 261, 10)).step(10).size(3), axisLabels(range(0, 261, 20)).size(8).inset(12).format(v => v.toString().padEnd(3, '\u00A0')), axisLabels({ '-5': '\u00A0km/h' }).inset(16).size(5)), indicatePointer(), gauge().metric('range').unit('mi').fake(forceSeries(0, 500))
+            .measure(linear().domain([-100, 600]).range([240, 120]))
+            .r(90)
+            .append(axisSector([-50, 550]).size(1).inset(-3).class('g3-axis-line'), axisTicks(range(0, 500, 10)).style('stroke: #800').size(5), axisLabels(range(0, 500, 200)).size(10).inset(15), indicateSector().size(5).style('fill: red'), axisTicks(range(0, 501, 100)).size(8).style('stroke-width: 2'), axisLabels({ 500: 'miles' }).orient('counterclockwise').size(6).inset(-7)), gauge().metric('destination').unit('mi').fake(forceSeries(0, 500))
+            .measure(linear().domain([-100, 600]).range([240, 120]))
+            .append(indicatePointer().append(element('circle', { cy: -85, r: 4 })).style('fill: white; stroke: black; filter: none;')));
     }
 
-    const
-        tachyLabels =  [].concat(
-            range(60,95,5),
-            range(100,200,10),
-            range(200,300,25),
-            range(300,400,50),
-            range(400,600,100),
-        ),
-        noTachyLabels = (v => !tachyLabels.includes(v)),
-        noNearlyFives = (v => Math.abs(v - 5*Math.round(v/5)) > 0.25);
-
-
+    const tachyLabels = [].concat(range(60, 95, 5), range(100, 200, 10), range(200, 300, 25), range(300, 400, 50), range(400, 600, 100)), noTachyLabels = ((v) => !tachyLabels.includes(v)), noNearlyFives = ((v) => Math.abs(v - 5 * Math.round(v / 5)) > 0.25);
     // See https://en.wikipedia.org/wiki/Omega_Speedmaster tho this is a date variant
     function omegaSpeedmaster() {
         return gauge()
             .metric('time').unit('s')
             .fake(midnightSecondsSeries())
-            .measure(linear().domain([0,60]).range([0, 360]))
+            .measure(linear().domain([0, 60]).range([0, 360]))
             .css(`
 .g3-pointer-hub, .g3-pointer-blade {fill: #ddd; stroke: #ddd}
 text {fill: #ccc}
 .g3-highlight {fill-opacity: 0.5;}
 `)
             .append(
-                // indicate the date at the 3 o'clock position
-                put().rotate(90).append(
-                    gauge().autoindicate(true)
-                        .metric('date').unit('dateTime')
-                        .fake(datetimeSeries())
-                        .rescale(dt => dt.getDate())
-                        .measure(linear().domain([1,32]).range([0,360]))
-                        .append(
-                            gaugeFace(),
-                            axisLabels().step(1).orient('relative').rotate(-90).size(13).inset(45)
-                        ),
-                ),
-                gaugeFace().window(
-                    axisSector([13.75, 16.25]).inset(36).size(19).style('fill: black')
-                ),
-                gaugeFace().r(45).style('fill: #282828'),
-                axisSector([13.75, 16.25]).inset(36).size(19).style('fill: none; stroke: #ccc; stroke-width: 3'),
-                // watch outline and tachymetre divider
-                axisLine().style('stroke-width: 4; stroke: #aaa'),
-                axisSector().inset(14).size(10).style('fill: #aaa'),
-                axisSector().inset(17).size(1).style('fill: white; filter: url(#gaussianBlur1)'),
-                // Gauge with no metric or pointer to render the inverted speed scale
-                gauge()
-                    .measure(pow().exponent(-1).domain([60, 500]).range([360, 43.2]))
-                    .append(
-                        axisTicks(range(60,100).filter(noTachyLabels)).inset(12).size(-3),
-                        axisTicks(range(60,140,5).filter(noTachyLabels)).inset(12).size(-5),
-                        axisTicks(tachyLabels).shape('dot').size(0.5).inset(12),
-                        axisLabels(tachyLabels).inset(6).size(6),
-                    ),
-                axisLabels({3.6: 'TACHYMETRE'}).orient('clockwise').inset(7).size(7),
-                // main face ticks
-                put().scale(0.72).append(
-                    axisTicks(range(0, 60, 0.2).filter(noNearlyFives)).size(3).style('stroke: #888'),
-                    axisTicks(range(0, 60, 1).filter(noNearlyFives)).size(8),
-                    axisTicks([29, 31]).inset(3).size(5).class('g3-bg-stroke'),
-                    axisTicks(range(0, 60, 5).filter(v => v % 15)).inset(8).size(16)
-                        .shape('wedge').width(4).style('stroke-width: 3'),
-                    axisLabels().step(5).start(5).format(format('02d')).inset(2.5).size(7.5).orient('upward'),
-                ),
-                axisLabels({31: 'SWISS', 29: 'MADE'}).orient('counterclockwise').inset(31.5).size(2.5),
-                element('image', {
-                    href: 'speedmaster_logo.png',
-                    width: 32,
-                    x: 9,
-                    y: -16,
-                }),
-                // Time seconds at the 9 o'clock position
-                put().x(-42).scale(0.25).append(
-                    gaugeFace(),
-                    axisLine().style('stroke: #aaa; stroke-width: 4'),
-                    axisSector().size(50).style('fill: #282828'),
-                    axisTicks(range(5,60,5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'),
-                    axisLabels().step(15).start(15).size(40),
-                    indicatePointer().shape('wedge').rescale(snapScale()),
-                ),
-                // gauge for chrono hour and minute
-                gauge()
-                    .metric('elapsed').unit('s')
-                    .fake(elapsedSecondsSeries())
-                    .measure(linear().domain([0,60]).range([0, 360]))
-                    .append(
-                        // 30-minute counter at the 12 o'clock position
-                        put().y(-42).scale(0.25).append(
-                            // TODO need to manually scale ticks/labels for 30 minute counter
-                            gaugeFace(),
-                            axisLine().style('stroke: #aaa; stroke-width: 4'),
-                            axisSector().size(50).style('fill: #282828'),
-                            axisTicks(
-                                range(2, 60, 2)
-                                .filter(v => Math.abs(v - Math.round(v/20)*20) > 2)
-                            ).step(2).inset(5).size(10),
-                            axisTicks().start(10).step(20).inset(5).size(20).style('stroke-width: 2'),
-                            axisLabels().start(20).step(20).size(40).format(v => v/2),
-                            indicatePointer().shape('wedge').rescale(v => v/30),
-                        ),
-                        // 12-hour counter at the 6 o'clock position
-                        put().y(42).scale(0.25).append(
-                            gaugeFace(),
-                            axisLine().style('stroke: #aaa; stroke-width: 4'),
-                            axisSector().size(50).style('fill: #282828'),
-                            axisTicks(range(5,60,5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'),
-                            axisLabels().step(15).start(15).size(40).format(v => v/5),
-                            indicatePointer().shape('wedge').rescale(v => v/60/12),
-                        ),
-                ),
-                // time hours and minutes indicator
-                put().scale(0.75).append(
-                    indicatePointer().shape('omega-baton-short').rescale(v => v/60/12),
-                    indicatePointer().shape('omega-baton-long').rescale(v => v/60),
-                    // indicator for chrono seconds
-                    gauge()
-                        .metric('elapsed').unit('s')
-                        .measure(linear().domain([0,60]).range([0, 360]))
-                        .append(
-                            indicatePointer().shape('omega-second')
-                        ),
-                ),
-            )
+        // indicate the date at the 3 o'clock position
+        put().rotate(90).append(gauge().autoindicate(true)
+            .metric('date').unit('dateTime')
+            .fake(datetimeSeries())
+            .rescale((dt) => dt.getDate())
+            .measure(linear().domain([1, 32]).range([0, 360]))
+            .append(gaugeFace(), axisLabels().step(1).orient('relative').rotate(-90).size(13).inset(45))), gaugeFace().window(axisSector([13.75, 16.25]).inset(36).size(19).style('fill: black')), gaugeFace().r(45).style('fill: #282828'), axisSector([13.75, 16.25]).inset(36).size(19).style('fill: none; stroke: #ccc; stroke-width: 3'), 
+        // watch outline and tachymetre divider
+        axisLine().style('stroke-width: 4; stroke: #aaa'), axisSector().inset(14).size(10).style('fill: #aaa'), axisSector().inset(17).size(1).style('fill: white; filter: url(#gaussianBlur1)'), 
+        // Gauge with no metric or pointer to render the inverted speed scale
+        gauge()
+            .measure(pow().exponent(-1).domain([60, 500]).range([360, 43.2]))
+            .append(axisTicks(range(60, 100).filter(noTachyLabels)).inset(12).size(-3), axisTicks(range(60, 140, 5).filter(noTachyLabels)).inset(12).size(-5), axisTicks(tachyLabels).shape('dot').size(0.5).inset(12), axisLabels(tachyLabels).inset(6).size(6)), axisLabels({ 3.6: 'TACHYMETRE' }).orient('clockwise').inset(7).size(7), 
+        // main face ticks
+        put().scale(0.72).append(axisTicks(range(0, 60, 0.2).filter(noNearlyFives)).size(3).style('stroke: #888'), axisTicks(range(0, 60, 1).filter(noNearlyFives)).size(8), axisTicks([29, 31]).inset(3).size(5).class('g3-bg-stroke'), axisTicks(range(0, 60, 5).filter(v => v % 15)).inset(8).size(16)
+            .shape('wedge').width(4).style('stroke-width: 3'), axisLabels().step(5).start(5).format(format('02d')).inset(2.5).size(7.5).orient('upward')), axisLabels({ 31: 'SWISS', 29: 'MADE' }).orient('counterclockwise').inset(31.5).size(2.5), element('image', {
+            href: 'speedmaster_logo.png',
+            width: 32,
+            x: 9,
+            y: -16,
+        }), 
+        // Time seconds at the 9 o'clock position
+        put().x(-42).scale(0.25).append(gaugeFace(), axisLine().style('stroke: #aaa; stroke-width: 4'), axisSector().size(50).style('fill: #282828'), axisTicks(range(5, 60, 5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'), axisLabels().step(15).start(15).size(40), indicatePointer().shape('wedge').rescale(snapScale())), 
+        // gauge for chrono hour and minute
+        gauge()
+            .metric('elapsed').unit('s')
+            .fake(elapsedSecondsSeries())
+            .measure(linear().domain([0, 60]).range([0, 360]))
+            .append(
+        // 30-minute counter at the 12 o'clock position
+        put().y(-42).scale(0.25).append(
+        // TODO need to manually scale ticks/labels for 30 minute counter
+        gaugeFace(), axisLine().style('stroke: #aaa; stroke-width: 4'), axisSector().size(50).style('fill: #282828'), axisTicks(range(2, 60, 2)
+            .filter(v => Math.abs(v - Math.round(v / 20) * 20) > 2)).step(2).inset(5).size(10), axisTicks().start(10).step(20).inset(5).size(20).style('stroke-width: 2'), axisLabels().start(20).step(20).size(40).format((v) => v / 2), indicatePointer().shape('wedge').rescale((v) => v / 30)), 
+        // 12-hour counter at the 6 o'clock position
+        put().y(42).scale(0.25).append(gaugeFace(), axisLine().style('stroke: #aaa; stroke-width: 4'), axisSector().size(50).style('fill: #282828'), axisTicks(range(5, 60, 5).filter(v => v % 15)).inset(5).size(20).style('stroke-width: 2'), axisLabels().step(15).start(15).size(40).format((v) => v / 5), indicatePointer().shape('wedge').rescale((v) => v / 60 / 12))), 
+        // time hours and minutes indicator
+        put().scale(0.75).append(indicatePointer().shape('omega-baton-short').rescale((v) => v / 60 / 12), indicatePointer().shape('omega-baton-long').rescale((v) => v / 60), 
+        // indicator for chrono seconds
+        gauge()
+            .metric('elapsed').unit('s')
+            .measure(linear().domain([0, 60]).range([0, 360]))
+            .append(indicatePointer().shape('omega-second'))));
     }
 
     function toggleFactory(metric, label) {
-        metric = metric || 'status';
-        label = label || metric;
+        const m = metric || 'status';
+        const l = label || m;
         return gauge()
-            .metric(metric)
+            .metric(m)
             .fake(categoricalSeries([0, 1]))
             .measure(linear().domain([0, 1]).range([-40, 40]))
             .kind('linear')
-            .append(
-                put().rotate(-90).append(
-                    element('path', {d: 'M 40,40 a 40,40 0 0 0 0,-80 l -80,0 a 40,40 0 0 0 0,80 z'})
-                        .class('g3-fg-stroke g3-bg-fill').style('stroke-width: 7'),
-                    axisLabels({0: 'off', 1: 'on'}).inset(60).rotate(90),
-                    gaugeLabel(label, {size: 20, y: -60}),
-                    indicatePointer().append(
-                        element('circle', {r: 30}).class('g3-fg-fill')
-                    ),
-                )
-            );
+            .append(put().rotate(-90).append(element('path', { d: 'M 40,40 a 40,40 0 0 0 0,-80 l -80,0 a 40,40 0 0 0 0,80 z' })
+            .class('g3-fg-stroke g3-bg-fill').style('stroke-width: 7'), axisLabels({ 0: 'off', 1: 'on' }).inset(60).rotate(90), gaugeLabel(l, { size: 20, y: -60 }), indicatePointer().append(element('circle', { r: 30 }).class('g3-fg-fill'))));
     }
 
     // Simple gauge with no pointer which is useful in panel layout alignment
     function alignment() {
-        return gauge().append(
-            gaugeFace().style('fill: #333'),
-            element('line', {x1: -100, x2: 100}).style('stroke: #8f8'),
-            element('line', {y1: -100, y2: 100}).style('stroke: #8f8'),
-            axisLine().style('stroke: #ff8'),
-        )
+        return gauge().append(gaugeFace().style('fill: #333'), element('line', { x1: -100, x2: 100 }).style('stroke: #8f8'), element('line', { y1: -100, y2: 100 }).style('stroke: #8f8'), axisLine().style('stroke: #ff8'));
     }
 
-    var contrib = {
+    const contrib = {
         nav: {
             airspeed: {
                 DHC2: airspeed,
@@ -12164,13 +11491,13 @@ text {fill: #ccc}
                 generic: attitudeGeneric,
             },
             heading: {
-                generic: headingGeneric
+                generic: headingGeneric,
             },
             turnCoordinator: {
-                generic: turnCoordinatorGeneric
+                generic: turnCoordinatorGeneric,
             },
             VSI: {
-                generic: VSIGeneric
+                generic: VSIGeneric,
             },
         },
         radionav: {
@@ -12193,10 +11520,10 @@ text {fill: #ccc}
                 DHC2: suctionPressure,
             },
             manifoldPressure: {
-                DHC2: manifoldPressure
+                DHC2: manifoldPressure,
             },
             fuel: {
-                generic: tank,  // (lo, hi, arc, instance)
+                generic: tank, // (lo, hi, arc, instance)
                 DHC2: fuel,
             },
             oilFuelStatus: {
@@ -12226,39 +11553,23 @@ text {fill: #ccc}
             toggle: toggleFactory,
         },
         debug: {
-            alignment: alignment
+            alignment: alignment,
         },
     };
 
-    const gauges = flatten(contrib).map(([ks, f]) => [ks.join('.'), f()]),
-        pointers = Object.keys(pointers$1);
-
-
-    var gallery = {
+    const gaugeEntries = flatten(contrib).filter(([, f]) => typeof f === 'function');
+    const gauges = gaugeEntries.map(([ks, f]) => [ks.join('.'), f()]), pointers = Object.keys(pointers$1);
+    const gallery = {
         contrib: panel()
-            .width(320*4).height(320*Math.floor((gauges.length+3)/4) + 40)
-            .append(
-                ...gauges.map(
-                    ([k, g], i) => put()
-                        .x(320*(i%4)+160).y(320*Math.floor(i/4)+160).scale(1.28)
-                        .append(g, gaugeLabel(k).y(120))
-                )
-            ),
+            .width(320 * 4).height(320 * Math.floor((gauges.length + 3) / 4) + 40)
+            .append(...gauges.map(([k, g], i) => put()
+            .x(320 * (i % 4) + 160).y(320 * Math.floor(i / 4) + 160).scale(1.28)
+            .append(g, gaugeLabel(k).y(120)))),
         pointers: panel()
-            .width(240*4).height(240*Math.floor((pointers.length+4)/4) + 40)
-            .append(
-                ...pointers.map(
-                    (k, i) => put()
-                        .x(240*(i%4) + 120).y(240*Math.floor(i/4) + 120)
-                        .append(
-                            gauge().append(
-                                axisLine().style('stroke: #333'),
-                                indicatePointer().shape(k),
-                            ),
-                            gaugeLabel(k).y(110).size(15)
-                        )
-                )
-            ),
+            .width(240 * 4).height(240 * Math.floor((pointers.length + 4) / 4) + 40)
+            .append(...pointers.map((k, i) => put()
+            .x(240 * (i % 4) + 120).y(240 * Math.floor(i / 4) + 120)
+            .append(gauge('pointer-' + k).append(axisLine().style('stroke: #333'), indicatePointer().shape(k)), gaugeLabel(k).y(110).size(15)))),
     };
 
     exports.axisLabels = axisLabels;
@@ -12296,3 +11607,4 @@ text {fill: #ccc}
     Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
+//# sourceMappingURL=g3-contrib.js.map
