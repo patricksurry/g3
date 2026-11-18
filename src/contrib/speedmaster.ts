@@ -15,7 +15,11 @@ const
     noNearlyFives = ((v: number) => Math.abs(v - 5*Math.round(v/5)) > 0.25);
 
 
-// See https://en.wikipedia.org/wiki/Omega_Speedmaster tho this is a date variant
+/**
+ * Omega Speedmaster Date chronograph watch featuring a tachymeter outer bezel, date window at 3 o'clock,
+ * running seconds sub-dial at 9 o'clock, and elapsed chronograph 30-minute (12 o'clock), 12-hour (6 o'clock),
+ * and central sweep-seconds indicators.
+ */
 export function omegaSpeedmaster(): GaugeComponent {
     return g3.gauge()
         .metric('time').unit('s')

@@ -1,0 +1,619 @@
+<svg width="216" height="216" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216">
+<defs>
+<style>.will-change-transform { will-change: transform; }
+.g3-panel { background-color: black; display: block; margin: 0px auto; stroke: none; fill: none; }
+.g3-panel * { vector-effect: non-scaling-stroke; }
+.g3-panel text { text-anchor: middle; dominant-baseline: central; font-stretch: condensed; fill: rgb(170, 170, 170); }
+.g3-axis-ticks-dot,.g3-axis-ticks-wedge,.g3-axis-sector,.g3-fg-fill { fill: rgb(221, 221, 221); }
+.g3-axis-line,.g3-axis-ticks,.g3-fg-stroke { stroke: rgb(221, 221, 221); }
+.g3-axis-ticks .g3-axis-ticks-dot,.g3-axis-ticks .g3-axis-ticks-wedge { stroke: none; }
+.g3-grid-line line { stroke: rgb(102, 102, 102); }
+.g3-grid-hairline { stroke: rgb(51, 51, 51); }
+.g3-grid-label text { font-size: 8px; text-anchor: middle; dominant-baseline: central; fill: rgb(153, 153, 153); }
+.g3-grid-label rect { stroke: none; fill: black; opacity: 0.5; }
+.g3-gauge-face,.g3-bg-fill { fill: rgb(24, 24, 24); }
+.g3-bg-stroke { stroke: rgb(24, 24, 24); }
+.g3-no-fill { fill: none; }
+.g3-no-stroke { stroke: none; }
+.g3-highlight-fill { fill: orange; }
+.g3-highlight-stroke { stroke: orange; stroke-width: 2; }
+.g3-danger-stroke { stroke: red; stroke-width: 2; }
+.g3-danger-fill { fill: red; }
+.g3-warning-fill { fill: rgb(152, 120, 8); }
+.g3-normal-fill { fill: green; }
+.g3-cold-fill,.g3-sky-fill { fill: rgb(5, 128, 186); }
+.g3-ground-fill { fill: rgb(107, 86, 52); }
+.g3-indicate-pointer { fill: rgb(34, 34, 34); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-pointer-needle { fill: red; }
+.g3-pointer-blade { fill: rgb(232, 232, 232); stroke: rgb(232, 232, 232); }
+.g3-pointer-luminous { fill: rgb(224, 232, 208); stroke: rgb(208, 216, 192); }
+.g3-indicate-sector { fill: green; stroke: none; }
+.g3-indicate-sector.g3-indicate-sector-negative { fill: red; }
+.g3-gauge-screw { fill: rgb(51, 51, 51); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-gauge-screw rect { fill: rgb(34, 34, 34); }
+.g3-highlight { fill: url("#highlightGradient"); fill-opacity: 0.25; }
+svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background: none; }
+.g3-panel { background-color: transparent; fill: none; }</style>
+<radialGradient id="highlightGradient" cx="50%" cy="50%" fx="25%" fy="40%" r="50%">
+<stop stop-color="white" offset="0%">
+</stop>
+<stop stop-color="black" offset="100%">
+</stop>
+</radialGradient>
+<filter id="dropShadow1" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="1" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow2" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="2" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow3" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="3" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="gaussianBlur1">
+<feGaussianBlur in="SourceGraphic" stdDeviation="1">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur2">
+<feGaussianBlur in="SourceGraphic" stdDeviation="2">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur3">
+<feGaussianBlur in="SourceGraphic" stdDeviation="3">
+</feGaussianBlur>
+</filter>
+</defs>
+<g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<circle r="100" class="g3-gauge-face">
+</circle>
+<path d="M-83.237,57.207A101,101,0,1,1,83.237,57.207L82.413,56.641A100,100,0,1,0,-82.413,56.641Z" class="g3-axis-sector g3-axis-line">
+</path>
+<path d="M-80.764,55.508A98,98,0,1,1,80.764,55.508L76.644,52.676A93,93,0,1,0,-76.644,52.676Z" class="g3-axis-sector" style="fill: #333">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(-120) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-105) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-90) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-75) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-60) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-45) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-30) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-15) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(0) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(15) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(30) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(45) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(60) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(75) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(90) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(105) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(120) translate(0, -98)">
+<path d="M0,0L0,5">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="14" transform="rotate(-120) translate(0, -80) rotate(120)">0&nbsp;&nbsp;</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(-90) translate(0, -80) rotate(90)">20&nbsp;</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(-60) translate(0, -80) rotate(60)">40&nbsp;</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(-30) translate(0, -80) rotate(30)">60&nbsp;</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(0) translate(0, -80) rotate(0)">80&nbsp;</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(30) translate(0, -80) rotate(-30)">100</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(60) translate(0, -80) rotate(-60)">120</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(90) translate(0, -80) rotate(-90)">140</text>
+</g>
+<g>
+<text font-size="14" transform="rotate(120) translate(0, -80) rotate(-120)">160</text>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="6" transform="rotate(-124.5) translate(0, -76) rotate(124.5)">mph</text>
+</g>
+</g>
+<g class="g3-gauge">
+<g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(-120) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-110.6794089502529) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-101.35881790050578) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-92.03822685075869) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-82.71763580101158) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-73.39704475126447) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-64.07645370151738) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-54.75586265177027) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-45.43527160202319) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-36.11468055227609) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-26.794089502528976) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-17.473498452781882) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(-8.152907403034767) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(1.1676836467123337) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(10.488274696459435) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(19.808865746206543) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(29.129456795953615) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(38.45004784570073) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(47.77063889544783) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(57.091229945194925) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(66.41182099494205) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(75.73241204468914) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(85.05300309443624) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(94.37359414418336) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(103.69418519393045) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(113.01477624367755) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(122.33536729342467) translate(0, -66)">
+<path d="M0,0L0,3">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="8" transform="rotate(-120) translate(0, -54) rotate(120)">0&nbsp;&nbsp;</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(-101.35881790050578) translate(0, -54) rotate(101.35881790050578)">20&nbsp;</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(-82.71763580101158) translate(0, -54) rotate(82.71763580101158)">40&nbsp;</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(-64.07645370151738) translate(0, -54) rotate(64.07645370151738)">60&nbsp;</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(-45.43527160202319) translate(0, -54) rotate(45.43527160202319)">80&nbsp;</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(-26.794089502528976) translate(0, -54) rotate(26.794089502528976)">100</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(-8.152907403034767) translate(0, -54) rotate(8.152907403034767)">120</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(10.488274696459435) translate(0, -54) rotate(-10.488274696459435)">140</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(29.129456795953615) translate(0, -54) rotate(-29.129456795953615)">160</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(47.77063889544783) translate(0, -54) rotate(-47.77063889544783)">180</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(66.41182099494205) translate(0, -54) rotate(-66.41182099494205)">200</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(85.05300309443624) translate(0, -54) rotate(-85.05300309443624)">220</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(103.69418519393045) translate(0, -54) rotate(-103.69418519393045)">240</text>
+</g>
+<g>
+<text font-size="8" transform="rotate(122.33536729342467) translate(0, -54) rotate(-122.33536729342467)">260</text>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="5" transform="rotate(-124.66029552487355) translate(0, -50) rotate(124.66029552487355)">&nbsp;km/h</text>
+</g>
+</g>
+</g>
+</g>
+<g class="g3-indicate-pointer" transform="rotate(115.40845264785457)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<rect x="-1" y="-90" width="2" height="100" class="g3-pointer-needle">
+</rect>
+<circle r="5" class="g3-pointer-hub">
+</circle>
+</g>
+</g>
+<g class="g3-gauge">
+<g>
+<path d="M-72.71,57.985A93,93,0,0,0,72.71,57.985L71.928,57.361A92,92,0,0,1,-71.928,57.361Z" class="g3-axis-sector g3-axis-line">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke: #800">
+<g transform="rotate(222.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(221.14285714285714) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(219.42857142857142) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(217.7142857142857) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(216) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(214.28571428571428) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(212.57142857142856) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(210.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(209.14285714285714) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(207.42857142857144) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(205.71428571428572) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(204) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(202.2857142857143) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(200.5714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(198.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(197.14285714285714) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(195.42857142857144) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(193.71428571428572) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(192) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(190.28571428571428) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(188.57142857142856) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(186.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(185.14285714285717) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(183.42857142857144) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(181.7142857142857) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(180) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(178.28571428571428) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(176.57142857142856) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(174.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(173.14285714285714) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(171.42857142857144) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(169.71428571428572) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(168) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(166.28571428571428) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(164.57142857142856) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(162.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(161.14285714285717) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(159.42857142857144) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(157.71428571428572) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(156) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(154.28571428571428) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(152.57142857142858) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(150.85714285714283) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(149.14285714285717) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(147.42857142857142) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(145.71428571428572) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(144) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(142.28571428571428) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(140.57142857142856) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(138.85714285714286) translate(0, -90)">
+<path d="M0,0L0,5">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="10" transform="rotate(222.85714285714286) translate(0, -75) rotate(-222.85714285714286)">0</text>
+</g>
+<g>
+<text font-size="10" transform="rotate(188.57142857142856) translate(0, -75) rotate(-188.57142857142856)">200</text>
+</g>
+<g>
+<text font-size="10" transform="rotate(154.28571428571428) translate(0, -75) rotate(-154.28571428571428)">400</text>
+</g>
+</g>
+<path class="g3-indicate-sector" style="fill: red" d="M-61.216,65.975A90,90,0,0,0,-25.658,86.265L-24.232,81.473A85,85,0,0,1,-57.815,62.309Z">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke-width: 2">
+<g transform="rotate(222.85714285714286) translate(0, -90)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(205.71428571428572) translate(0, -90)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(188.57142857142856) translate(0, -90)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(171.42857142857144) translate(0, -90)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(154.28571428571428) translate(0, -90)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(137.14285714285714) translate(0, -90)">
+<path d="M0,0L0,8">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<path id="axis-label-path-1-0" d="M 0,97 A 97,97,0,1,0,0,-97 A 97,97,0,1,0,0,97" style="visibility: hidden" transform="rotate(137.14285714285714)">
+</path>
+<text font-size="6">
+<textPath startOffset="50%" href="#axis-label-path-1-0">miles</textPath>
+</text>
+</g>
+</g>
+</g>
+</g>
+<g class="g3-gauge">
+<g>
+<g class="g3-indicate-pointer" style="fill: white; stroke: black; filter: none;" transform="rotate(181.35382101205843)">
+<circle cy="-85" r="4">
+</circle>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

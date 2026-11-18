@@ -3,6 +3,9 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * DHC-2 Beaver alternator load ammeter (-0.1 to 1.2 proportion of rated load).
+ */
 export function ammeter(): GaugeComponent {
     return g3.gauge()
         .metric('alternatorLoad').unit('proportion')
@@ -24,6 +27,9 @@ export function ammeter(): GaugeComponent {
 }
 
 
+/**
+ * DHC-2 Beaver DC voltmeter (0–30 V).
+ */
 export function voltmeter(): GaugeComponent {
     return g3.gauge()
         .metric('alternatorVolts').unit('V')

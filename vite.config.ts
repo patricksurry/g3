@@ -10,7 +10,6 @@ export default defineConfig({
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
-      '**/*.render.test.*',
     ],
     coverage: {
       provider: 'v8',

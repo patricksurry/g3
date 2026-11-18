@@ -1,0 +1,242 @@
+<svg width="216" height="216" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216">
+<defs>
+<style>.will-change-transform { will-change: transform; }
+.g3-panel { background-color: black; display: block; margin: 0px auto; stroke: none; fill: none; }
+.g3-panel * { vector-effect: non-scaling-stroke; }
+.g3-panel text { text-anchor: middle; dominant-baseline: central; font-stretch: condensed; fill: rgb(170, 170, 170); }
+.g3-axis-ticks-dot,.g3-axis-ticks-wedge,.g3-axis-sector,.g3-fg-fill { fill: rgb(221, 221, 221); }
+.g3-axis-line,.g3-axis-ticks,.g3-fg-stroke { stroke: rgb(221, 221, 221); }
+.g3-axis-ticks .g3-axis-ticks-dot,.g3-axis-ticks .g3-axis-ticks-wedge { stroke: none; }
+.g3-grid-line line { stroke: rgb(102, 102, 102); }
+.g3-grid-hairline { stroke: rgb(51, 51, 51); }
+.g3-grid-label text { font-size: 8px; text-anchor: middle; dominant-baseline: central; fill: rgb(153, 153, 153); }
+.g3-grid-label rect { stroke: none; fill: black; opacity: 0.5; }
+.g3-gauge-face,.g3-bg-fill { fill: rgb(24, 24, 24); }
+.g3-bg-stroke { stroke: rgb(24, 24, 24); }
+.g3-no-fill { fill: none; }
+.g3-no-stroke { stroke: none; }
+.g3-highlight-fill { fill: orange; }
+.g3-highlight-stroke { stroke: orange; stroke-width: 2; }
+.g3-danger-stroke { stroke: red; stroke-width: 2; }
+.g3-danger-fill { fill: red; }
+.g3-warning-fill { fill: rgb(152, 120, 8); }
+.g3-normal-fill { fill: green; }
+.g3-cold-fill,.g3-sky-fill { fill: rgb(5, 128, 186); }
+.g3-ground-fill { fill: rgb(107, 86, 52); }
+.g3-indicate-pointer { fill: rgb(34, 34, 34); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-pointer-needle { fill: red; }
+.g3-pointer-blade { fill: rgb(232, 232, 232); stroke: rgb(232, 232, 232); }
+.g3-pointer-luminous { fill: rgb(224, 232, 208); stroke: rgb(208, 216, 192); }
+.g3-indicate-sector { fill: green; stroke: none; }
+.g3-indicate-sector.g3-indicate-sector-negative { fill: red; }
+.g3-gauge-screw { fill: rgb(51, 51, 51); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-gauge-screw rect { fill: rgb(34, 34, 34); }
+.g3-highlight { fill: url("#highlightGradient"); fill-opacity: 0.25; }
+.css-1dos0lw { }
+.css-1dos0lw text { fill: rgb(221, 221, 221); }
+svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background: none; }
+.g3-panel { background-color: transparent; fill: none; }</style>
+<radialGradient id="highlightGradient" cx="50%" cy="50%" fx="25%" fy="40%" r="50%">
+<stop stop-color="white" offset="0%">
+</stop>
+<stop stop-color="black" offset="100%">
+</stop>
+</radialGradient>
+<filter id="dropShadow1" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="1" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow2" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="2" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow3" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="3" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="gaussianBlur1">
+<feGaussianBlur in="SourceGraphic" stdDeviation="1">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur2">
+<feGaussianBlur in="SourceGraphic" stdDeviation="2">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur3">
+<feGaussianBlur in="SourceGraphic" stdDeviation="3">
+</feGaussianBlur>
+</filter>
+</defs>
+<g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<g class="g3-gauge">
+<g clip-path="url(#gauge-clip1)" class="will-change-transform" transform="rotate(-23.98641338804738)">
+<clipPath id="gauge-clip1">
+<circle r="100" class="g3-gauge-face">
+</circle>
+</clipPath>
+<g transform="translate(0, 0) rotate(-90) scale(1, 1)">
+<g class="g3-gauge css-1dos0lw">
+<g class="will-change-transform" transform="translate(12.07798346877098, 0)">
+<rect height="200" width="150" y="-100" class="g3-sky-fill g3-fg-stroke">
+</rect>
+<rect height="200" width="150" x="-150" y="-100" class="g3-ground-fill g3-fg-stroke">
+</rect>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="translate(-25, -25)">
+<path d="M0,0L0,50">
+</path>
+</g>
+<g transform="translate(25, -25)">
+<path d="M0,0L0,50">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="translate(-12.5, -15)">
+<path d="M0,0L0,30">
+</path>
+</g>
+<g transform="translate(12.5, -15)">
+<path d="M0,0L0,30">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="translate(-18.75, -10)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="translate(-6.25, -10)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="translate(6.25, -10)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="translate(18.75, -10)">
+<path d="M0,0L0,20">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="12" transform="translate(-25, 35) rotate(90)">20</text>
+</g>
+<g>
+<text font-size="12" transform="translate(25, 35) rotate(90)">20</text>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="12" transform="translate(-25, -35) rotate(90)">20</text>
+</g>
+<g>
+<text font-size="12" transform="translate(25, -35) rotate(90)">20</text>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="12" transform="translate(-12.5, 25) rotate(90)">10</text>
+</g>
+<g>
+<text font-size="12" transform="translate(12.5, 25) rotate(90)">10</text>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="12" transform="translate(-12.5, -25) rotate(90)">10</text>
+</g>
+<g>
+<text font-size="12" transform="translate(12.5, -25) rotate(90)">10</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-80A80,80,0,1,0,0,80A80,80,0,1,0,0,-80Z" class="g3-axis-sector" style="filter: url(#dropShadow3)">
+</path>
+<path d="M-100,0A100,100,0,1,1,100,0L80,0A80,80,0,1,0,-80,0Z" class="g3-axis-sector g3-sky-fill g3-fg-stroke">
+</path>
+<path d="M100,0A100,100,0,1,1,-100,0L-80,0A80,80,0,1,0,80,0Z" class="g3-axis-sector g3-ground-fill g3-fg-stroke">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(-90) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(-60) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(-30.000000000000007) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(0) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(29.999999999999996) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(60) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(90) translate(0, -100)">
+<path d="M0,0L0,20">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-wedge">
+<g transform="rotate(-45) translate(0, -90)">
+<path d="M 0,10 L 5,0 L -5,0 z">
+</path>
+</g>
+<g transform="rotate(45) translate(0, -90)">
+<path d="M 0,10 L 5,0 L -5,0 z">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(-20.000000000000007) translate(0, -90)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(-10) translate(0, -90)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(10) translate(0, -90)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(20.000000000000014) translate(0, -90)">
+<path d="M0,0L0,10">
+</path>
+</g>
+</g>
+</g>
+</g>
+<circle r="100" class="g3-fg-stroke">
+</circle>
+<g transform="translate(0, 0) rotate(0) scale(1, 1)" style="filter: url(#dropShadow1)">
+<path d="M 0,-80 l 5,15 l -10,0 z" class="g3-highlight-stroke g3-no-fill">
+</path>
+<path d="M -15,0 a 15,10 0 0 0 30,0 M 0,10 l 0,35" class="g3-bg-stroke" style="stroke-width: 2">
+</path>
+<path d="M 0,40 l 15,38 a 100,100 0 0 1 -30,0 z" class="g3-bg-fill" style="stroke-width: 2">
+</path>
+<path d="M -50,0 l 35,0 m 30,0 l 35,0" class="g3-highlight-stroke g3-no-fill" style="filter: url(#dropShadow1)">
+</path>
+<circle r="2" class="g3-highlight-fill">
+</circle>
+</g>
+</g>
+</g>
+</g>
+</svg>

@@ -6,6 +6,9 @@ import type { GaugeComponent } from '../types';
 const dowFormat = (v: any) => d3.timeFormat('%a')(v).slice(0,2).toUpperCase();
 
 
+/**
+ * Classic three-hand analog clock (hours, minutes, and snapping seconds hand) driven by seconds since midnight.
+ */
 export function simple(): GaugeComponent {
     return g3.gauge()
         .metric('time').unit('s')
@@ -23,6 +26,10 @@ export function simple(): GaugeComponent {
 }
 
 
+/**
+ * Casio F-91W style digital LCD watch face using segmented `DSEG7-Classic` and `DSEG14-Classic` fonts
+ * to display AM/PM, day of week, day of month, hours/minutes, and seconds.
+ */
 export function casioF91W(): GaugeComponent {
     return g3.gauge()
         .metric('date').unit('dateTime')
