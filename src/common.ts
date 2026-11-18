@@ -14,11 +14,13 @@ export function d3sel(sel: SelectorOrSelection): D3Selection {
 
 export function element(elt: string, attrs_?: Record<string, any>): ElementComponent {
     const attrs: Record<string, any> = attrs_ || {};
+    let text: string | number | undefined;
 
     const elementFn: ElementComponent = interactable<ElementComponent>(stylable(appendable(Object.assign(
         function(sel: SelectorOrSelection, g?: GaugeComponent) {
             const _ = d3sel(sel).append(elt);
             Object.entries(attrs).forEach(([k, v]) => _.attr(k, v));
+            if (typeof text !== 'undefined') _.text(text);
             elementFn.stylable(_);
             elementFn.appendable(_, g);
             elementFn.interactable(_, g);
@@ -26,7 +28,10 @@ export function element(elt: string, attrs_?: Record<string, any>): ElementCompo
         {
             attr(k: string, _?: any): any {
                 return (typeof _ !== 'undefined') ? (attrs[k] = _, elementFn) : attrs[k];
-            }
+            },
+            text(_?: string | number): any {
+                return arguments.length ? (text = _, elementFn) : text;
+            },
         }
     ))));
     return elementFn;

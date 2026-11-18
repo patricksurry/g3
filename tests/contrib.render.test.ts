@@ -27,6 +27,7 @@ describe('Contributed gauge SVG snapshots & auto-documentation', () => {
             // Structural sanity checks on rendered SVG
             expect(svg).toContain('<svg');
             expect(svg).not.toContain('NaN');
+            expect(svg).not.toContain('&nbsp;');
 
             const expectedSvgPath = path.join(SNAPSHOT_DIR, `${entry.slug}.svg`);
             if (shouldUpdate) {

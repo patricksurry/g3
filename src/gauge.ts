@@ -23,7 +23,7 @@ import type {
 export function gauge(initialMetric?: string): GaugeComponent {
 
     let metric: string | undefined = initialMetric,
-        rescale = identity as (v: any) => any,
+        rescale = identity as (v: any, metrics?: Record<string, any>, unit?: string) => any,
         unit: string | undefined,
         instance: string | undefined,
         fake: (() => any) | undefined,
@@ -71,9 +71,20 @@ export function gauge(initialMetric?: string): GaugeComponent {
                 if (fake && m) activeController.fake(m, fake);
 
                 if (autoindicate && m) {
-                    const update = (v: any, transition?: TransitionFunction) => {
+                    const range = measure.range();
+                    const isCyclic = kind == 'circular' && range[0] !== range[1] && ((range[0] - range[1]) % 360 == 0);
+                    const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
+                        const xform = gaugeFn.metrictransform(rescale(v, metrics, u), true);
                         const t = typeof transition === 'function' ? transition(_) : _;
-                        t.attr('transform', gaugeFn.metrictransform(rescale(v), true));
+                        if (!_.attr('transform')) _.attr('transform', xform);
+                        if (!isCyclic && 'attrTween' in t) {
+                            t.attrTween('transform', function(this: Element) {
+                                const prev = this.getAttribute('transform');
+                                return d3.interpolateString(prev || xform, xform);
+                            });
+                        } else {
+                            t.attr('transform', xform);
+                        }
                     };
 
                     _.classed('will-change-transform', true);

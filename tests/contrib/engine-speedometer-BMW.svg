@@ -146,19 +146,19 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <g class="g3-axis-labels">
 <g>
-<text font-size="14" transform="rotate(-120) translate(0, -80) rotate(120)">0&nbsp;&nbsp;</text>
+<text font-size="14" transform="rotate(-120) translate(0, -80) rotate(120)">0&#160;&#160;</text>
 </g>
 <g>
-<text font-size="14" transform="rotate(-90) translate(0, -80) rotate(90)">20&nbsp;</text>
+<text font-size="14" transform="rotate(-90) translate(0, -80) rotate(90)">20&#160;</text>
 </g>
 <g>
-<text font-size="14" transform="rotate(-60) translate(0, -80) rotate(60)">40&nbsp;</text>
+<text font-size="14" transform="rotate(-60) translate(0, -80) rotate(60)">40&#160;</text>
 </g>
 <g>
-<text font-size="14" transform="rotate(-30) translate(0, -80) rotate(30)">60&nbsp;</text>
+<text font-size="14" transform="rotate(-30) translate(0, -80) rotate(30)">60&#160;</text>
 </g>
 <g>
-<text font-size="14" transform="rotate(0) translate(0, -80) rotate(0)">80&nbsp;</text>
+<text font-size="14" transform="rotate(0) translate(0, -80) rotate(0)">80&#160;</text>
 </g>
 <g>
 <text font-size="14" transform="rotate(30) translate(0, -80) rotate(-30)">100</text>
@@ -292,19 +292,19 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <g class="g3-axis-labels">
 <g>
-<text font-size="8" transform="rotate(-120) translate(0, -54) rotate(120)">0&nbsp;&nbsp;</text>
+<text font-size="8" transform="rotate(-120) translate(0, -54) rotate(120)">0&#160;&#160;</text>
 </g>
 <g>
-<text font-size="8" transform="rotate(-101.35881790050578) translate(0, -54) rotate(101.35881790050578)">20&nbsp;</text>
+<text font-size="8" transform="rotate(-101.35881790050578) translate(0, -54) rotate(101.35881790050578)">20&#160;</text>
 </g>
 <g>
-<text font-size="8" transform="rotate(-82.71763580101158) translate(0, -54) rotate(82.71763580101158)">40&nbsp;</text>
+<text font-size="8" transform="rotate(-82.71763580101158) translate(0, -54) rotate(82.71763580101158)">40&#160;</text>
 </g>
 <g>
-<text font-size="8" transform="rotate(-64.07645370151738) translate(0, -54) rotate(64.07645370151738)">60&nbsp;</text>
+<text font-size="8" transform="rotate(-64.07645370151738) translate(0, -54) rotate(64.07645370151738)">60&#160;</text>
 </g>
 <g>
-<text font-size="8" transform="rotate(-45.43527160202319) translate(0, -54) rotate(45.43527160202319)">80&nbsp;</text>
+<text font-size="8" transform="rotate(-45.43527160202319) translate(0, -54) rotate(45.43527160202319)">80&#160;</text>
 </g>
 <g>
 <text font-size="8" transform="rotate(-26.794089502528976) translate(0, -54) rotate(26.794089502528976)">100</text>
@@ -336,7 +336,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <g class="g3-axis-labels">
 <g>
-<text font-size="5" transform="rotate(-124.66029552487355) translate(0, -50) rotate(124.66029552487355)">&nbsp;km/h</text>
+<text font-size="5" transform="rotate(-124.66029552487355) translate(0, -50) rotate(124.66029552487355)">&#160;km/h</text>
 </g>
 </g>
 </g>

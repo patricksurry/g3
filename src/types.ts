@@ -97,6 +97,10 @@ export interface ElementComponent extends
     attr(k: string): any;
     /** Set attribute `k` to value `_`. */
     attr(k: string, _: any): ElementComponent;
+    /** Get the text content of the element. */
+    text(): string | number | undefined;
+    /** Set the text content of the element. */
+    text(_: string | number): ElementComponent;
 }
 
 /** Deferred SVG `<g>` group container created by `g3.put()`. */
@@ -136,9 +140,9 @@ export interface GaugeComponent extends
     /** Set the metric name indicated by this gauge. */
     metric(_?: string): GaugeComponent;
     /** Get the metric pre-measure rescaling function (default `identity`). */
-    rescale(): (v: any) => any;
+    rescale(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set a function that rescales metric values before applying `measure()`. */
-    rescale(_: (v: any) => any): GaugeComponent;
+    rescale(_: (v: any, metrics?: Record<string, any>, unit?: string) => any): GaugeComponent;
     /** Get the unit of measurement for automatic conversion (via `convert-units`). */
     unit(): string | undefined;
     /** Set the unit of measurement for automatic conversion (via `convert-units`). */
@@ -265,9 +269,9 @@ export interface StatusLightComponent {
     /** Set the fake metric generator. */
     fake(_?: () => any): StatusLightComponent;
     /** Get the trigger function mapping metric values to `[0, 1]` opacity. */
-    trigger(): (v: any) => any;
+    trigger(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set the trigger function mapping metric values to `[0, 1]` opacity. */
-    trigger(_: (v: any) => any): StatusLightComponent;
+    trigger(_: (v: any, metrics?: Record<string, any>, unit?: string) => any): StatusLightComponent;
     /** Get the illuminated fill color (default `'red'`). */
     color(): string;
     /** Set the illuminated fill color. */
@@ -406,13 +410,26 @@ export interface AxisLabelsComponent extends StylableMixin<AxisLabelsComponent> 
 export interface IndicateTextComponent extends StylableMixin<IndicateTextComponent> {
     (sel: SelectorOrSelection, g?: GaugeComponent): void;
     /** Get the metric value formatter function (default `identity`). */
-    format(): (v: any) => any;
+    format(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set a function that formats metric values into display text. */
-    format(_: (v: any) => any): IndicateTextComponent;
+    format(_: (v: any, metrics?: Record<string, any>, unit?: string) => any): IndicateTextComponent;
     /** Get the text font size in SVG units (default 20). */
     size(): number;
     /** Set the text font size in SVG units. */
     size(_: number): IndicateTextComponent;
+}
+
+/** Dynamic metric unit indicator created by `g3.indicateUnit()`. */
+export interface IndicateUnitComponent extends StylableMixin<IndicateUnitComponent> {
+    (sel: SelectorOrSelection, g?: GaugeComponent): void;
+    /** Get the unit formatter function (default `identity`). */
+    format(): (u: string, v?: any, metrics?: Record<string, any>) => any;
+    /** Set a function that formats unit strings into display text. */
+    format(_: (u: string, v?: any, metrics?: Record<string, any>) => any): IndicateUnitComponent;
+    /** Get the text font size in SVG units (default 20). */
+    size(): number;
+    /** Set the text font size in SVG units. */
+    size(_: number): IndicateUnitComponent;
 }
 
 /** Rotating or sliding metric pointer indicator created by `g3.indicatePointer()`. */
@@ -421,9 +438,9 @@ export interface IndicatePointerComponent extends
     AppendableMixin<IndicatePointerComponent> {
     (sel: SelectorOrSelection, g?: GaugeComponent): void;
     /** Get the pre-measure metric rescaling function (default `identity`). */
-    rescale(): (v: any) => any;
+    rescale(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set a function that rescales metric values before applying the gauge's `measure()`. */
-    rescale(_: (v: any) => any): IndicatePointerComponent;
+    rescale(_: (v: any, metrics?: Record<string, any>, unit?: string) => any): IndicatePointerComponent;
     /** Get the `[min, max]` domain clamping bounds applied after rescaling. */
     clamp(): [number | undefined, number | undefined];
     /** Set `[min, max]` domain clamping bounds applied after rescaling. */
@@ -438,9 +455,9 @@ export interface IndicatePointerComponent extends
 export interface IndicateSectorComponent extends StylableMixin<IndicateSectorComponent> {
     (sel: SelectorOrSelection, g?: GaugeComponent): void;
     /** Get the pre-measure metric rescaling function (default `identity`). */
-    rescale(): (v: any) => any;
+    rescale(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set a function that rescales metric values before applying the gauge's `measure()`. */
-    rescale(_: (v: any) => any): IndicateSectorComponent;
+    rescale(_: (v: any, metrics?: Record<string, any>, unit?: string) => any): IndicateSectorComponent;
     /** Get the `[min, max]` domain clamping bounds applied after rescaling. */
     clamp(): [number | undefined, number | undefined];
     /** Set `[min, max]` domain clamping bounds applied after rescaling. */
@@ -471,9 +488,9 @@ export interface IndicateStyleComponent extends AppendableMixin<IndicateStyleCom
     /** Set the style object applied when `trigger` returns 0. */
     styleOff(_: Record<string, any>): IndicateStyleComponent;
     /** Get the trigger function mapping metric values to `[0, 1]`. */
-    trigger(): (v: any) => any;
+    trigger(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set a function mapping metric values to a `[0, 1]` interpolation factor between `styleOff` and `styleOn`. */
-    trigger(_: (v: any) => any): IndicateStyleComponent;
+    trigger(_: (v: any, metrics?: Record<string, any>, unit?: string) => any): IndicateStyleComponent;
 }
 
 export interface ControllerData {
@@ -484,7 +501,7 @@ export interface ControllerData {
 
 export interface GaugeController {
     (data: ControllerData, transition?: TransitionFunction): void;
-    register(updater: (v: any, transition?: TransitionFunction) => void, metric?: string, unit?: string): void;
+    register(updater: (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => void, metric?: string, unit?: string): void;
     fake(metric: string, generator: () => any): void;
     fakeMetrics(): {
         latest: number;
