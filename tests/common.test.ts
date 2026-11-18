@@ -77,6 +77,14 @@ describe('common module', () => {
       expect(el.attr('width')).toBe(100);
       expect(el.attr('height')).toBe(50);
     });
+
+    test('element should support getting and setting text', () => {
+      const el = element('text');
+      expect(el.text()).toBeUndefined();
+      const result = el.text('hello');
+      expect(result).toBe(el);
+      expect(el.text()).toBe('hello');
+    });
   });
 
   describe('element DOM operations', () => {
@@ -147,6 +155,14 @@ describe('common module', () => {
       el(d3.select('#target'));
       container.querySelector('rect')!.dispatchEvent(new MouseEvent('click'));
       expect(clicked).toBe(true);
+    });
+
+    test('should render element text content when .text() is configured', () => {
+      const el = element('text', { x: 10, y: 20 }).text('RPM');
+      el(d3.select('#target'));
+      const textEl = container.querySelector('text');
+      expect(textEl).not.toBeNull();
+      expect(textEl!.textContent).toBe('RPM');
     });
   });
 

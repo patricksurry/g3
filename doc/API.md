@@ -402,14 +402,34 @@ with optional formatting.
 Use [g3-put()](#g3-put) to control the positioning of the text.
 
 
-*indicateText*.**format**(\[*format*: any &rArr; string\]) · [source](/src/indicate.ts)
+*indicateText*.**format**(\[*format*: (value, metrics, unit) &rArr; string\]) · [source](/src/indicate.ts)
 
-If *format* is defined, it specifies a function that converts metric values to text.
+If *format* is defined, it specifies a function that converts metric values to text
+(receiving the current metric *value*, the dictionary of all current *metrics*, and the resolved *unit*).
 Otherwise returns the current formatter, which defaults to the identity function.
 For example, *indicateText*.format(v &rArr; Math.round(v/100)) would display the
 metric value in hundreds.
 
 *indicateText*.**size**(\[*size*: number\]) · [source](/src/indicate.ts)
+
+If *size* is defined, specifies the size of the text in SVG units,
+otherwise returns the current size, defaulting to 20.
+
+
+<a id="g3-indicateUnit" href="#g3-indicateUnit">#</a>
+g3.**indicateUnit**() · [source](/src/indicate.ts)
+
+Returns a [stylable](#stylable) *indicateUnit* object,
+which is called to display the current metric's unit (either configured on the parent gauge via *gauge*.unit() or provided dynamically in the source `units` data) as text,
+with optional formatting.
+
+*indicateUnit*.**format**(\[*format*: (unit, value, metrics) &rArr; string\]) · [source](/src/indicate.ts)
+
+If *format* is defined, it specifies a function that formats the unit string into display text
+(receiving the resolved *unit*, the current metric *value*, and the dictionary of all current *metrics*).
+Otherwise returns the current formatter, which defaults to the identity function.
+
+*indicateUnit*.**size**(\[*size*: number\]) · [source](/src/indicate.ts)
 
 If *size* is defined, specifies the size of the text in SVG units,
 otherwise returns the current size, defaulting to 20.
@@ -509,10 +529,10 @@ depending on whether the metric is non-zero.
 See also [statusLight](#g3-statusLight) which provides
 a convenience wrapper for indicator lights.
 
-*indicateStyle*.**trigger**(\[*trigger*: any &rArr; float\]) · [source](/src/indicate.ts)
+*indicateStyle*.**trigger**(\[*trigger*: (value, metrics, unit) &rArr; float\]) · [source](/src/indicate.ts)
 
 If *trigger* is defined, specifies a function
-mapping the current metric value to a
+mapping the current metric value (along with the dictionary of all current *metrics* and resolved *unit*) to a
 proportion between 0 and 1
 which tweens between the off (0) and on (1) style.
 Otherwise, returns the current trigger function, which defaults to the identity
@@ -885,3 +905,8 @@ like `{name: value, ...}` which are added to the element.
 
 If *value* is defined, sets attribute *key* to *value* and returns the element,
 otherwise returns the current value of attribute *key*.
+
+*element*.**text**(\[*value*: string\]) · [source](/src/common.ts)
+
+If *value* is defined, sets the text content of the element to *value* and returns the element,
+otherwise returns the current text content.

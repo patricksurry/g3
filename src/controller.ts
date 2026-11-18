@@ -36,9 +36,10 @@ export function gaugeController(): GaugeController {
     `updaters` is populated after the first call with best match to actual metrics
     */
 
-    type UpdaterFn = (v: any, transition?: TransitionFunction) => void;
+    type UpdaterFn = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => void;
     const callbacks: Record<string, Record<string, UpdaterFn[]>> = {},     // nested dict of metric => (unit || '') => list of update fns
-        fakes: Record<string, () => any> = {};         // dict of metric => generator
+        fakes: Record<string, () => any> = {},         // dict of metric => generator
+        latestMetrics: Record<string, any> = {};       // latest values across updates
     let updaters: Record<string, { unit: string; updaters: Record<string, UpdaterFn[]> | null }> | null = null;
 
     // call the controller to display current metric values
@@ -50,6 +51,8 @@ export function gaugeController(): GaugeController {
             with keys like: "metric.some.qualification"
             and corresponding values
             */
+            if (data.metrics) Object.assign(latestMetrics, data.metrics);
+
             if (!updaters) {
                 // First call, we establish the mapping from metric keys => callbacks
                 updaters = {};
@@ -84,13 +87,17 @@ export function gaugeController(): GaugeController {
 
             // Trigger updates for each source metric
             Object.entries(updaters).forEach(([m, d]) => {
+                if (data.units && m in data.units) {
+                    d.unit = data.units[m] || '';
+                }
                 if (data.metrics && m in data.metrics && d.updaters) {
                     Object.entries(d.updaters).forEach(([unit, fs]) => {
                         const v = maybeConvert(data.metrics[m], d.unit, unit);
                         if (typeof v === 'undefined') {
                             console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
                         } else {
-                            fs.forEach(f => f(v, transition));
+                            const resolvedUnit = unit || d.unit;
+                            fs.forEach(f => f(v, transition, latestMetrics, resolvedUnit));
                         }
                     });
                 }

@@ -198,7 +198,7 @@ export function renderContribGauge(factory: () => GaugeComponent): { svg: string
         defsEl.insertBefore(styleEl, defsEl.firstChild);
 
         return {
-            svg: svgEl.outerHTML.replace(/>(?=<)/g, '>\n') + '\n',
+            svg: svgEl.outerHTML.replace(/&nbsp;/g, '&#160;').replace(/>(?=<)/g, '>\n') + '\n',
             metrics,
         };
     } finally {

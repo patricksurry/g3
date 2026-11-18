@@ -33,6 +33,55 @@ describe('indicate components', () => {
             const text = svg.select('text.g3-indicate-text');
             expect(text.attr('font-size')).toBe('30');
         });
+
+        it('should pass metrics and unit to format callback', () => {
+            const indicator = g3.indicateText().format((v, metrics, unit) => `${v}/${metrics?.limit} ${unit}`);
+            svg.call(indicator, gauge);
+
+            controller({
+                metrics: { 'test.metric': 50, limit: 80 },
+                units: { 'test.metric': '%' }
+            });
+
+            const text = svg.select('text.g3-indicate-text');
+            expect(text.text()).toBe('50/80 %');
+        });
+    });
+
+    describe('g3.indicateUnit', () => {
+        it('should display variable unit from controller data', () => {
+            const indicator = g3.indicateUnit();
+            svg.call(indicator, gauge);
+
+            controller({
+                metrics: { 'test.metric': 100 },
+                units: { 'test.metric': 'kg' }
+            });
+
+            const text = svg.select('text.g3-indicate-unit');
+            expect(text.text()).toBe('kg');
+
+            controller({
+                metrics: { 'test.metric': 220 },
+                units: { 'test.metric': 'lbs' }
+            });
+            expect(text.text()).toBe('lbs');
+        });
+
+        it('should support custom format and size', () => {
+            const indicator = g3.indicateUnit().size(14).format(u => u.toUpperCase());
+            expect(indicator.size()).toBe(14);
+            svg.call(indicator, gauge);
+
+            controller({
+                metrics: { 'test.metric': 100 },
+                units: { 'test.metric': 'kg' }
+            });
+
+            const text = svg.select('text.g3-indicate-unit');
+            expect(text.attr('font-size')).toBe('14');
+            expect(text.text()).toBe('KG');
+        });
     });
 
     describe('g3.indicatePointer', () => {
@@ -88,6 +137,33 @@ describe('indicate components', () => {
             controller({ metrics: { 'test.metric': 40 } }, transition);
             expect(g.attr('transform')).toBe('rotate(180)');
         });
+
+        it('should not wrap around the discontinuity on non-cyclic gauges during transitions', () => {
+            const nonCyclicGauge = g3.gauge()
+                .metric('rpm')
+                .measure(d3.scaleLinear().domain([0, 6000]).range([-125, 125]));
+            const indicator = g3.indicatePointer();
+            svg.call(indicator, nonCyclicGauge);
+
+            let tweenFn: ((this: Element) => (t: number) => string) | undefined;
+            const mockTransition = (sel: any) => ({
+                attr: (k: string, v: string) => sel.attr(k, v),
+                attrTween: (_k: string, fn: any) => { tweenFn = fn; },
+            });
+
+            // First update at 6000 RPM (+125 deg)
+            controller({ metrics: { rpm: 6000 } }, mockTransition as any);
+            const gNode = svg.select('g.g3-indicate-pointer').node() as Element;
+            expect(gNode.getAttribute('transform')).toBe('rotate(125)');
+
+            // Second update drops to 0 RPM (-125 deg): should pass through 0 deg at midpoint (t=0.5), not 180 deg
+            controller({ metrics: { rpm: 0 } }, mockTransition as any);
+            expect(tweenFn).toBeDefined();
+            const interpolator = tweenFn!.call(gNode);
+            expect(interpolator(0)).toBe('rotate(125)');
+            expect(interpolator(0.5)).toBe('rotate(0)');
+            expect(interpolator(1)).toBe('rotate(-125)');
+        });
     });
 
     describe('g3.indicateStyle', () => {
@@ -102,6 +178,21 @@ describe('indicate components', () => {
 
             controller({ metrics: { 'test.metric': 75 } });
             expect(g.style('opacity')).toBe('1');
+        });
+
+        it('should allow comparing values of two metrics in trigger', () => {
+            const indicator = g3.indicateStyle()
+                .trigger((v, metrics) => v > metrics?.limit ? 1 : 0)
+                .styleOff({ fill: 'green' })
+                .styleOn({ fill: 'orange' });
+            svg.call(indicator, gauge);
+            const group = svg.select('g.g3-indicate-style');
+
+            controller({ metrics: { 'test.metric': 85, limit: 90 } });
+            expect(group.style('fill')).toBe('rgb(0, 128, 0)');
+
+            controller({ metrics: { 'test.metric': 95, limit: 90 } });
+            expect(group.style('fill')).toBe('rgb(255, 165, 0)');
         });
 
         it('should allow custom on/off styles', () => {
