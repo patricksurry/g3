@@ -25,7 +25,7 @@ for example the pressure reading of an altimeter
 or the "day of month" of some watches
 where the gauge axis rotates to be visible through a fixed window.
 
-<p align='center'><img src="/tests/contrib/nav-altitude-generic.png"></p>
+<p align='center'><img src="/tests/contrib/nav-altitude-generic.svg" width="216"></p>
 
 In order to keep things modular, and separate gauge configuration
 from usage in a specific panel,
@@ -53,7 +53,7 @@ Gauges are often decorated with a [*gaugeFace()*](#g3-gaugeFace),
 
 
 <a id="g3-gauge" href="#g3-gauge">#</a>
-g3.**gauge**() · [source](/src/gauge.js)
+g3.**gauge**() · [source](/src/gauge.ts)
 
 Creates a gauge renderer configured via the
 *gauge* getter/setter methods described below, e.g. *gauge*.r(100).
@@ -61,14 +61,14 @@ The *gauge* is called to draw it within an SVG document, e.g. *gauge*(d3.select(
 Typically *gauge* is not drawn directly
 but instead appended to a [panel](#panel) which will draw it and manage metric updates.
 A *gauge* is also [stylable](#stylable) and [appendable](#appendable) via [mixins](#mixins).
-A number of pre-configured gauge builders are available via the functions in `g3.contrib.*`.
+A number of pre-configured gauge builders are available via the functions in `g3.contrib.*`; see the [Contributed Gauge Gallery](CONTRIB.md) for the complete catalog.
 
-*gauge*.**metric**(\[*metric*: string\]) · [source](/src/gauge.js)
+*gauge*.**metric**(\[*metric*: string\]) · [source](/src/gauge.ts)
 
 If *metric* is specified, set the name of the metric that this gauge will indicate.
 If *metric* is not specified, return the name of the current metric, defaulting to *undefined*.
 
-*gauge*.**unit**(\[*unit*: string\]) · [source](/src/gauge.js)
+*gauge*.**unit**(\[*unit*: string\]) · [source](/src/gauge.ts)
 
 If *unit* is specified, set the unit of measurement for the current metric,
 otherwise return the current unit, defaulting to *undefined*.
@@ -80,20 +80,20 @@ For example, a gauge designed to show miles/hour (mph)
 could then correctly display speeds provided in km/hour (kph).
 
 <a id="g3-gauge-fake" href="#g3-gauge-fake">#</a>
-*gauge*.**fake**(\[*generator*: function\]) · [source](/src/gauge.js)
+*gauge*.**fake**(\[*generator*: function\]) · [source](/src/gauge.ts)
 
 If *generator* is specified, it defines a function that produces a sequence of metric values for this gauge.
 This is useful for gauge development and testing when a panel has no external metric source. 
 If *generator* is not specified, the current generator is returned. 
 See [fake metrics](#fake-metrics) for available generators.
 
-*gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.js)
+*gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.ts)
 
 If *kind* is specified, it must be either the string `circular` or `linear`
 to select how the axis is displayed for this gauge.
 If *kind* is not specified, return the current value, defaulting to `circular`.
 
-*gauge*.**measure**(\[*measure*: any &rArr; number\]) · [source](/src/gauge.js)
+*gauge*.**measure**(\[*measure*: any &rArr; number\]) · [source](/src/gauge.ts)
 
 If *measure* is specified, it defines a [d3.scale](https://github.com/d3/d3-scale)-like
 function which transforms metric values to the axis coordinate system of the gauge,
@@ -105,7 +105,7 @@ would map a metric expected to take values between 0 and 10
 to a semi-circular axis on the top half of the gauge face
 (i.e. between -90° and 90°).
 
-*gauge*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/gauge.js)
+*gauge*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/gauge.ts)
 
 If *rescale* is defined, specifies a function that
 rescales the current metric value before applying the *measure()* scale,
@@ -114,14 +114,14 @@ Otherwise, returns the current rescaling, which defaults to the identity functio
 For example, a dateTime metric might be rescaled to the day-of-month domain
 before displaying on a calendar wheel.
 
-*gauge*.**r**(\[*radius*: number\]) · [source](/src/gauge.js)
+*gauge*.**r**(\[*radius*: number\]) · [source](/src/gauge.ts)
 
 If *radius* is specified it defines the size of the gauge in SVG units,
 otherwise the current *radius* is returned, defaulting to 100.
 For circular gauges, the axis line will be placed here.
 
 <a id="g3-gauge-autoindicate"></a>
-*gauge*.**autoindicate**(\[*flag*: bool\]) · [source](/src/gauge.js)
+*gauge*.**autoindicate**(\[*flag*: bool\]) · [source](/src/gauge.ts)
 
 If *flag* is set, the boolean value defines whether this gauge should self-indicate,
 otherwise return the current value, defaulting to false.
@@ -135,14 +135,14 @@ For example, to indicate in a window at the 3 o'clock position, try:
 
     g3.put().rotate(90).append(g3.gauge().autoindicate(true)...)
 
-*gauge*.**clip**(\[*clippath*: function\]) · [source](/src/gauge.js)
+*gauge*.**clip**(\[*clippath*: function\]) · [source](/src/gauge.ts)
 
 If *clippath* is set, it defines a G3 drawing function that, when called, draws a clipping path for this gauge.
 Otherwise, it returns the current drawing function, defaulting to undefined.
 For complex nested gauges, like the attitude indicator, it is sometimes convenient to clip to a simple circle
 via *gauge*.clip(g3.gaugeFace()).
 
-*gauge*.**grid**(\[*show*: boolean\]) · [source](/src/gauge.js)
+*gauge*.**grid**(\[*show*: boolean\]) · [source](/src/gauge.ts)
 
 If *show* is defined, update the value.
 Otherwise returns the current value, which defaults to `false`.
@@ -152,15 +152,15 @@ This can be useful during layout development.
 
 
 <a id="g3-gaugeFace" href="#g3-gaugeFace">#</a>
-g3.**gaugeFace**() · [source](/src/gauge.js)
+g3.**gaugeFace**() · [source](/src/gauge.ts)
 
 Returns a [stylable](#stylable) *gaugeFace* object, which when called will draw a circle with CSS class `g3-gauge-face`.
 
-*gaugeFace*.**r**(\[*r*: number\]) · [source](/src/gauge.js)
+*gaugeFace*.**r**(\[*r*: number\]) · [source](/src/gauge.ts)
 
 If *r* is defined, set the radius for the circular face, otherwise return the current value, defaulting to 100.
 
-*gaugeFace*.**window**(\[*window*: object\]) · [source](/src/gauge.js)
+*gaugeFace*.**window**(\[*window*: object\]) · [source](/src/gauge.ts)
 
 If *window* is defined, use that drawing function to define an
 [SVG mask](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask)
@@ -168,7 +168,7 @@ on the gauge face to "cut out" a window.  Otherwise, return the current window d
 
 
 <a id="g3-gaugeLabel" href="#g3-gaugeLabel">#</a>
-g3.**gaugeLabel**(\[*value*: string\[, *opts*: object\]\]) · [source](/src/gauge.js)
+g3.**gaugeLabel**(\[*value*: string\[, *opts*: object\]\]) · [source](/src/gauge.ts)
 
 Create a [stylable](#stylable) *gaugeLabel* function which adds SVG text to a gauge when called.
 If *value* is set, it defines the initial value of the label.
@@ -176,21 +176,21 @@ The optional *opts* can be used as a shortcut for the accessor functions.
 For example `g3.gaugeLabel("hello", {x: 20, y: 20})`
 is equivalent to `g3.gaugeLabel().value("hello").x(20).y(20)`.
 
-*gaugeLabel*.**value**(\[*value*: string\]) · [source](/src/gauge.js)
+*gaugeLabel*.**value**(\[*value*: string\]) · [source](/src/gauge.ts)
 
 Set the label text to *value* if defined, otherwise return the current value.
 
-*gaugeLabel*.**size**(\[*size*: number\]) · [source](/src/gauge.js)
+*gaugeLabel*.**size**(\[*size*: number\]) · [source](/src/gauge.ts)
 
 Set the label size to *size* SVG units, otherwise return the current value which defaults to 10.
 
-*gaugeLabel*.**x**(\[*x*: number\]) · [source](/src/gauge.js)
+*gaugeLabel*.**x**(\[*x*: number\]) · [source](/src/gauge.ts)
 
-*gaugeLabel*.**y**(\[*y*: number\]) · [source](/src/gauge.js)
+*gaugeLabel*.**y**(\[*y*: number\]) · [source](/src/gauge.ts)
 
-*gaugeLabel*.**dx**(\[*dx*: number\]) · [source](/src/gauge.js)
+*gaugeLabel*.**dx**(\[*dx*: number\]) · [source](/src/gauge.ts)
 
-*gaugeLabel*.**dy**(\[*dy*: number\]) · [source](/src/gauge.js)
+*gaugeLabel*.**dy**(\[*dy*: number\]) · [source](/src/gauge.ts)
 
 Set or return the *x*, *y*, *dx* or *dy* values of the underlying
 [SVG text element](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text)
@@ -198,16 +198,16 @@ respectively.
 
 
 <a id="g3-gaugeScrew" href="#g3-gaugeScrew">#</a>
-g3.**gaugeScrew**() · [source](/src/gauge.js)
+g3.**gaugeScrew**() · [source](/src/gauge.ts)
 
 A *gaugeScrew* configures a [stylable](#stylable), [transformable](#transformable) screw head.
 When called, draws the screw with the selected head shape oriented in a random rotation.
 
-*gaugeScrew*.**r**(\[*r*: number\]) · [source](/src/gauge.js)
+*gaugeScrew*.**r**(\[*r*: number\]) · [source](/src/gauge.ts)
 
 If *r* is defined, set the radius of the screw head, otherwise return the current value, defaulting to 8.
 
-*gaugeScrew*.**shape**(\[*shape*: string\]) · [source](/src/gauge.js)
+*gaugeScrew*.**shape**(\[*shape*: string\]) · [source](/src/gauge.ts)
 
 If *shape* is defined, sets the screw head style to one of `slotted`, `phillips` or `robertson`.
 Otherwise returns the current shape, defaulting to `slotted`.
@@ -227,7 +227,7 @@ and can also be used for windows, rings or other annular decorations.
 
 
 <a id="g3-axisLine" href="#g3-axisLine">#</a>
-g3.**axisLine**() · [source](/src/axis.js)
+g3.**axisLine**() · [source](/src/axis.ts)
 
 Returns a [stylable](#stylable) *axisLine*, which draws a line spanning the domain of its parent gauge's metric.
 Essentially a shortcut for g3.axisSector(\[*min, max*\]).size(0).inset(0).class('g3-axis-line')
@@ -235,35 +235,35 @@ where \[*min, max*\] are the smallest and largest values of this gauge's metric.
 
 
 <a id="g3-axisTicks" href="#g3-axisTicks">#</a>
-g3.**axisTicks**(\[*vs*: array<number>\]) · [source](/src/axis.js)
+g3.**axisTicks**(\[*vs*: array<number>\]) · [source](/src/axis.ts)
 
 Returns a [stylable](#stylable) *axisTicks* object, which will draw tick marks along the axis line.
 The optional *vs* defines a list of specific tick mark locations in the metric domain.
 
-*axisTicks*.**values**(\[*vs*: array<number>\]) · [source](/src/axis.js)
+*axisTicks*.**values**(\[*vs*: array<number>\]) · [source](/src/axis.ts)
 
 If *vs* is defined, set specific tick mark locations along the axis, in the metric domain.
 Otherwise return the current list of locations, which defaults to none.
 See also *axisTicks*.start() and  *axisTicks*.step()
 
-*axisTicks*.**step**(\[*step*: number\]) · [source](/src/axis.js)
+*axisTicks*.**step**(\[*step*: number\]) · [source](/src/axis.ts)
 
 If *step* is defined, set the step size for tick marks in the metric domain.
 Otherwise return the current value, which defaults to 1.
 See also  *axisTicks*.start().
 
-*axisTicks*.**start**(\[*start*: number\]) · [source](/src/axis.js)
+*axisTicks*.**start**(\[*start*: number\]) · [source](/src/axis.ts)
 
 If *start* is defined, set the first tick mark location in the metric domain.
 Otherwise return the current value, which defaults to *gauge*.metric().domain()\[0\].
 
-*axisTicks*.**shape**(\[*shape*: string\]) · [source](/src/axis.js)
+*axisTicks*.**shape**(\[*shape*: string\]) · [source](/src/axis.ts)
 
 If *shape* is defined, sets the current tick mark shape to one of 
 `tick`, `dot`, `wedge` or `rect`.
 Otherwise, return the current shape, which defaults to `tick`.
 
-*axisTicks*.**size**(\[*size*: number\]) · [source](/src/axis.js)
+*axisTicks*.**size**(\[*size*: number\]) · [source](/src/axis.ts)
 
 If *size* is defined, set the current tick mark size, otherwise return the current value,
 which defaults to 10.
@@ -271,20 +271,20 @@ The *size* is measured inward from the axis line,
 use a negative value (or negative inset) for outward ticks
 on a circular gauge.
 
-*axisTicks*.**width**(\[*width*: number\]) · [source](/src/axis.js)
+*axisTicks*.**width**(\[*width*: number\]) · [source](/src/axis.ts)
 
 If *width* is defined, set the current tick mark width along the axis, in SVG units.
 Otherwise return the current value, which defaults to 1.
 The `wedge` and `rect` shapes support *width*.
 
-*axisTicks*.**inset**(\[*inset*: number\]) · [source](/src/axis.js)
+*axisTicks*.**inset**(\[*inset*: number\]) · [source](/src/axis.ts)
 
 If *inset* is defined, set the current tick mark inset inside the axis line.
 Otherwise, return the default value, which defaults to 0.
 
 
 <a id="g3-axisLabels" href="#g3-axisLabels">#</a>
-g3.**axisLabels**(\[*vs*: array<number>|object\]) · [source](/src/axis.js)
+g3.**axisLabels**(\[*vs*: array<number>|object\]) · [source](/src/axis.ts)
 
 Returns a [stylable](#stylable) *axisLabels* object,
 which will draw text labels relative to the gauge's metric domain.
@@ -300,35 +300,35 @@ For example
 Otherwise return the current list of label locations, which defaults to none.
 See also *axisLabels*.start() and  *axisLabels*.step()
 
-*axisLabels*.**step**(\[*step*: number\]) · [source](/src/axis.js)
+*axisLabels*.**step**(\[*step*: number\]) · [source](/src/axis.ts)
 
 If *step* is defined, set the step size for labels in the metric domain.
 Otherwise return the current value, which defaults to 1.
 See also  *axisLabels*.start().
 
-*axisLabels*.**start**(\[*start*: number\]) · [source](/src/axis.js)
+*axisLabels*.**start**(\[*start*: number\]) · [source](/src/axis.ts)
 
 If *start* is defined, set the first label location in the metric domain.
 Otherwise return the current value, which defaults to *gauge*.metric().domain()\[0\].
 
-*axisLabels*.**format**(\[*format*: number &rArr; string\]) · [source](/src/axis.js)
+*axisLabels*.**format**(\[*format*: number &rArr; string\]) · [source](/src/axis.ts)
 
 If *format* is defined, it is assumed to be a function that converts a
 metric value indicating a label position to the appropriate text label.
 For example *axisLabels*.format(v &rArr; Math.round(v/100)) might be used
 to label a gauge in hundreds.
 
-*axisLabels*.**size**(\[*size*: number\]) · [source](/src/axis.js)
+*axisLabels*.**size**(\[*size*: number\]) · [source](/src/axis.ts)
 
 If *size* is defined, set the text size in SVG units.
 Otherwise return the current size, which defaults to 20.
 
-*axisLabels*.**inset**(\[*inset*: number\]) · [source](/src/axis.js)
+*axisLabels*.**inset**(\[*inset*: number\]) · [source](/src/axis.ts)
 
 If *inset* is defined, set the current tick mark inset inside the axis line.
 Otherwise, return the default value, which defaults to 0.
 
-*axisLabels*.**orient**(\[*orient*: string\]) · [source](/src/axis.js)
+*axisLabels*.**orient**(\[*orient*: string\]) · [source](/src/axis.ts)
 
 If *orient* is defined, it indicates one of the label orientations
 `fixed`, `relative`, `upward`, `clockwise`, or `counterclockwise`.
@@ -350,7 +350,7 @@ labels wrap around the circle,
 reading in the described direction.
 Additional rotation does not apply in this case.
 
-*axisLabels*.**rotate**(\[*rotate*: number\]) · [source](/src/axis.js)
+*axisLabels*.**rotate**(\[*rotate*: number\]) · [source](/src/axis.ts)
 
 If *rotate* is defined, set the current rotation angle in degrees.
 Otherwise return the current rotation, which defaults to 0.
@@ -358,7 +358,7 @@ See also *orient*.
 
 
 <a id="g3-axisSector" href="#g3-axisSector">#</a>
-g3.**axisSector**(\[*vs*: array<number>\]) · [source](/src/axis.js)
+g3.**axisSector**(\[*vs*: array<number>\]) · [source](/src/axis.ts)
 
 Returns a [stylable](#stylable) *axisSector* object, which draws part of an
 [annulus](https://en.wikipedia.org/wiki/Annulus_(mathematics)) relative to the gauge's axis line.
@@ -369,12 +369,12 @@ otherwise the sector spans the full domain.
 This is typically used to highlight important regions of the axis,
 and can also be used to add windows, rings or other annular decorations.
 
-*axisSector*.**size**(\[*size*: number\]) · [source](/src/axis.js)
+*axisSector*.**size**(\[*size*: number\]) · [source](/src/axis.ts)
 
 If *size* is defined, sets the width of the sector in SVG units, otherwise returning the current value,
 which defaults to 5.  Size is measured inward from the axis line.
 
-*axisSector*.**inset**(\[*inset*: number\]) · [source](/src/axis.js)
+*axisSector*.**inset**(\[*inset*: number\]) · [source](/src/axis.ts)
 
 If *inset* is defined, sets the distance inside the axis line the outer rim of the sector.
 Otherwise returns the current value, which defaults to 0.
@@ -394,7 +394,7 @@ declared by G3 as the `DSEG7-Classic` and `DSEG14-Classic` font-family.
 
 
 <a id="g3-indicateText" href="#g3-indicateText">#</a>
-g3.**indicateText**() · [source](/src/indicate.js)
+g3.**indicateText**() · [source](/src/indicate.ts)
 
 Returns a [stylable](#stylable) *indicateText* object,
 which is called to update the current metric value as text,
@@ -402,21 +402,21 @@ with optional formatting.
 Use [g3-put()](#g3-put) to control the positioning of the text.
 
 
-*indicateText*.**format**(\[*format*: any &rArr; string\]) · [source](/src/indicate.js)
+*indicateText*.**format**(\[*format*: any &rArr; string\]) · [source](/src/indicate.ts)
 
 If *format* is defined, it specifies a function that converts metric values to text.
 Otherwise returns the current formatter, which defaults to the identity function.
 For example, *indicateText*.format(v &rArr; Math.round(v/100)) would display the
 metric value in hundreds.
 
-*indicateText*.**size**(\[*size*: number\]) · [source](/src/indicate.js)
+*indicateText*.**size**(\[*size*: number\]) · [source](/src/indicate.ts)
 
 If *size* is defined, specifies the size of the text in SVG units,
 otherwise returns the current size, defaulting to 20.
 
 
 <a id="g3-indicatePointer" href="#g3-indicatePointer">#</a>
-g3.**indicatePointer**() · [source](/src/indicate.js)
+g3.**indicatePointer**() · [source](/src/indicate.ts)
 
 Returns a [stylable](#stylable), [appendable](#appendable) *indicatePointer* object,
 which is called to draw a pointer that typically points to the current metric value,
@@ -424,9 +424,9 @@ or some converted version, on the gauge axis.
 A standard pointer can be configured using *indicatePointer*.shape(),
 or the pointer can be customized with arbitrary elements via *indicatePointer*.append().
 
-*indicatePointer*.**shape**(\[*shape*: string\]) · [source](/src/indicate.js)
+*indicatePointer*.**shape**(\[*shape*: string\]) · [source](/src/indicate.ts)
 
-If *shape* is defined, selects a pointer shape from the enumeration in [pointers.js](/src/pointers.js).
+If *shape* is defined, selects a pointer shape from the enumeration in [pointers.ts](/src/pointers.ts).
 The shapes currently available are illustrated below.
 Otherwise, returns the current pointer shape, defaulting to `needle`.
 
@@ -435,7 +435,7 @@ Otherwise, returns the current pointer shape, defaulting to `needle`.
 </div>
 <br />
 
-*indicatePointer*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/indicate.js)
+*indicatePointer*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/indicate.ts)
 
 If *rescale* is defined, specifies a function that
 rescales the current metric value before indicating.
@@ -445,7 +445,7 @@ Otherwise, return the current conversion, which defaults to the identity functio
 For example, an altimeter might indicate in hundreds, thousands and ten-thousands
 using pointers with different scales.
 
-*indicatePointer*.**clamp**(\[*extents*: array<number>\]) · [source](/src/indicate.js)
+*indicatePointer*.**clamp**(\[*extents*: array<number>\]) · [source](/src/indicate.ts)
 
 If *extents* is defined, it provides a two-element array defining
 the minimum and maximum extent of the pointer domain, after any rescaling.
@@ -458,14 +458,14 @@ A similar effect could be achieved by enabling
 but this would also prevent any axis decorations beyond the clamped extent.
 
 <a id="g3-indicateSector" href="#g3-indicateSector">#</a>
-g3.**indicateSector**() · [source](/src/indicate.js)
+g3.**indicateSector**() · [source](/src/indicate.ts)
 
 Returns a [stylable](#stylable) *indicateSector* object,
 which is called to draw a sector on the gauge axis representing the range
 between a fixed anchor point and the current metric value.
 This is useful for things like turn coordinators or deviation indicators.
 
-*indicateSector*.**anchor**(\[*anchor*: number\]) · [source](/src/indicate.js)
+*indicateSector*.**anchor**(\[*anchor*: number\]) · [source](/src/indicate.ts)
 
 If *anchor* is defined, sets the fixed anchor value in the metric domain.
 Otherwise returns the current anchor, defaulting to 0.
@@ -473,25 +473,25 @@ The sector will be drawn from this value to the current metric value.
 If the current value is less than the anchor, the sector is drawn "backwards"
 and the class `g3-indicate-sector-negative` is added, allowing for different styling.
 
-*indicateSector*.**size**(\[*size*: number\]) · [source](/src/indicate.js)
+*indicateSector*.**size**(\[*size*: number\]) · [source](/src/indicate.ts)
 
 If *size* is defined, sets the width of the sector in SVG units.
 Otherwise returns the current value,
 which defaults to 10. Size is measured inward from the axis line.
 
-*indicateSector*.**inset**(\[*inset*: number\]) · [source](/src/indicate.js)
+*indicateSector*.**inset**(\[*inset*: number\]) · [source](/src/indicate.ts)
 
 If *inset* is defined, sets the distance of the outer rim of the sector inside 
 the axis line (outside, if negative).
 Otherwise returns the current value, which defaults to 0.
 
-*indicateSector*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/indicate.js)
+*indicateSector*.**rescale**(\[*rescale*: any &rArr; any\]) · [source](/src/indicate.ts)
 
 If *rescale* is defined, specifies a function that
 rescales the current metric value before indicating.
 Otherwise, returns the current conversion, which defaults to the identity function.
 
-*indicateSector*.**clamp**(\[*extents*: array<number>\]) · [source](/src/indicate.js)
+*indicateSector*.**clamp**(\[*extents*: array<number>\]) · [source](/src/indicate.ts)
 
 If *extents* is defined, it provides a two-element array defining
 the minimum and maximum extent of the sector domain, after any rescaling.
@@ -499,7 +499,7 @@ Otherwise, return the current limits which default to \[undefined, undefined\].
 
 
 <a id="g3-indicateStyle" href="#g3-indicateStyle">#</a>
-g3.**indicateStyle**() · [source](/src/indicate.js)
+g3.**indicateStyle**() · [source](/src/indicate.ts)
 
 Returns an [appendable](#appendable) *indicateStyle* object,
 which is called to apply CSS styling conditional on the current metric.
@@ -509,7 +509,7 @@ depending on whether the metric is non-zero.
 See also [statusLight](#g3-statusLight) which provides
 a convenience wrapper for indicator lights.
 
-*indicateStyle*.**trigger**(\[*trigger*: any &rArr; float\]) · [source](/src/indicate.js)
+*indicateStyle*.**trigger**(\[*trigger*: any &rArr; float\]) · [source](/src/indicate.ts)
 
 If *trigger* is defined, specifies a function
 mapping the current metric value to a
@@ -518,13 +518,13 @@ which tweens between the off (0) and on (1) style.
 Otherwise, returns the current trigger function, which defaults to the identity
 (meaning that the style is on whenever the metric is non-zero).
 
-*indicateStyle*.**styleOn**(\[*styleOn*: object\]) · [source](/src/indicate.js)
+*indicateStyle*.**styleOn**(\[*styleOn*: object\]) · [source](/src/indicate.ts)
 
 If *styleOn* is defined, it specifies a dictionary of styles to apply
 to the *indicateStyle* contents when the *trigger* is true.
 Otherwise, returns the current styles, which default to `{opacity: 1}`.
 
-*indicateStyle*.**styleOff**(\[*styleOff*: object\]) · [source](/src/indicate.js)
+*indicateStyle*.**styleOff**(\[*styleOff*: object\]) · [source](/src/indicate.ts)
 
 If *styleOff* is defined, it specifies a dictionary of styles to apply
 to the *indicateStyle* contents when the *trigger* is false.
@@ -532,7 +532,7 @@ Otherwise, returns the current styles, which default to `{opacity: 0}`.
 
 
 <a id="g3-snapScale" href="#g3-snapScale">#</a>
-g3.**snapScale**() · [source](/src/common.js)
+g3.**snapScale**() · [source](/src/common.ts)
 
 Creates a *snapScale* object which provides a continuous
 "staircase" transformation function that pulls its input value
@@ -552,17 +552,17 @@ Or maybe this is scale should just be deprecated entirely:
 another way to get a similar effect is to specify (or rescale) the metric as integer values,
 so we'd get a single refresh transform with duration equal to polling interval.
 
-*snapScale*.**start**(\[*start*: number\]) · [source](/src/common.js)
+*snapScale*.**start**(\[*start*: number\]) · [source](/src/common.ts)
 
 If defined, *start* sets the starting anchor point for calculating steps,
 otherwise returns the current value defaulting to 0.
 
-*snapScale*.**step**(\[*step*: number\]) · [source](/src/common.js)
+*snapScale*.**step**(\[*step*: number\]) · [source](/src/common.ts)
 
 If defined, *step* sets the step size,
 otherwise returns the current value defaulting to 1.
 
-*snapScale*.**strength**(\[*strength*: number\]) · [source](/src/common.js)
+*snapScale*.**strength**(\[*strength*: number\]) · [source](/src/common.ts)
 
 If defined, *strength* sets the strength of pull towards each step location,
 otherwise returns the current value defaulting to 5.
@@ -571,7 +571,7 @@ and positive values less than 1 result in repulsion away from step locations.
 
 
 <a id="g3-statusLight" href="#g3-statusLight">#</a>
-g3.**statusLight**() · [source](/src/gauge.js)
+g3.**statusLight**() · [source](/src/gauge.ts)
 
 A convenience wrapper for [indicateStyle](#g3-indicateStyle)
 that creates a gauge whose face lights up when its metric meets a trigger threshold.
@@ -584,15 +584,15 @@ Roughly equivalent to:
         )
     )
 
-*statusLight*.**metric**(\[*metric*: string\]) · [source](/src/gauge.js)
+*statusLight*.**metric**(\[*metric*: string\]) · [source](/src/gauge.ts)
 
 Set or return the [gauge](#g3-gauge)'s metric.
 
-*statusLight*.**trigger**(\[*trigger*: any &rArr; boolean\]) · [source](/src/gauge.js)
+*statusLight*.**trigger**(\[*trigger*: any &rArr; boolean\]) · [source](/src/gauge.ts)
 
 Set or return the trigger function for the [indicateStyle](#g3-indicateStyle).
 
-*statusLight*.**color**(\[*color*: string\]) · [source](/src/gauge.js)
+*statusLight*.**color**(\[*color*: string\]) · [source](/src/gauge.ts)
 
 If *color* is defined, sets the color to display when the trigger is on.
 Otherwise return the current color, which defaults to `red`.
@@ -606,7 +606,7 @@ which are polled from an external source.
 
 
 <a id="g3-panel" href="#g3-panel">#</a>
-g3.**panel**() · [source](/src/panel.js)
+g3.**panel**() · [source](/src/panel.ts)
 
 Creates a [stylable](#stylable),
 [appendable](#appendable) *panel* object,
@@ -617,27 +617,27 @@ renders its children
 (typically [gauges](#g3-gauge) or other [elements](#g3-element))
 and begins polling for metric updates.
 
-*panel*.**width**(\[*width*: integer\]) · [source](/src/panel.js)
-*panel*.**height**(\[*height*: integer\]) · [source](/src/panel.js)
+*panel*.**width**(\[*width*: integer\]) · [source](/src/panel.ts)
+*panel*.**height**(\[*height*: integer\]) · [source](/src/panel.ts)
 
 Set or return the current width or height of the SVG container.
 
-*panel*.**url**(\[*url*: string\]) · [source](/src/panel.js)
+*panel*.**url**(\[*url*: string\]) · [source](/src/panel.ts)
 
 If defined, *url* sets the URL from which to retrieve metrics,
 otherwise the current URL is returned, defaulting to undefined.
-When URL is undefined, the panel [controller](/src/controller.js) supplies [fake metrics](#g3-fakeMetrics) for testing.
+When URL is undefined, the panel [controller](/src/controller.ts) supplies [fake metrics](#g3-fakeMetrics) for testing.
 Otherwise, an HTTP GET to *url* should return a JSON structure 
 containing the current [metrics](#metrics).
 
-*panel*.**interval**(\[*interval*: number\]) · [source](/src/panel.js)
+*panel*.**interval**(\[*interval*: number\]) · [source](/src/panel.ts)
 
 If defined, *interval* sets the polling interval in milliseconds,
 otherwise the current interval is returned, defaulting to 250.
 The panel will query the configured URL (or generate fake metrics)
 once each interval.
 
-*panel*.**smooth**(\[*smooth*: boolean\]) · [source](/src/panel.js)
+*panel*.**smooth**(\[*smooth*: boolean\]) · [source](/src/panel.ts)
 
 If *smooth* is defined, update the value.
 Otherwise return the current value, which defaults to `true`.
@@ -646,7 +646,7 @@ with duration equal to *panel.interval()*.
 Otherwise updates will be instantaneous which usually looks worse but
 can be more responsive for less capable clients.
 
-*panel*.**grid**(\[*show*: boolean\]) · [source](/src/panel.js)
+*panel*.**grid**(\[*show*: boolean\]) · [source](/src/panel.ts)
 
 If *show* is defined, update the value.
 Otherwise returns the current value, which defaults to `false`.
@@ -656,28 +656,28 @@ This can be useful during layout development.
 
 
 <a id="g3-grid" href="#g3-grid">#</a>
-g3.**grid**() · [source](/src/grid.js)
+g3.**grid**() · [source](/src/grid.ts)
 
 Returns a stylable *grid* object, which draws a rectangular grid
 useful for layout alignment.
 
-*grid*.**width**(\[*width*: number\]) · [source](/src/grid.js)
-*grid*.**height**(\[*height*: number\]) · [source](/src/grid.js)
+*grid*.**width**(\[*width*: number\]) · [source](/src/grid.ts)
+*grid*.**height**(\[*height*: number\]) · [source](/src/grid.ts)
 
 Set or return the width and height of the grid in SVG units.
 
-*grid*.**x**(\[*x*: number\]) · [source](/src/grid.js)
-*grid*.**y**(\[*y*: number\]) · [source](/src/grid.js)
+*grid*.**x**(\[*x*: number\]) · [source](/src/grid.ts)
+*grid*.**y**(\[*y*: number\]) · [source](/src/grid.ts)
 
 Set or return the x and y offset of the grid origin.
 
-*grid*.**xmajor**(\[*spacing*: number\]) · [source](/src/grid.js)
-*grid*.**ymajor**(\[*spacing*: number\]) · [source](/src/grid.js)
+*grid*.**xmajor**(\[*spacing*: number\]) · [source](/src/grid.ts)
+*grid*.**ymajor**(\[*spacing*: number\]) · [source](/src/grid.ts)
 
 Set or return the spacing of major grid lines.
 
-*grid*.**xminor**(\[*spacing*: number\]) · [source](/src/grid.js)
-*grid*.**yminor**(\[*spacing*: number\]) · [source](/src/grid.js)
+*grid*.**xminor**(\[*spacing*: number\]) · [source](/src/grid.ts)
+*grid*.**yminor**(\[*spacing*: number\]) · [source](/src/grid.ts)
 
 Set or return the spacing of minor grid lines.
 
@@ -738,7 +738,7 @@ A simple set of metric generators is provided,
 or you can define your own function that produces a new metric value each time it's called.
 
 <a id="g3-forceSeries" href="#g3-forceSeries">#</a>
-g3.**forceSeries**(\[*min*: number\[, *max*: number\[, *options*: object\]\]\]) · [source](/src/faketimeseries.js)
+g3.**forceSeries**(\[*min*: number\[, *max*: number\[, *options*: object\]\]\]) · [source](/src/faketimeseries.ts)
 
 Returns a generator for a random time series
 which varies between *min* (default 0) and *max* (default 1),
@@ -753,23 +753,23 @@ and *wrap* (default false) is a boolean that controls whether the particle wraps
 or bounces back when it hits a boundary.
 
 <a id="g3-categoricalSeries" href="#g3-categoricalSeries">#</a>
-g3.**categoricalSeries**(*vs*: array<any>) · [source](/src/faketimeseries.js)
+g3.**categoricalSeries**(*vs*: array<any>) · [source](/src/faketimeseries.ts)
 
 Returns a generator for a time series that oscillates between the
 categories listed in *vs*.
 
 <a id="g3-datetimeSeries" href="#g3-datetimeSeries">#</a>
-g3.**datetimeSeries**() · [source](/src/faketimeseries.js)
+g3.**datetimeSeries**() · [source](/src/faketimeseries.ts)
 
 Returns a time series generator which always returns the current Javascript [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date).
 
 <a id="g3-midnightSecondsSeries" href="#g3-midnightSecondsSeries">#</a>
-g3.**midnightSecondsSeries**() · [source](/src/faketimeseries.js)
+g3.**midnightSecondsSeries**() · [source](/src/faketimeseries.ts)
 
 Returns a time series generator which returns the number of seconds since midnight (in browser local time).
 
 <a id="g3-elapsedSecondsSeries" href="#g3-elapsedSecondsSeries">#</a>
-g3.**elapsedSecondsSeries**() · [source](/src/faketimeseries.js)
+g3.**elapsedSecondsSeries**() · [source](/src/faketimeseries.ts)
 
 Returns a time series generator which returns the number of seconds since the panel was launched,
 effectively a timer.
@@ -784,16 +784,16 @@ Many G3 object support standard configuration options via mixins.
 by adding class names, element styles, or inline CSS using the
 [@emotion/css package](https://www.npmjs.com/package/@emotion/css).
 
-*stylable*.**style**(\[*style*: string\]) · [source](/src/mixin.js)
+*stylable*.**style**(\[*style*: string\]) · [source](/src/mixin.ts)
 
 If *style* is defined, set the object's inline style property, otherwise return the current inline style value.
 
-*stylable*.**class**(\[*class*: string\]) · [source](/src/mixin.js)
+*stylable*.**class**(\[*class*: string\]) · [source](/src/mixin.ts)
 
 If *class* is defined, add it as a space-separated list of class names to the object's class property,
 otherwise return the current space-separated list of classes.
 
-*stylable*.**css**(\[*css*: string\]) · [source](/src/mixin.js)
+*stylable*.**css**(\[*css*: string\]) · [source](/src/mixin.ts)
 
 If *css* is defined, interpret as inline CSS rules using [@emotion/css](https://www.npmjs.com/package/@emotion/css),
 which injects the CSS into the HTML doc using a new class name and adds that class to the current list of classes.
@@ -807,26 +807,26 @@ as well as the global helper defs defined in panel.js for blurs, drop shadows et
 **transformable** objects support
 [SVG transformation](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform)
 via translation, scaling and rotation.
-Note the resulting transformation is always applied as `translate(...) scale(...) rotate(...)`
+Note the resulting transformation is always applied as `translate(...) rotate(...) scale(...)`
 regardless of the order in which the transformation is configured.
-Also note that applies transformations right to left, so rotation happens first,
-then scaling, and finally translation.
+Also note that SVG applies transformations right to left, so scaling happens first,
+then rotation, and finally translation.
 
-*transformable*.**x**(\[*x*: number\]) · [source](/src/mixin.js)
+*transformable*.**x**(\[*x*: number\]) · [source](/src/mixin.ts)
 
-*transformable*.**y**(\[*y*: number\]) · [source](/src/mixin.js)
+*transformable*.**y**(\[*y*: number\]) · [source](/src/mixin.ts)
 
 If *x* (*y*) is defined, set the current translation in the x (y) direction,
 otherwise return the current value, which defaults to 0.
 
-*transformable*.**scale**(\[*sx*: number, \[*sy*: number\]\]) · [source](/src/mixin.js)
+*transformable*.**scale**(\[*sx*: number, \[*sy*: number\]\]) · [source](/src/mixin.ts)
 
 If both *sx* and *sy* are defined, set the corresponding scale in each dimension.
 If only one value *sx* is provided, set a common scale in both dimensions.
 If no arguments are provided, return an array with the current \[*sx, sy*\] values,
 which default to \[1, 1\].
 
-*transformable*.**rotate**(\[*angle*: number\]) · [source](/src/mixin.js)
+*transformable*.**rotate**(\[*angle*: number\]) · [source](/src/mixin.ts)
 
 If *angle* is defined, set the current rotation, otherwise return the current value, which defaults to 0.
 
@@ -835,19 +835,27 @@ If *angle* is defined, set the current rotation, otherwise return the current va
 as well as shared global definitions like fill patterns, gradients or SVG filters.
 This allows flexible nested configuration of panels and gauges.
 
-*appendable*.**append**(\[*a*, \[*b*, \[*c*, ...\]\]\]: object) · [source](/src/mixin.js)
+*appendable*.**append**(\[*a*, \[*b*, \[*c*, ...\]\]\]: object) · [source](/src/mixin.ts)
 
 If any arguments are provided, append those G3 objects to *appendable*,
 otherwise return the current list of appended objects, defaulting to the empty list.
 The Javascript spread operator `...` is useful to append from a list,
 e.g. *appendable*.append(...*xs*).
 
-*appendable*.**defs**(\[*a*, \[*b*, \[*c*, ...\]\]\]: object) · [source](/src/mixin.js)
+*appendable*.**defs**(\[*a*, \[*b*, \[*c*, ...\]\]\]: object) · [source](/src/mixin.ts)
 
 Similar to *appendable*.**append**() but when this object is drawn the appended *defs*
 are added to a [`<defs>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs)
 child of the top-level `<svg>` container.
 These elements aren't rendered directly but referenced from other parts of the SVG.
+
+<a id="interactable" href="#interactable">#</a>
+**interactable** objects support registering DOM event handlers on the underlying D3 selection.
+
+*interactable*.**on**(\[*type*: string\[, *handler*: function\[, *opts*: any\]\]\]) · [source](/src/mixin.ts)
+
+If *type* and *handler* are specified, registers an event listener on the rendered SVG element via [*selection*.on](https://github.com/d3/d3-selection#selection_on).
+If no arguments are provided, returns the dictionary of registered handlers.
 
 
 ### SVG elements
@@ -858,7 +866,7 @@ and [g3.element()](#g3-element) supports arbitrary elements.
 
 
 <a id="g3-put" href="#g3-put">#</a>
-g3.**put**() · [source](/src/common.js)
+g3.**put**() · [source](/src/common.ts)
 
 Creates a [stylable](#stylable), [transformable](#transformable),
 [appendable](#appendable) container object which renders an
@@ -866,14 +874,14 @@ SVG `<g>` element with its children when called.
 
 
 <a id="g3-element" href="#g3-element">#</a>
-g3.**element**(*element*: string\[, *attrs*: object\]) · [source](/src/common.js)
+g3.**element**(*element*: string\[, *attrs*: object\]) · [source](/src/common.ts)
 
-Creates a [stylable](#stylable), [appendable](#appendable) object that
+Creates a [stylable](#stylable), [appendable](#appendable), [interactable](#interactable) object that
 renders the named SVG *element* when called.
 If *attrs* is defined, it defines a dictionary of attributes
 like `{name: value, ...}` which are added to the element.
 
-*element*.**attr**(*attribute*: any) · [source](/src/common.js)
+*element*.**attr**(*key*: string\[, *value*: any\]) · [source](/src/common.ts)
 
-If *attribute* is defined, adds an attribute to the element,
-otherwise return the full dictionary of current attributes, defaulting to empty.
+If *value* is defined, sets attribute *key* to *value* and returns the element,
+otherwise returns the current value of attribute *key*.

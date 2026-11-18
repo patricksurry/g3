@@ -3,6 +3,10 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * DHC-2 Beaver airspeed indicator displaying speed in knots/mph (40–200)
+ * with color-coded flap, normal operating, and caution arcs.
+ */
 export function airspeed(): GaugeComponent {
     return g3.gauge()
         .metric('airspeed').unit('knot')

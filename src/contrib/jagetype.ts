@@ -3,6 +3,10 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * Classic Smiths 8-cylinder positive-earth tachometer (0–6,000 RPM) from a Jaguar E-Type,
+ * featuring a redline sector (5,000–6,000 RPM) and custom two-tone pointer.
+ */
 export function tachometer(): GaugeComponent {
     return g3.gauge()
         .metric('engineRPM').unit('rpm')

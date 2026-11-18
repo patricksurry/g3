@@ -16,7 +16,7 @@ Here's a screenshot with some of the included flight gauges
 
 - [Install G3](#installing)
 - [Get started](#getting-started) by running a panel or designing a new gauge
-- Browse the complete [API reference](doc/API.md)
+- Browse the [Contributed Gauge Gallery](doc/CONTRIB.md) and complete [API reference](doc/API.md)
 - Give back by [contributing](#contributing) new gauges and panels
 - Explore related [resources](#resources)
 
@@ -70,10 +70,9 @@ by creating a project directory and installing G3:
 
     npm install @patricksurry/g3
 
-If you prefer, you can download a
-[bundled distribution from github](https://github.com/patricksurry/g3/tree/master/dist),
-by picking any of `g3[-contrib][.min].js`,
-clicking the 'Raw' button, and then right-clicking to "save as".
+If you prefer a local standalone copy, you can download any of `g3[-contrib][.min].js`
+directly from [unpkg](https://unpkg.com/browse/@patricksurry/g3/dist/) or
+[jsDelivr](https://cdn.jsdelivr.net/npm/@patricksurry/g3/dist/) (right-click and "Save As").
 The base `g3` package provides the API to define gauges and assemble them into control panels,
 and the `g3-contrib` package adds a bunch of predefined gauges and panels
 that you can use or modify.   The `.min` versions are minified to load slightly faster,
@@ -123,7 +122,8 @@ above.
 The [contrib folder](src/contrib)
 included with `g3-contrib.js` is where all the predefined gauges live, including
 clocks, flight instruments, as well as engine and electrical gauges.
-The full index of definitions can be found in the[`__index__.js`](src/contrib/__index__.js) file,
+Browse the auto-generated [Contributed Gauge Gallery](doc/CONTRIB.md) for visual previews, metrics, and factory source code.
+The full index of definitions can be found in [`__index__.ts`](src/contrib/__index__.ts),
 and two predefined panels, `g3.gallery.contrib` and `g3.gallery.pointers`,
 will draw a gallery of all known gauges and indicator pointers respectively.
 
@@ -480,10 +480,10 @@ if you're looking for something to play with.
 
 Check the unit tests after any changes with `npm run test`.
 Ensure new code is tested using `npm test -- --coverage`.
-Before making a PR, also run the rendering tests `npm run test:render`.
-They take longer but generate a screenshot of every contributed gauge 
-and compare it to a reference image in `tests/contrib`.   
-Images for new contributions should be added automatically.
+The test suite also verifies that every contributed gauge has a JSDoc description,
+matches its deterministic SVG snapshot in `tests/contrib/*.svg`, and is documented in `doc/CONTRIB.md`.
+After adding or modifying a contributed gauge in `src/contrib/`, run `npm run docs`
+to regenerate the SVG snapshots and `doc/CONTRIB.md`.
 
 You can test changes interactively by serving directly from the `src/` tree using
 [Vite](https://vite.dev/).
@@ -491,13 +491,14 @@ Use `npm run start` to launch the gauge gallery panel from `src/index.html`
 in your browser.
 (Note this HTML script uses module style imports unlike the production distribution.)
 
-You can rebuild the bundled package in `dist/` using `rollup` by typing `npm run build`.
+You can build the bundled package and TypeScript declarations into `dist/` by typing `npm run build`
+(`dist/` is git-ignored and built automatically on `npm publish` via the `prepack` script).
 Once you're happy with your changes, make a pull request.
 When I want to publish a new release, I also bump the version in `package.json`,
 then merge and tag in github and finally publish with something like:
 
 ```sh
-git tag v0.1.19
+git tag v0.1.20
 git push origin --tags
 npm login
 npm publish --access public

@@ -5,6 +5,10 @@ import { headingFormat, deviationScale } from './nav';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * VHF Omnidirectional Range (VOR) course deviation indicator (CDI) with a rotating omni-bearing
+ * selector (OBS) ring, linear radial deviation needle, and TO/FROM/NAV status flags.
+ */
 export function VORGeneric(): GaugeComponent {
     return g3.gauge()
         // the inner part of the VOR gauge measures the deviation from selected radial
@@ -72,6 +76,9 @@ export function VORGeneric(): GaugeComponent {
 }
 
 
+/**
+ * Automatic Direction Finder (ADF) relative bearing indicator with a rotating compass card.
+ */
 export function ADFGeneric(): GaugeComponent {
     return g3.gauge()
         .metric('relativeADF').unit('deg')

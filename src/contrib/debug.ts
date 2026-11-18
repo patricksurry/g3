@@ -2,7 +2,9 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
-// Simple gauge with no pointer which is useful in panel layout alignment
+/**
+ * Simple alignment reference gauge with crosshairs and outer circle, useful for panel layout positioning.
+ */
 export function alignment(): GaugeComponent {
     return g3.gauge().append(
         g3.gaugeFace().style('fill: #333'),

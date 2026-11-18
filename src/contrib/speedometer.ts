@@ -3,6 +3,10 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * Dual-scale automotive speedometer (mph outer scale, km/h inner scale) with a lower
+ * remaining-range sector bar and destination distance marker.
+ */
 export function speedometerBMW(): GaugeComponent {
     return g3.gauge()
         .metric('speed').unit('mph').fake(g3.forceSeries(9, 160))

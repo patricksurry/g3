@@ -1,0 +1,2206 @@
+<svg width="216" height="216" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216">
+<defs>
+<style>.will-change-transform { will-change: transform; }
+.g3-panel { background-color: black; display: block; margin: 0px auto; stroke: none; fill: none; }
+.g3-panel * { vector-effect: non-scaling-stroke; }
+.g3-panel text { text-anchor: middle; dominant-baseline: central; font-stretch: condensed; fill: rgb(170, 170, 170); }
+.g3-axis-ticks-dot,.g3-axis-ticks-wedge,.g3-axis-sector,.g3-fg-fill { fill: rgb(221, 221, 221); }
+.g3-axis-line,.g3-axis-ticks,.g3-fg-stroke { stroke: rgb(221, 221, 221); }
+.g3-axis-ticks .g3-axis-ticks-dot,.g3-axis-ticks .g3-axis-ticks-wedge { stroke: none; }
+.g3-grid-line line { stroke: rgb(102, 102, 102); }
+.g3-grid-hairline { stroke: rgb(51, 51, 51); }
+.g3-grid-label text { font-size: 8px; text-anchor: middle; dominant-baseline: central; fill: rgb(153, 153, 153); }
+.g3-grid-label rect { stroke: none; fill: black; opacity: 0.5; }
+.g3-gauge-face,.g3-bg-fill { fill: rgb(24, 24, 24); }
+.g3-bg-stroke { stroke: rgb(24, 24, 24); }
+.g3-no-fill { fill: none; }
+.g3-no-stroke { stroke: none; }
+.g3-highlight-fill { fill: orange; }
+.g3-highlight-stroke { stroke: orange; stroke-width: 2; }
+.g3-danger-stroke { stroke: red; stroke-width: 2; }
+.g3-danger-fill { fill: red; }
+.g3-warning-fill { fill: rgb(152, 120, 8); }
+.g3-normal-fill { fill: green; }
+.g3-cold-fill,.g3-sky-fill { fill: rgb(5, 128, 186); }
+.g3-ground-fill { fill: rgb(107, 86, 52); }
+.g3-indicate-pointer { fill: rgb(34, 34, 34); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-pointer-needle { fill: red; }
+.g3-pointer-blade { fill: rgb(232, 232, 232); stroke: rgb(232, 232, 232); }
+.g3-pointer-luminous { fill: rgb(224, 232, 208); stroke: rgb(208, 216, 192); }
+.g3-indicate-sector { fill: green; stroke: none; }
+.g3-indicate-sector.g3-indicate-sector-negative { fill: red; }
+.g3-gauge-screw { fill: rgb(51, 51, 51); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-gauge-screw rect { fill: rgb(34, 34, 34); }
+.g3-highlight { fill: url("#highlightGradient"); fill-opacity: 0.25; }
+.css-1ycgz69 { }
+.css-1ycgz69 .g3-pointer-hub,.css-1ycgz69 .g3-pointer-blade { fill: rgb(221, 221, 221); stroke: rgb(221, 221, 221); }
+.css-1ycgz69 text { fill: rgb(204, 204, 204); }
+.css-1ycgz69 .g3-highlight { fill-opacity: 0.5; }
+svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background: none; }
+.g3-panel { background-color: transparent; fill: none; }</style>
+<radialGradient id="highlightGradient" cx="50%" cy="50%" fx="25%" fy="40%" r="50%">
+<stop stop-color="white" offset="0%">
+</stop>
+<stop stop-color="black" offset="100%">
+</stop>
+</radialGradient>
+<filter id="dropShadow1" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="1" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow2" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="2" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow3" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="3" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="gaussianBlur1">
+<feGaussianBlur in="SourceGraphic" stdDeviation="1">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur2">
+<feGaussianBlur in="SourceGraphic" stdDeviation="2">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur3">
+<feGaussianBlur in="SourceGraphic" stdDeviation="3">
+</feGaussianBlur>
+</filter>
+</defs>
+<g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
+<g class="g3-gauge css-1ycgz69">
+<g>
+<g transform="translate(0, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g class="will-change-transform" transform="rotate(-313.5483870967742)">
+<circle r="100" class="g3-gauge-face">
+</circle>
+<g class="g3-axis-labels">
+<g>
+<text font-size="13" transform="rotate(0) translate(0, -55) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(11.612903225806452) translate(0, -55) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(23.225806451612904) translate(0, -55) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(34.83870967741935) translate(0, -55) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(46.45161290322581) translate(0, -55) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(58.064516129032256) translate(0, -55) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(69.6774193548387) translate(0, -55) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(81.29032258064515) translate(0, -55) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(92.90322580645162) translate(0, -55) rotate(-90)">9</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(104.51612903225808) translate(0, -55) rotate(-90)">10</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(116.12903225806451) translate(0, -55) rotate(-90)">11</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(127.74193548387098) translate(0, -55) rotate(-90)">12</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(139.3548387096774) translate(0, -55) rotate(-90)">13</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(150.96774193548387) translate(0, -55) rotate(-90)">14</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(162.5806451612903) translate(0, -55) rotate(-90)">15</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(174.19354838709677) translate(0, -55) rotate(-90)">16</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(185.80645161290323) translate(0, -55) rotate(-90)">17</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(197.41935483870967) translate(0, -55) rotate(-90)">18</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(209.03225806451616) translate(0, -55) rotate(-90)">19</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(220.6451612903226) translate(0, -55) rotate(-90)">20</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(232.25806451612902) translate(0, -55) rotate(-90)">21</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(243.87096774193546) translate(0, -55) rotate(-90)">22</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(255.48387096774195) translate(0, -55) rotate(-90)">23</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(267.0967741935484) translate(0, -55) rotate(-90)">24</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(278.7096774193548) translate(0, -55) rotate(-90)">25</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(290.3225806451613) translate(0, -55) rotate(-90)">26</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(301.93548387096774) translate(0, -55) rotate(-90)">27</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(313.5483870967742) translate(0, -55) rotate(-90)">28</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(325.1612903225806) translate(0, -55) rotate(-90)">29</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(336.7741935483871) translate(0, -55) rotate(-90)">30</text>
+</g>
+<g>
+<text font-size="13" transform="rotate(348.38709677419354) translate(0, -55) rotate(-90)">31</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<mask id="gauge-face-window-1">
+<circle r="100" style="fill: white;">
+</circle>
+<g style="fill: black">
+<path d="M63.452,-8.354A64,64,0,0,1,63.452,8.354L44.615,5.874A45,45,0,0,0,44.615,-5.874Z" class="g3-axis-sector" style="fill: black">
+</path>
+</g>
+</mask>
+<circle r="100" class="g3-gauge-face" mask="url(#gauge-face-window-1)">
+</circle>
+<circle r="45" class="g3-gauge-face" style="fill: #282828">
+</circle>
+<path d="M63.452,-8.354A64,64,0,0,1,63.452,8.354L44.615,5.874A45,45,0,0,0,44.615,-5.874Z" class="g3-axis-sector" style="fill: none; stroke: #ccc; stroke-width: 3">
+</path>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-100A100,100,0,1,0,0,100A100,100,0,1,0,0,-100Z" class="g3-axis-sector g3-axis-line" style="stroke-width: 4; stroke: #aaa">
+</path>
+<path d="M0,-86A86,86,0,1,1,0,86A86,86,0,1,1,0,-86M0,-76A76,76,0,1,0,0,76A76,76,0,1,0,0,-76Z" class="g3-axis-sector" style="fill: #aaa">
+</path>
+<path d="M0,-83A83,83,0,1,1,0,83A83,83,0,1,1,0,-83M0,-82A82,82,0,1,0,0,82A82,82,0,1,0,0,-82Z" class="g3-axis-sector" style="fill: white; filter: url(#gaussianBlur1)">
+</path>
+<g class="g3-gauge">
+<g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(354.0983606557377) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(348.38709677419354) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(342.85714285714283) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(337.5) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(327.27272727272725) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(322.3880597014925) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(317.6470588235294) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(313.04347826086956) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(304.22535211267603) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(300) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(295.8904109589041) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(291.8918918918919) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(284.2105263157895) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(280.5194805194805) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(276.9230769230769) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(273.4177215189874) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(266.66666666666663) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(263.4146341463415) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(260.2409638554217) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(257.14285714285717) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(251.1627906976744) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(248.27586206896552) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(245.45454545454547) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(242.69662921348313) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(237.36263736263737) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(234.78260869565216) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(232.25806451612902) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(229.7872340425532) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(227.36842105263156) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(225) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(222.68041237113403) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(220.4081632653061) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+<g transform="rotate(218.18181818181822) translate(0, -88)">
+<path d="M0,0L0,-3">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(227.36842105263156) translate(0, -88)">
+<path d="M0,0L0,-5">
+</path>
+</g>
+<g transform="rotate(205.71428571428572) translate(0, -88)">
+<path d="M0,0L0,-5">
+</path>
+</g>
+<g transform="rotate(187.82608695652175) translate(0, -88)">
+<path d="M0,0L0,-5">
+</path>
+</g>
+<g transform="rotate(172.8) translate(0, -88)">
+<path d="M0,0L0,-5">
+</path>
+</g>
+<g transform="rotate(160.00000000000003) translate(0, -88)">
+<path d="M0,0L0,-5">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-dot">
+<g transform="rotate(360) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(332.3076923076923) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(308.5714285714286) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(288) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(270) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(254.11764705882354) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(240) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(216.00000000000003) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(196.36363636363637) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(180) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(166.15384615384616) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(154.28571428571428) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(144) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(135) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(127.05882352941177) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(120) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(113.6842105263158) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(108) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(96) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(86.4) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(78.54545454545456) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(72) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(61.71428571428572) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(54.00000000000001) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+<g transform="rotate(43.2) translate(0, -88)">
+<circle r="0.5">
+</circle>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="6" transform="rotate(360) translate(0, -94) rotate(-360)">60</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(332.3076923076923) translate(0, -94) rotate(-332.3076923076923)">65</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(308.5714285714286) translate(0, -94) rotate(-308.5714285714286)">70</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(288) translate(0, -94) rotate(-288)">75</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(270) translate(0, -94) rotate(-270)">80</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(254.11764705882354) translate(0, -94) rotate(-254.11764705882354)">85</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(240) translate(0, -94) rotate(-240)">90</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(216.00000000000003) translate(0, -94) rotate(-216.00000000000003)">100</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(196.36363636363637) translate(0, -94) rotate(-196.36363636363637)">110</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(180) translate(0, -94) rotate(-180)">120</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(166.15384615384616) translate(0, -94) rotate(-166.15384615384616)">130</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(154.28571428571428) translate(0, -94) rotate(-154.28571428571428)">140</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(144) translate(0, -94) rotate(-144)">150</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(135) translate(0, -94) rotate(-135)">160</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(127.05882352941177) translate(0, -94) rotate(-127.05882352941177)">170</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(120) translate(0, -94) rotate(-120)">180</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(113.6842105263158) translate(0, -94) rotate(-113.6842105263158)">190</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(108) translate(0, -94) rotate(-108)">200</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(96) translate(0, -94) rotate(-96)">225</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(86.4) translate(0, -94) rotate(-86.4)">250</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(78.54545454545456) translate(0, -94) rotate(-78.54545454545456)">275</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(72) translate(0, -94) rotate(-72)">300</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(61.71428571428572) translate(0, -94) rotate(-61.71428571428572)">350</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(54.00000000000001) translate(0, -94) rotate(-54.00000000000001)">400</text>
+</g>
+<g>
+<text font-size="6" transform="rotate(43.2) translate(0, -94) rotate(-43.2)">500</text>
+</g>
+</g>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<path id="axis-label-path-2-0" d="M 0,93 A 93,93,0,1,1,0,-93 A 93,93,0,1,1,0,93" style="visibility: hidden" transform="rotate(21.6)">
+</path>
+<text font-size="7">
+<textPath startOffset="50%" href="#axis-label-path-2-0">TACHYMETRE</textPath>
+</text>
+</g>
+</g>
+<g transform="translate(0, 0) rotate(0) scale(0.72, 0.72)">
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke: #888">
+<g transform="rotate(2.4000000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(3.6000000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(4.800000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(7.200000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(8.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(9.600000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(10.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(12) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(13.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(14.400000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(15.600000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(16.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(18) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(19.200000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(20.400000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(21.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(22.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(24) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(25.200000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(26.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(27.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(32.400000000000006) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(33.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(34.800000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(36) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(37.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(38.400000000000006) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(39.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(40.800000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(42) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(43.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(44.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(45.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(46.800000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(48) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(49.20000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(50.400000000000006) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(51.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(52.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(54) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(55.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(56.400000000000006) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(57.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(62.400000000000006) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(63.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(64.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(66) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(67.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(68.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(69.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(70.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(72) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(73.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(74.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(75.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(76.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(78) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(79.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(80.39999999999999) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(81.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(82.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(84) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(85.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(86.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(87.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(92.39999999999999) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(93.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(94.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(96) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(97.19999999999999) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(98.40000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(99.60000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(100.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(102) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(103.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(104.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(105.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(106.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(108) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(109.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(110.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(111.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(112.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(114) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(115.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(116.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(117.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(122.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(123.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(124.80000000000001) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(125.99999999999999) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(127.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(128.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(129.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(130.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(132) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(133.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(134.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(135.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(136.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(138) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(139.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(140.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(141.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(142.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(144) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(145.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(146.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(147.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(152.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(153.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(154.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(156) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(157.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(158.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(159.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(160.79999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(162) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(163.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(164.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(165.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(166.79999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(168) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(169.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(170.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(171.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(172.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(174) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(175.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(176.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(177.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(182.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(183.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(184.79999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(186.00000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(187.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(188.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(189.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(190.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(192) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(193.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(194.39999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(195.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(196.80000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(198.00000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(199.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(200.39999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(201.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(202.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(204) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(205.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(206.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(207.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(212.39999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(213.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(214.80000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(216) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(217.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(218.4) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(219.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(220.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(222) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(223.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(224.39999999999998) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(225.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(226.80000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(228) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(229.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(230.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(231.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(232.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(234) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(235.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(236.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(237.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(242.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(243.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(244.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(246) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(247.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(248.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(249.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(250.80000000000004) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(251.99999999999997) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(253.20000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(254.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(255.60000000000002) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(256.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(258) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(259.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(260.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(261.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(262.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(264) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(265.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(266.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(267.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(272.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(273.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(274.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(276) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(277.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(278.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(279.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(280.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(282) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(283.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(284.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(285.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(286.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(288) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(289.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(290.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(291.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(292.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(294) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(295.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(296.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(297.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(302.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(303.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(304.80000000000007) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(306) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(307.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(308.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(309.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(310.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(312) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(313.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(314.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(315.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(316.80000000000007) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(318) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(319.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(320.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(321.59999999999997) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(322.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(324) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(325.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(326.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(327.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(332.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(333.59999999999997) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(334.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(336) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(337.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(338.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(339.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(340.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(342) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(343.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(344.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(345.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(346.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(348) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(349.20000000000005) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(350.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(351.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(352.8) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(354) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(355.2) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(356.40000000000003) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+<g transform="rotate(357.6) translate(0, -100)">
+<path d="M0,0L0,3">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(6) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(12) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(18) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(24) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(36) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(42) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(48) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(54) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(66) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(72) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(78) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(84) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(96) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(102) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(108) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(114) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(125.99999999999999) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(132) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(138) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(144) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(156) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(162) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(168) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(174) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(186.00000000000003) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(192) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(198.00000000000003) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(204) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(216) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(222) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(228) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(234) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(246) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(251.99999999999997) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(258) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(264) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(276) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(282) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(288) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(294) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(306) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(312) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(318) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(324) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(336) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(342) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(348) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+<g transform="rotate(354) translate(0, -100)">
+<path d="M0,0L0,8">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-bg-stroke g3-axis-ticks-tick">
+<g transform="rotate(174) translate(0, -97)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(186.00000000000003) translate(0, -97)">
+<path d="M0,0L0,5">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-wedge" style="stroke-width: 3">
+<g transform="rotate(30) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(60) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(120) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(150) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(210) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(240) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(300) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+<g transform="rotate(330) translate(0, -92)">
+<path d="M 0,16 L 2,0 L -2,0 z">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="7.5" transform="rotate(30) translate(0, -97.5)">05</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(60) translate(0, -97.5)">10</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(90) translate(0, -97.5)">15</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(120) translate(0, -97.5) rotate(180)">20</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(150) translate(0, -97.5) rotate(180)">25</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(180) translate(0, -97.5) rotate(180)">30</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(210) translate(0, -97.5) rotate(180)">35</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(240) translate(0, -97.5) rotate(180)">40</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(270) translate(0, -97.5)">45</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(300) translate(0, -97.5)">50</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(330) translate(0, -97.5)">55</text>
+</g>
+<g>
+<text font-size="7.5" transform="rotate(360) translate(0, -97.5)">60</text>
+</g>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<path id="axis-label-path-3-0" d="M 0,68.5 A 68.5,68.5,0,1,0,0,-68.5 A 68.5,68.5,0,1,0,0,68.5" style="visibility: hidden" transform="rotate(174)">
+</path>
+<text font-size="2.5">
+<textPath startOffset="50%" href="#axis-label-path-3-0">MADE</textPath>
+</text>
+</g>
+<g>
+<path id="axis-label-path-3-1" d="M 0,68.5 A 68.5,68.5,0,1,0,0,-68.5 A 68.5,68.5,0,1,0,0,68.5" style="visibility: hidden" transform="rotate(186.00000000000003)">
+</path>
+<text font-size="2.5">
+<textPath startOffset="50%" href="#axis-label-path-3-1">SWISS</textPath>
+</text>
+</g>
+</g>
+<image href="data:image/png;base64,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" width="32" x="9" y="-16">
+</image>
+<g transform="translate(-42, 0) rotate(0) scale(0.25, 0.25)">
+<circle r="100" class="g3-gauge-face">
+</circle>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-100A100,100,0,1,0,0,100A100,100,0,1,0,0,-100Z" class="g3-axis-sector g3-axis-line" style="stroke: #aaa; stroke-width: 4">
+</path>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-50A50,50,0,1,0,0,50A50,50,0,1,0,0,-50Z" class="g3-axis-sector" style="fill: #282828">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke-width: 2">
+<g transform="rotate(30) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(60) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(120) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(150) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(210) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(240) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(300) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(330) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="40" transform="rotate(90) translate(0, -75) rotate(-90)">15</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(180) translate(0, -75) rotate(-180)">30</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(270) translate(0, -75) rotate(-270)">45</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(360) translate(0, -75) rotate(-360)">60</text>
+</g>
+</g>
+<g class="g3-indicate-pointer" transform="rotate(271776)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<path d="M 5,25 l -10,0 l 5,-120 z" class="g3-pointer-blade">
+</path>
+<circle r="10" class="g3-pointer-hub">
+</circle>
+<circle r="4" class="g3-highlight">
+</circle>
+</g>
+</g>
+</g>
+<g class="g3-gauge">
+<g>
+<g transform="translate(0, -42) rotate(0) scale(0.25, 0.25)">
+<circle r="100" class="g3-gauge-face">
+</circle>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-100A100,100,0,1,0,0,100A100,100,0,1,0,0,-100Z" class="g3-axis-sector g3-axis-line" style="stroke: #aaa; stroke-width: 4">
+</path>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-50A50,50,0,1,0,0,50A50,50,0,1,0,0,-50Z" class="g3-axis-sector" style="fill: #282828">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(24) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(36) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(48) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(60) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(72) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(84) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(96) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(144) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(156) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(168) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(180) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(192) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(204) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(216) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(264) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(276) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(288) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(300) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(312) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(324) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+<g transform="rotate(336) translate(0, -95)">
+<path d="M0,0L0,10">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke-width: 2">
+<g transform="rotate(60) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(180) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(300) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="40" transform="rotate(120) translate(0, -75) rotate(-120)">10</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(240) translate(0, -75) rotate(-240)">20</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(360) translate(0, -75) rotate(-360)">30</text>
+</g>
+</g>
+<g class="g3-indicate-pointer" transform="rotate(0)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<path d="M 5,25 l -10,0 l 5,-120 z" class="g3-pointer-blade">
+</path>
+<circle r="10" class="g3-pointer-hub">
+</circle>
+<circle r="4" class="g3-highlight">
+</circle>
+</g>
+</g>
+</g>
+<g transform="translate(0, 42) rotate(0) scale(0.25, 0.25)">
+<circle r="100" class="g3-gauge-face">
+</circle>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-100A100,100,0,1,0,0,100A100,100,0,1,0,0,-100Z" class="g3-axis-sector g3-axis-line" style="stroke: #aaa; stroke-width: 4">
+</path>
+<path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-50A50,50,0,1,0,0,50A50,50,0,1,0,0,-50Z" class="g3-axis-sector" style="fill: #282828">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke-width: 2">
+<g transform="rotate(30) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(60) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(120) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(150) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(210) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(240) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(300) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+<g transform="rotate(330) translate(0, -95)">
+<path d="M0,0L0,20">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="40" transform="rotate(90) translate(0, -75) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(180) translate(0, -75) rotate(-180)">6</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(270) translate(0, -75) rotate(-270)">9</text>
+</g>
+<g>
+<text font-size="40" transform="rotate(360) translate(0, -75) rotate(-360)">12</text>
+</g>
+</g>
+<g class="g3-indicate-pointer" transform="rotate(0)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<path d="M 5,25 l -10,0 l 5,-120 z" class="g3-pointer-blade">
+</path>
+<circle r="10" class="g3-pointer-hub">
+</circle>
+<circle r="4" class="g3-highlight">
+</circle>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(0, 0) rotate(0) scale(0.75, 0.75)">
+<g class="g3-indicate-pointer" transform="rotate(377.46666666666664)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<path d="M 3.5,0 l 0,-55 l -3.5,-10 l -3.5,10 l 0,55 z" class="g3-pointer-blade">
+</path>
+<path d="M 2.5,0 l 0,-55 l -5,0 l 0,55 z" class="g3-pointer-luminous">
+</path>
+<circle r="9" class="g3-pointer-hub">
+</circle>
+</g>
+</g>
+<g class="g3-indicate-pointer" transform="rotate(4529.599999999999)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<path d="M 3,0 l 0,-80 l -3,-10 l -3,10 l 0,80 z" class="g3-pointer-blade">
+</path>
+<path d="M 2,0 l 0,-80 l -4,0 l 0,80 z" class="g3-pointer-luminous">
+</path>
+<circle r="6.5" class="g3-pointer-hub">
+</circle>
+</g>
+</g>
+<g class="g3-gauge">
+<g>
+<g class="g3-indicate-pointer" transform="rotate(0)">
+<g transform="translate(0, 0) rotate(0) scale(1, 1)">
+<path d="M 3,25 l -6,0 l 3,-115 z M 0,-72 l 4,15 l -4,5 l -4,-5 z" class="g3-pointer-blade">
+</path>
+<path d="M 0,-69 l 3,12 l -3,3 l -3,-3 z" class="g3-pointer-luminous">
+</path>
+<circle r="4" class="g3-pointer-hub">
+</circle>
+<circle r="2" class="g3-highlight">
+</circle>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

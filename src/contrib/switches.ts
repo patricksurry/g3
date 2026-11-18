@@ -3,6 +3,11 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * Two-position linear on/off toggle switch indicator.
+ * @param metric - Metric name to indicate (default 'status')
+ * @param label - Text label displayed above the switch (defaults to `metric`)
+ */
 export function toggleFactory(metric?: string, label?: string): GaugeComponent {
     const m = metric || 'status';
     const l = label || m;

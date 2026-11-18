@@ -3,6 +3,9 @@ import * as g3 from '../g3';
 import type { GaugeComponent } from '../types';
 
 
+/**
+ * DHC-2 Beaver gyroscope suction pressure gauge (0–10 inHg).
+ */
 export function suctionPressure(): GaugeComponent {
     return g3.gauge()
         .metric('suctionPressure').unit('inHg')
@@ -21,6 +24,9 @@ export function suctionPressure(): GaugeComponent {
 }
 
 
+/**
+ * DHC-2 Beaver engine manifold pressure gauge (10–50 inHg) with idle and normal operating sectors.
+ */
 export function manifoldPressure(): GaugeComponent {
     return g3.gauge()
         .metric('manifoldPressure').unit('inHg')
@@ -43,6 +49,9 @@ export function manifoldPressure(): GaugeComponent {
 }
 
 
+/**
+ * DHC-2 Beaver engine tachometer (300–3,500 RPM) with idle and normal operating sectors.
+ */
 export function tachometer(): GaugeComponent {
     return g3.gauge()
         .metric('engineRPM').unit('rpm')
@@ -64,6 +73,13 @@ export function tachometer(): GaugeComponent {
 }
 
 
+/**
+ * Configurable single fuel tank quantity gauge (gallons) with an active-tank selector status light.
+ * @param lo - Minimum scale reading in gallons (default 2)
+ * @param hi - Maximum scale reading in gallons (default 19)
+ * @param arc - Angular span of the dial arc in degrees (default 96)
+ * @param instance - Optional tank instance qualifier (e.g. 'front', 'center', 'rear')
+ */
 export function tank(lo?: number, hi?: number, arc?: number, instance?: string): GaugeComponent {
     const loVal = lo ?? 2;
     const hiVal = hi ?? 19;
@@ -94,6 +110,9 @@ export function tank(lo?: number, hi?: number, arc?: number, instance?: string):
 }
 
 
+/**
+ * DHC-2 Beaver composite three-tank fuel gauge combining front, center, and rear `tank` sub-gauges.
+ */
 export function fuel(): GaugeComponent {
     return g3.gauge()
         .append(
@@ -115,6 +134,9 @@ export function fuel(): GaugeComponent {
 }
 
 
+/**
+ * DHC-2 Beaver tri-gauge displaying engine oil temperature (°C), oil pressure (psi), and fuel pressure (psi).
+ */
 export function oilFuelStatus(): GaugeComponent {
     return g3.gauge()
         .append(
@@ -172,6 +194,9 @@ export function oilFuelStatus(): GaugeComponent {
 }
 
 
+/**
+ * DHC-2 Beaver carburetor mixture temperature gauge (-50°C to +50°C) with icing caution and normal sectors.
+ */
 export function carbMixtureTemp(): GaugeComponent {
     return g3.gauge()
         .metric('carbMixtureTemp').unit('C')
@@ -195,6 +220,9 @@ export function carbMixtureTemp(): GaugeComponent {
 }
 
 
+/**
+ * DHC-2 Beaver cylinder head temperature (CHT) gauge (0–350°C).
+ */
 export function cylinderHeadTemp(): GaugeComponent {
     return g3.gauge()
         .metric('cylinderHeadTemp').unit('C')

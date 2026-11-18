@@ -9,6 +9,10 @@ export const
     deviationScale = d3.scaleLinear().domain([-10,10]).range([-50,50]);
 
 
+/**
+ * Three-pointer barometric altimeter (hundreds, thousands, and ten-thousands of feet)
+ * with a self-indicating Kollsman pressure window (hPa) and low-altitude striped warning sector.
+ */
 export function altitudeGeneric(): GaugeComponent {
     return g3.gauge()
         .metric('altitude').unit('ft')
@@ -69,6 +73,10 @@ export function altitudeGeneric(): GaugeComponent {
 }
 
 
+/**
+ * Artificial horizon / attitude indicator combining a circular self-indicating roll dial
+ * with a clipped linear self-indicating pitch scale.
+ */
 export function attitudeGeneric(): GaugeComponent {
     return g3.gauge()
         // outer gauge is invisible other than the indicator marks
@@ -130,6 +138,9 @@ export function attitudeGeneric(): GaugeComponent {
 }
 
 
+/**
+ * Directional gyro / heading indicator with a rotating 360° compass card and fixed aircraft reference symbol.
+ */
 export function headingGeneric(): GaugeComponent {
     return g3.gauge()
         .metric('heading').unit('deg')
@@ -147,6 +158,9 @@ export function headingGeneric(): GaugeComponent {
 }
 
 
+/**
+ * Vertical speed indicator (VSI) measuring rate of climb or descent (±2,000 ft/min) with clamped pointer stops.
+ */
 export function VSIGeneric(): GaugeComponent {
     return g3.gauge()
         .metric('verticalSpeed').unit('ft/min')
@@ -178,6 +192,9 @@ export function VSIGeneric(): GaugeComponent {
 }
 
 
+/**
+ * Turn coordinator combining a miniature aircraft turn-rate pointer (deg/s) with an inclinometer slip/skid ball tube.
+ */
 export function turnCoordinatorGeneric(): GaugeComponent {
     return g3.gauge()
         .metric('turnrate').unit('deg/s')

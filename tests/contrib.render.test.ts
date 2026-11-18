@@ -1,71 +1,64 @@
-import { describe, test } from 'vitest';
-import { execSync } from 'child_process';
+import { describe, test, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import os from 'os';
-import { fileURLToPath } from 'url';
-import { contrib } from '../src/contrib/__index__';
-import { flatten } from '../src/common';
+import {
+    SNAPSHOT_DIR,
+    CONTRIB_DOC_PATH,
+    extractContribMetadata,
+    renderContribGauge,
+    generateContribMarkdown,
+    type MetricInfo,
+} from '../scripts/contrib-gallery';
 
+const shouldUpdate = Boolean(process.env.UPDATE_CONTRIB);
+const entries = extractContribMetadata();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+describe('Contributed gauge SVG snapshots & auto-documentation', () => {
+    const renderedMetrics = new Map<string, MetricInfo[]>();
 
-const gaugeDefs = flatten(contrib).filter(([, f]) => typeof f === 'function');
-const gaugeURIs = gaugeDefs.map(([ks]) => ks.join('.'));
+    for (const entry of entries) {
+        test(`gauge ${entry.uri} has JSDoc documentation and matches its deterministic SVG snapshot`, () => {
+            expect(entry.description.length).toBeGreaterThan(10);
+            expect(entry.sourceCode).toContain(`export function ${entry.funcName}`);
 
-// HTML template to render a single gauge
-const htmlTemplate = (gaugeURI: string, distPath: string) => `
-<html>
-  <head><meta charset="utf-8"></head>
-  <body style="background-color: white !important;">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="file://${distPath}"></script>
-    <script>
-        g3.panel().width(480).height(480).x(240).y(240).scale(2).append(
-            g3.contrib.${gaugeURI}()
-        )('body')
-    </script>
-  </body>
-</html>
-`;
+            const { svg, metrics } = renderContribGauge(entry.factory);
+            renderedMetrics.set(entry.uri, metrics);
 
-const SCRIPT_PATH = path.resolve(__dirname, '../scripts/render-png.js');
-const DIST_PATH = path.resolve(__dirname, '../dist/g3-contrib.min.js');
-const EXPECTED_DIR = path.resolve(__dirname, 'contrib');
+            // Structural sanity checks on rendered SVG
+            expect(svg).toContain('<svg');
+            expect(svg).not.toContain('NaN');
 
-describe('Contributed gauge visual regression tests', () => {
+            const expectedSvgPath = path.join(SNAPSHOT_DIR, `${entry.slug}.svg`);
+            if (shouldUpdate) {
+                fs.mkdirSync(SNAPSHOT_DIR, { recursive: true });
+                fs.writeFileSync(expectedSvgPath, svg, 'utf8');
+            }
 
-    gaugeURIs.forEach(gaugeURI => {
-        const gaugePath = gaugeURI.replace(/\./g, '-');
-//        if (gaugePath != 'radionav-ADF-generic') return;
-        const expectedPngPath = path.join(EXPECTED_DIR, `${gaugePath}.png`);
-        const testOrCreate = (compare: boolean) => {
-            const f = () => {
-                const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `g3-test-${gaugePath}-`));
-                const tempHtmlPath = path.join(tmpDir, 'gauge.html');
-                const command = `node ${SCRIPT_PATH} ${tempHtmlPath} ${expectedPngPath}` + (compare ? ' --compare': '');
+            expect(
+                fs.existsSync(expectedSvgPath),
+                `Missing SVG snapshot at ${expectedSvgPath}. Run "npm run docs" to generate it.`
+            ).toBe(true);
+            const expectedSvg = fs.readFileSync(expectedSvgPath, 'utf8');
+            expect(svg).toBe(expectedSvg);
+        });
+    }
 
-                fs.writeFileSync(tempHtmlPath, htmlTemplate(gaugeURI, DIST_PATH));
+    test('doc/CONTRIB.md is up to date with src/contrib/* metadata and metrics', () => {
+        const enriched = entries.map(e => ({
+            ...e,
+            metrics: renderedMetrics.get(e.uri) ?? renderContribGauge(e.factory).metrics,
+        }));
+        const markdown = generateContribMarkdown(enriched);
 
-                try {
-                    execSync(command);  // stdio defaults to 'pipe' which captures output
-                } catch (error: any) {
-                    error.message += `\n\nStderr:\n${error.stderr}`;
-                    throw error;
-                }
-
-                fs.rmSync(tmpDir, { recursive: true, force: true });
-            };
-            return f;
-        };
-
-        if (fs.existsSync(expectedPngPath)) {
-            test(`gauge ${gaugeURI} should match its reference PNG`, testOrCreate(true), 10*1000); // 10s timeout
-        } else {
-            const f = testOrCreate(false);
-            test.skip(`${gaugeURI} - no reference in ${path.relative(__dirname, expectedPngPath)}`, f);
-            f();
+        if (shouldUpdate) {
+            fs.writeFileSync(CONTRIB_DOC_PATH, markdown, 'utf8');
         }
+
+        expect(
+            fs.existsSync(CONTRIB_DOC_PATH),
+            `Missing ${CONTRIB_DOC_PATH}. Run "npm run docs" to generate it.`
+        ).toBe(true);
+        const existingDoc = fs.readFileSync(CONTRIB_DOC_PATH, 'utf8');
+        expect(markdown).toBe(existingDoc);
     });
 });
