@@ -32,7 +32,7 @@ export function indicateText(): IndicateTextComponent {
                 const update = (v: any, _transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => {
                     _.text(format(v, metrics, unit));
                 };
-                activeController.register(update, g.metric(), g.unit());
+                activeController.register(update, g.metrics(), g.unit());
             }
         },
         {
@@ -63,7 +63,7 @@ export function indicateUnit(): IndicateUnitComponent {
                 const update = (v: any, _transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
                     _.text(format(u || '', v, metrics));
                 };
-                activeController.register(update, g.metric(), g.unit());
+                activeController.register(update, g.metrics(), g.unit());
             }
         },
         {
@@ -115,7 +115,7 @@ export function indicatePointer(): IndicatePointerComponent {
                         t.attr('transform', xform);
                     }
                 };
-                activeController.register(update, g.metric(), g.unit());
+                activeController.register(update, g.metrics(), g.unit());
             }
         },
         {
@@ -162,7 +162,7 @@ export function indicateSector(): IndicateSectorComponent {
                     t.attr('d', g.sectorpath(negative ? z : z0, negative ? z0 : z, size, inset));
                     _.classed('g3-indicate-sector-negative', negative);
                 };
-                activeController.register(update, g.metric(), g.unit());
+                activeController.register(update, g.metrics(), g.unit());
             }
         },
         {
@@ -207,7 +207,7 @@ export function indicateStyle(): IndicateStyleComponent {
                     // Nb. ignore transition for style updates, looks weird for light on/off
                     for (const k in s) _.style(k, s[k]);
                 };
-                activeController.register(update, g.metric(), g.unit());
+                activeController.register(update, g.metrics(), g.unit());
             }
         },
         {

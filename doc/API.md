@@ -936,6 +936,18 @@ The local hub works like this:
 The local hub stores each metric in the unit of the gauge that declared its fake,
 and converts the values in actions to that unit.
 
+<a id="g3-localHub" href="#g3-localHub">#</a>
+g3.**localHub**(*fakes*: object) · [source](/src/hub.ts)
+
+Creates the local hub that a panel uses when it has no *url*.
+You don't normally need to call this yourself, but it's handy for testing,
+or as a reference when writing your own hub.
+*fakes* maps each metric name to `{fake, unit}`, where *fake* is a constant or generator as for [*gauge*.fake()](#g3-gauge-fake).
+The returned *hub* has three methods, each of which returns a [message](#reading-metrics) of the form `{latest, metrics, units}`:
+*hub*.**snapshot**() reports every metric,
+*hub*.**tick**() advances each generated metric and reports the changes,
+and *hub*.**apply**(*actions*) applies a batch of [actions](#actions) in order and reports the changes.
+
 #### Fake metrics
 
 For development and testing, any gauge can be configured to display fake metrics

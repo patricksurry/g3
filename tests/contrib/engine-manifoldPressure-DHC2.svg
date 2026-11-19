@@ -322,7 +322,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text x="0" y="-45" dx="0" dy="0" font-size="12" class="g3-gauge-label">MANIFOLD</text>
 <text x="0" y="-30" dx="0" dy="0" font-size="12" class="g3-gauge-label">PRESSURE</text>
 <text x="0" y="50" dx="0" dy="0" font-size="8" class="g3-gauge-label">INCHES OF MERCURY</text>
-<g class="g3-indicate-pointer" transform="rotate(106.60628172465496)">
+<g class="g3-indicate-pointer" transform="rotate(105.83329078265362)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z" class="g3-pointer-blade">
 </path>

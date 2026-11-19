@@ -149,12 +149,12 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text x="0" y="0" dx="0" dy="0" font-size="10" class="g3-gauge-label">A</text>
 <text x="0" y="9" dx="0" dy="0" font-size="10" class="g3-gauge-label">V</text>
 </g>
-<g class="g3-indicate-pointer" transform="translate(47.972826776094735, 0)">
+<g class="g3-indicate-pointer" transform="translate(47.69827612494119, 0)">
 <path d="M 0,-100 L 0,100" class="g3-fg-stroke" style="stroke-width: 4">
 </path>
 </g>
 <g class="g3-gauge">
-<g class="will-change-transform" transform="rotate(-174.3139517493546)">
+<g class="will-change-transform" transform="rotate(-174.3750475827232)">
 <path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-70A70,70,0,1,0,0,70A70,70,0,1,0,0,-70Z" class="g3-axis-sector g3-bg-fill" style="filter: url(#dropShadow3)">
 </path>
 <g class="g3-axis-ticks g3-axis-ticks-tick">

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as d3 from 'd3';
 import * as g3 from '../src/g3';
 
@@ -62,6 +62,58 @@ describe('gauge components', () => {
             expect(g.select('circle.g3-gauge-screw-head').attr('r')).toBe('5');
             // Phillips has 2 rects
             expect(g.selectAll('rect').size()).toBe(2);
+        });
+    });
+
+    describe('gauge metrics and actions', () => {
+        it('should accept secondary metrics, qualified like the primary', () => {
+            const g = g3.gauge().metric('code', 'mode').instance('copilot');
+            svg.call(g);
+            expect(g.metric()).toBe('code.copilot');
+            expect(g.metrics()).toEqual(['code.copilot', 'mode.copilot']);
+        });
+
+        it('should redraw its indicators when a secondary metric changes', () => {
+            const ctrl = g3.gaugeController();
+            svg.call(
+                g3.gauge().metric('code', 'mode').append(
+                    g3.indicateText().format((v, metrics) => metrics?.mode == 'TST' ? '8888' : String(v))
+                )
+            );
+            ctrl({ metrics: { code: 7000, mode: 'ALT' } });
+            expect(svg.select('text.g3-indicate-text').text()).toBe('7000');
+            ctrl({ metrics: { mode: 'TST' } });
+            expect(svg.select('text.g3-indicate-text').text()).toBe('8888');
+        });
+
+        it('should declare a constant fake value with its unit', () => {
+            const ctrl = g3.gaugeController();
+            svg.call(g3.gauge().metric('sw').unit('deg').fake(0));
+            expect(ctrl.fakes()).toEqual({ sw: { fake: 0, unit: 'deg' } });
+        });
+
+        it('should send actions defaulting to its primary metric and unit', () => {
+            const ctrl = g3.gaugeController();
+            const sink = vi.fn();
+            ctrl.sink(sink);
+            const g = g3.gauge().metric('hdg').unit('deg');
+            svg.call(g);
+            g.send({ op: 'adjust', by: 5 }, { op: 'trigger', event: 'ident' });
+            expect(sink).toHaveBeenCalledWith([
+                { op: 'adjust', metric: 'hdg', unit: 'deg', by: 5 },
+                { op: 'trigger', event: 'ident' },
+            ]);
+        });
+
+        it('should send to the controller that was active when it was drawn', () => {
+            const ctrl = g3.gaugeController();
+            const sink = vi.fn();
+            ctrl.sink(sink);
+            const g = g3.gauge().metric('sw');
+            svg.call(g);
+            g3.gaugeController();  // a later controller becomes active
+            g.send({ op: 'set', value: 1 });
+            expect(sink).toHaveBeenCalledTimes(1);
         });
     });
 });

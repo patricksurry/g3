@@ -265,7 +265,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text font-size="15" transform="rotate(45) translate(0, -90) rotate(-45)">30</text>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(43.17554409848526)">
+<g class="g3-indicate-pointer" transform="rotate(42.86248276697472)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,15 L 1,0 l -2,0 z" class="g3-pointer-blade">
 </path>

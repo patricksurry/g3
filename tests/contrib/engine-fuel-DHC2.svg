@@ -146,7 +146,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g transform="translate(0, 40) rotate(0) scale(0.1, 0.1)">
 <g class="g3-gauge">
 <g>
-<g class="g3-indicate-style" style="opacity: 0.1;">
+<g class="g3-indicate-style" style="opacity: 1;">
 <circle r="100" class="g3-gauge-face" style="fill: orange">
 </circle>
 <circle r="100" class="g3-gauge-face g3-highlight">
@@ -155,7 +155,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(509.43195875454694)">
+<g class="g3-indicate-pointer" transform="rotate(510.98558295208034)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,15 L 1,0 l -2,0 z" class="g3-pointer-blade">
 </path>
@@ -241,7 +241,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g transform="translate(0, 40) rotate(0) scale(0.1, 0.1)">
 <g class="g3-gauge">
 <g>
-<g class="g3-indicate-style" style="opacity: 1;">
+<g class="g3-indicate-style" style="opacity: 0.1;">
 <circle r="100" class="g3-gauge-face" style="fill: orange">
 </circle>
 <circle r="100" class="g3-gauge-face g3-highlight">
@@ -250,7 +250,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(348.88255657441914)">
+<g class="g3-indicate-pointer" transform="rotate(351.7800483689848)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,15 L 1,0 l -2,0 z" class="g3-pointer-blade">
 </path>
@@ -331,7 +331,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(363.16793210059404)">
+<g class="g3-indicate-pointer" transform="rotate(365.1336680905223)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,15 L 1,0 l -2,0 z" class="g3-pointer-blade">
 </path>
