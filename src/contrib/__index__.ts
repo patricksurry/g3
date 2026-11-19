@@ -40,6 +40,9 @@ export const contrib = {
         VOR: {
             generic: radionav.VORGeneric,
         },
+        transponder: {
+            KT76C: radionav.transponderKT76C,
+        },
     },
     engine: {
         tachometer: {
@@ -84,6 +87,9 @@ export const contrib = {
     },
     switches: {
         toggle: switches.toggleFactory,
+        button: switches.buttonFactory,
+        rotary: switches.rotaryFactory,
+        selector: switches.selectorFactory,
     },
     debug: {
         alignment: debug.alignment,
