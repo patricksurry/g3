@@ -4,8 +4,11 @@
 
 A [panel](#panel) is a container that presents a collection of [gauges](#gauge),
 and orchestrates the display of [metrics](#metrics),
-normally retrieved by polling some external source.
-G3 can also generate [fake time-varying metrics](#fake-metrics) for development purposes.
+normally provided by an external [hub](#hubs) such as a simulator bridge.
+A panel is a client of its hub: gauges read metrics from it,
+and interactive controls send [actions](#actions) back to it.
+Without an external hub, the panel runs a [local hub](#local-hub)
+which generates [fake time-varying metrics](#fake-metrics) for development purposes.
 A simple gauge displays some metric,
 using a scale to transform the raw metric
 and [indicate](#indicate) that value on a local [axis](#axis),
@@ -40,8 +43,10 @@ The typical drawing function looks like this:
   /* append component instance to selection, perhaps based on parent gauge properties */
 }
 ```
-[Gauge components](#gauge) use [D3 dispatch](https://github.com/d3/d3-dispatch) to register interest
-in their designated metric so that the containing [panel](#panel) can send updates as the metric changes.
+[Gauge components](#gauge) register interest
+in their gauge's metrics so that the containing [panel](#panel) can redraw them when any of those metrics change.
+Data flows one way: the hub owns metric state, gauges only ever draw what the hub reports,
+and controls change state by sending actions to the hub rather than by updating the display directly.
 
 
 ### Gauge
@@ -63,10 +68,25 @@ but instead appended to a [panel](#panel) which will draw it and manage metric u
 A *gauge* is also [stylable](#stylable) and [appendable](#appendable) via [mixins](#mixins).
 A number of pre-configured gauge builders are available via the functions in `g3.contrib.*`; see the [Contributed Gauge Gallery](CONTRIB.md) for the complete catalog.
 
-*gauge*.**metric**(\[*metric*: string\]) · [source](/src/gauge.ts)
+<a id="g3-gauge-metric" href="#g3-gauge-metric">#</a>
+*gauge*.**metric**(\[*metric*: string\[, ...*others*: string\]\]) · [source](/src/gauge.ts)
 
 If *metric* is specified, set the name of the metric that this gauge will indicate.
 If *metric* is not specified, return the name of the current metric, defaulting to *undefined*.
+The name is a [metric key](#metric-keys), which may be more specific than the metric the hub actually provides.
+
+Any *others* name secondary metrics that the gauge also depends on.
+The gauge's components redraw whenever *metric* **or** any of *others* changes.
+Each redraw passes the (unit-converted) value of *metric* as `v`,
+along with the latest value of every metric as `metrics`,
+so callbacks like *trigger*, *format* and *rescale* can combine them, e.g.
+```js
+g3.gauge().metric('transponderCode', 'transponderMode').append(
+    g3.indicateText().format((v, metrics) => metrics.transponderMode == 'TST' ? '8888' : v)
+)
+```
+Values in `metrics` are as reported by the hub, without unit conversion.
+*gauge*.**metrics**() returns the full list `[metric, ...others]`.
 
 *gauge*.**unit**(\[*unit*: string\]) · [source](/src/gauge.ts)
 
@@ -80,12 +100,34 @@ For example, a gauge designed to show miles/hour (mph)
 could then correctly display speeds provided in km/hour (kph).
 
 <a id="g3-gauge-fake" href="#g3-gauge-fake">#</a>
-*gauge*.**fake**(\[*generator*: function\]) · [source](/src/gauge.ts)
+*gauge*.**fake**(\[*generator*: function | any\]) · [source](/src/gauge.ts)
 
-If *generator* is specified, it defines a function that produces a sequence of metric values for this gauge.
-This is useful for gauge development and testing when a panel has no external metric source. 
-If *generator* is not specified, the current generator is returned. 
+If *generator* is specified, it defines how the [local hub](#local-hub) produces values for this gauge's metric
+when a panel has no external hub.
+A function is called once per panel interval as *generator*(*current*), where *current* is the metric's current
+value in the local hub, and returns the next value.
+Generators that track their own state can ignore *current*,
+but the built-in generators continue from it, so a metric that is changed by an [action](#actions)
+carries on varying from its new value.
+Any other value is a constant initial value, which is appropriate for inputs like switches
+that only change in response to actions, e.g. *gauge*.fake(0).
+If *generator* is not specified, the current generator is returned.
 See [fake metrics](#fake-metrics) for available generators.
+
+<a id="g3-gauge-send" href="#g3-gauge-send">#</a>
+*gauge*.**send**(*action*: object\[, ...*actions*: object\]) · [source](/src/gauge.ts)
+
+Sends one or more [actions](#actions) to the panel's hub, in order.
+This is how interactive controls change state, typically from a DOM event handler registered with `.on()`.
+Actions that name a metric default to this gauge's primary *metric*,
+and are expressed in this gauge's *unit* if it has one, e.g.
+```js
+g.send({op: 'adjust', by: 5})               // nudge g.metric() by 5 g.unit()s
+g.send({op: 'set', value: 1})               // set g.metric() to 1
+g.send({op: 'trigger', event: 'transponderIdent'})
+```
+Sending an action never updates the display directly;
+the gauge redraws when the hub reports the resulting change.
 
 *gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.ts)
 
@@ -621,8 +663,9 @@ Otherwise return the current color, which defaults to `red`.
 ### Panel
 
 A [*panel()*](#g3-panel) is a container for gauges,
-which is used to manage layout and coordinate the update of metrics
-which are polled from an external source.
+which is used to manage layout and coordinate the update of metrics.
+The panel connects to a [hub](#hubs), either an external one at *url*
+or a [local hub](#local-hub) for development.
 
 
 <a id="g3-panel" href="#g3-panel">#</a>
@@ -644,18 +687,24 @@ Set or return the current width or height of the SVG container.
 
 *panel*.**url**(\[*url*: string\]) · [source](/src/panel.ts)
 
-If defined, *url* sets the URL from which to retrieve metrics,
+If defined, *url* sets the hub endpoint from which to [read metrics](#reading-metrics),
 otherwise the current URL is returned, defaulting to undefined.
-When URL is undefined, the panel [controller](/src/controller.ts) supplies [fake metrics](#g3-fakeMetrics) for testing.
-Otherwise, an HTTP GET to *url* should return a JSON structure 
-containing the current [metrics](#metrics).
+When URL is undefined, the panel runs a [local hub](#local-hub) which supplies [fake metrics](#fake-metrics).
+
+*panel*.**inputUrl**(\[*url*: string\]) · [source](/src/panel.ts)
+
+If defined, *url* sets the hub endpoint to which the panel [sends actions](#sending-actions),
+otherwise the current value is returned, defaulting to undefined.
+If the panel has a *url* but no *inputUrl*, actions are logged and dropped, i.e. the panel is display-only.
+Actions always go to the local hub when the panel has no *url*.
 
 *panel*.**interval**(\[*interval*: number\]) · [source](/src/panel.ts)
 
-If defined, *interval* sets the polling interval in milliseconds,
+If defined, *interval* sets the update interval in milliseconds,
 otherwise the current interval is returned, defaulting to 250.
-The panel will query the configured URL (or generate fake metrics)
-once each interval.
+With an external hub, a non-zero *interval* polls *url* once per interval,
+and an *interval* of 0 instead subscribes to *url* as a stream of server-sent events.
+The local hub advances its fake metric generators once per interval (or every 250ms if *interval* is 0).
 
 *panel*.**smooth**(\[*smooth*: boolean\]) · [source](/src/panel.ts)
 
@@ -704,58 +753,199 @@ Set or return the spacing of minor grid lines.
 
 ### Metrics
 
-G3 gauges display the current value of one or more metrics.
-Normally these metrics are fetched from an external source
-by configuring a [panel's](#g3-panel) *url*,
-but for development it's handy to display fake metrics which are generated locally.
-You can use [g3py](https://github.com/patricksurry/g3py)
-to provide the server for your panel.  It offers both fake metrics and
-stubs integrated with X-Plane and FS2020.
+G3 gauges display the current value of one or more *metrics*,
+named values like `altitude` or `transponderCode`, optionally with a unit.
+A panel never owns metric state.
+It reads metrics from a [hub](#hubs), and changes them only by sending the hub [actions](#actions).
+This one-way flow keeps the display consistent with the source of truth:
+what you see is always what the hub last reported.
 
-The G3 panel queries the metrics endpoint as `GET <url>?latest=<timestamp>&units=true|false`.
-The endpoint should return a structure like this:
+#### Hubs
+
+A *hub* holds the current state of a set of metrics:
+a map from metric name to value, each with an optional unit,
+and a `latest` counter that increases whenever any metric changes.
+Typically a hub is a bridge to a flight simulator.
+It watches the simulator for the metrics its clients need and reports changes,
+and turns the actions it receives into simulator variable writes or events.
+The effect of an action then comes back to the panel as an ordinary metric update,
+once the change is reflected in the simulator.
+A hub can serve several panels, as well as other clients such as physical switches or annunciator lights.
+
+A hub is expected to:
+
+- report the metrics matching the [keys](#metric-keys) a client asks for (or all metrics if it asks for none),
+  with the units it reports them in;
+- report only the metrics that changed since the client's last `latest`,
+  or all matching metrics when `latest` is 0;
+- accept ordered batches of [actions](#actions), applying each action exactly once, in order;
+- report the effect of any action as ordinary metric changes, to every client, including the one that sent it.
+
+Anything else is up to the hub, e.g. renaming simulator variables to G3 metric names,
+deriving or smoothing metrics, or mapping actions to simulator-specific events.
+G3 itself includes only the in-browser [local hub](#local-hub) for development.
+It doesn't provide a networked hub, since the protocol is small enough for a simulator bridge to implement directly,
+but the local hub is a useful reference for the expected behavior.
+
+#### Where state lives
+
+Each layer has exactly one job:
+
+- **The simulator owns the state.** It is the only source of truth for metric values.
+  With the [local hub](#local-hub), the local hub plays the simulator's role.
+- **The hub decides what changed.** It is the only layer that compares new values with old ones,
+  so it's the place to reduce network traffic and redraws, for example by
+  dropping unchanged values, rounding noisy ones (altitude to the nearest foot, say),
+  or limiting how often a metric is reported.
+  Slow display devices benefit without any panel-side awareness.
+- **The panel only mirrors what it's told.** It caches the latest reported value of each metric,
+  so that gauges can read [secondary metrics](#g3-gauge-metric) and [keys](#metric-keys) can be resolved,
+  but otherwise does not directly own or manage state.
+  It simply updates gauges that depends on metric updates it receives
+  When the panel (re)connects, it requests a full snapshot from the hub (`latest=0`)
+  and redraws based on that new ground truth.
+- **Panel controls hold no local state.** Input controls only delivers actions to the hub,
+  and then updates only when the hub reports an updated state.  
+  Responsive behavior for control inputs such as a button's pressed look, a knob being dragged,
+  or a half-typed transponder code, depend on this roundtrip through the hub, 
+  redrawn like any other output-only gauge.
+
+#### Reading metrics
+
+With a non-zero [*interval*](#g3-panel), the panel polls its hub as
+`GET <url>?latest=<latest>&units=true|false&keys=<key>,<key>,...`.
+With an *interval* of 0, it instead opens `GET <url>?keys=<key>,<key>,...`
+as a stream of [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
+Either way, each response (or event `data`) is a JSON structure like this:
 
 ```
 {
-    "latest": <timestamp>,
-    "metrics": { 
+    "latest": <number>,
+    "metrics": {
         "<metricName>": <metricValue>,
         ...
     },
-    "units": { 
+    "units": {
         "<metricName>": "<unitName>",
         ...
     }
 }
 ```
 
-The `metrics` object contains a set of key-value pairs containing the current
-raw value of each named metric.
+The `metrics` object contains the current raw value of each reported metric.
+Every metric in a message counts as changed:
+the panel redraws everything that depends on it, without comparing it to the previous value.
+So a hub should leave out unchanged metrics where it can, although it isn't required to.
 
-If the panel request query contains `units=true` then the `units` object should 
-also be provided in the response, although it can be empty.
-Adding a metric name to the `units` object in the response declares
-the units in which the corresponding values for that metric will be reported.
-If *unitName* is a unit recognized by
+Adding a metric name to the `units` object declares
+the units in which that metric's values are reported.
+When a poll has `units=true`, or for the first event in a stream,
+the hub should include `units` for every reported metric that has one (the object can be empty).
+If *unitName* is recognized by
 [convert-units](https://github.com/convert-units/convert-units),
-and compatible with whatever gauge(s) consume it,
-G3 will automatically convert between them.
+and is compatible with the gauge(s) that display it,
+G3 automatically converts between them.
 For example, X-Plane provides the barometer setting in `inHg` but
 the panel displays correctly in `hPa`.
 
-The `latest` value provided by the metric server is returned by the client
-in the next request, allowing the server to only report metrics that changed
-in the intervening period.  
-Simple metrics servers can simply always return `latest=0`.
+The panel sends back the `latest` value from each poll response in its next request,
+so the hub can report only what changed since then.
+A first stream event should be a full snapshot of the matching metrics.
+A very simple hub can always return `latest=0` along with every metric.
+
+#### Metric keys
+
+The names that gauges use are *metric keys*,
+which can be more specific than the metrics a hub actually provides.
+For example, a twin-tank fuel gauge might display `fuel.left` and `fuel.right`,
+yet still work with a hub that only reports a single `fuel` metric.
+The rule is:
+
+> A key resolves to the longest dot-separated prefix of itself that the hub has reported.
+> `fuel.left` resolves to `fuel.left` if the hub reports it, otherwise to `fuel`, otherwise to nothing.
+
+Resolution considers every metric the hub has reported so far,
+so a metric that first appears later on, or a more specific one, is picked up automatically.
+A key that resolves to nothing just isn't drawn until it does.
+On the hub side, the same rule says which metrics to report:
+a metric matches the requested keys if it equals one of them or is a dot-separated prefix of one.
+
+#### Actions
+
+Interactive controls change metrics by sending *actions* to the hub, via [*gauge*.send()](#g3-gauge-send).
+There are three kinds of action:
+
+| Action | Meaning | Typical controls |
+|---|---|---|
+| `{"op": "set", "metric": m, "value": v}` | set metric *m* to the absolute value *v* | toggles, selectors, keypads, held buttons (1 when pressed, 0 when released) |
+| `{"op": "adjust", "metric": m, "by": d}` | change metric *m* by *d* | rotary encoders, +/- buttons |
+| `{"op": "trigger", "event": e, "value": v}` | a one-shot event *e*, with an optional *value*, that isn't itself a metric | ident, caging, timer reset |
+
+Metric and event names are G3 names, like `headingBug` or `transponderIdent`, never simulator names.
+Mapping them to simulator variables and events is the hub's job,
+which is what lets the same panel work with different simulators.
+For example, an FS2020 hub might map `adjust headingBug by 5` to five `HEADING_BUG_INC` events,
+and another hub might simply set the heading bug to its current value plus 5.
+
+A `set` or `adjust` action may include a `unit`
+giving the unit of its *value* or *by*, which the hub converts as needed.
+An `adjust` action may also include `min`, `max` and `wrap` hints:
+the hub should clamp the result to the range [*min*, *max*], or wrap within it if *wrap* is true,
+unless the simulator enforces its own limits.
+A hub should ignore (and may log) any actions it doesn't support.
+
+#### Sending actions
+
+The panel sends actions to its [*inputUrl*](#g3-panel) as
+`POST <inputUrl>`, with `Content-Type: application/json` and a body like:
+
+```
+{
+    "actions": [
+        {"op": "set", "metric": "transponderCode", "value": "7000"},
+        {"op": "trigger", "event": "transponderIdent"}
+    ]
+}
+```
+
+The actions caused by a single user interaction go in one batch,
+and the panel sends batches one at a time so that the hub receives them in order.
+The hub should reply with a 2xx status once it has accepted the batch.
+The response body is ignored, since the effect of the actions arrives as metric updates.
+
+#### Local hub
+
+When a panel has no *url*, it runs a *local hub* in the browser that follows the same rules,
+so panels and contributed gauges behave the same way in development as with a real simulator.
+The local hub works like this:
+
+- Each gauge's [*fake*()](#g3-gauge-fake) declares the starting value of its metric:
+  either a constant, or the first value from a generator function.
+  If several gauges declare a fake for the same metric, the panel logs a warning and uses the first one.
+- Once per interval, the local hub calls each generator function with its metric's current value
+  and reports the new value.
+  Metrics with a constant fake never change on their own, which suits inputs like switches.
+- A `set` action replaces the metric's value.
+  An `adjust` action adds *by* to it, then applies any *min*, *max* and *wrap* hints.
+  A `trigger` action is logged and otherwise ignored, since there's no simulator to act on it.
+- Changes caused by actions are reported immediately rather than at the next interval,
+  so controls respond instantly.
+- Generators keep running after an action changes their metric, continuing from the new value.
+  For example, if a demo sets `altitude`, it carries on drifting from there.
+
+The local hub stores each metric in the unit of the gauge that declared its fake,
+and converts the values in actions to that unit.
 
 #### Fake metrics
 
-For development and testing, any gauge can be configured to display fake metrics. 
-This is done by defining a fake metric generator on the gauge itself using the *gauge*.fake() method. 
-When a panel is running without a configured `url`, it will use these generators to produce time-varying data.
+For development and testing, any gauge can be configured to display fake metrics
+by defining a fake metric generator on the gauge itself using the [*gauge*.fake()](#g3-gauge-fake) method.
+When a panel is running without a configured `url`, its [local hub](#local-hub) uses these generators to produce time-varying data.
 
 A simple set of metric generators is provided,
 or you can define your own function that produces a new metric value each time it's called.
+Generators are called with the metric's current value,
+and the built-in generators continue from that value when it's given.
 
 <a id="g3-forceSeries" href="#g3-forceSeries">#</a>
 g3.**forceSeries**(\[*min*: number\[, *max*: number\[, *options*: object\]\]\]) · [source](/src/faketimeseries.ts)
