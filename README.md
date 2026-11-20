@@ -479,6 +479,7 @@ Check the [issue tracker](https://github.com/patricksurry/g3/issues)
 if you're looking for something to play with.
 
 Check the unit tests after any changes with `npm run test`.
+The same type check, lint, tests and build run in CI on every pull request (see `.github/workflows/ci.yml`).
 Ensure new code is tested using `npm test -- --coverage`.
 The test suite also verifies that every contributed gauge has a JSDoc description,
 matches its deterministic SVG snapshot in `tests/contrib/*.svg`, and is documented in `doc/CONTRIB.md`.
