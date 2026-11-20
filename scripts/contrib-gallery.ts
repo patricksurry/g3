@@ -376,13 +376,13 @@ export function generateContribMarkdown(
     lines.push('### Quick Overview');
     lines.push('');
 
-    // Render a 5-column visual thumbnail grid
-    const cols = 5;
+    // Render a 4-column visual thumbnail grid
+    const cols = 4;
     lines.push('| ' + Array(cols).fill(' ').join(' | ') + ' |');
     lines.push('| ' + Array(cols).fill(':---:').join(' | ') + ' |');
     for (let i = 0; i < entries.length; i += cols) {
         const row = entries.slice(i, i + cols).map(e => {
-            return `<a href="#${e.slug}"><img src="../tests/contrib/${e.slug}.svg" width="110" alt="${e.uri}"><br><sub><code>${e.uri}</code></sub></a>`;
+            return `<a href="#${e.slug}"><img src="../tests/contrib/${e.slug}.svg" width="160" alt="${e.uri}"><br><sub><code>${e.uri}</code></sub></a>`;
         });
         while (row.length < cols) row.push(' ');
         lines.push('| ' + row.join(' | ') + ' |');
