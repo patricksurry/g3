@@ -11,10 +11,11 @@ combining JSDoc descriptions, runtime-reflected metric/unit bindings, a determin
 |   |   |   |   |   |
 | :---: | :---: | :---: | :---: | :---: |
 | <a href="#nav-airspeed-DHC2"><img src="../tests/contrib/nav-airspeed-DHC2.svg" width="110" alt="nav.airspeed.DHC2"><br><sub><code>nav.airspeed.DHC2</code></sub></a> | <a href="#nav-altitude-generic"><img src="../tests/contrib/nav-altitude-generic.svg" width="110" alt="nav.altitude.generic"><br><sub><code>nav.altitude.generic</code></sub></a> | <a href="#nav-attitude-generic"><img src="../tests/contrib/nav-attitude-generic.svg" width="110" alt="nav.attitude.generic"><br><sub><code>nav.attitude.generic</code></sub></a> | <a href="#nav-heading-generic"><img src="../tests/contrib/nav-heading-generic.svg" width="110" alt="nav.heading.generic"><br><sub><code>nav.heading.generic</code></sub></a> | <a href="#nav-turnCoordinator-generic"><img src="../tests/contrib/nav-turnCoordinator-generic.svg" width="110" alt="nav.turnCoordinator.generic"><br><sub><code>nav.turnCoordinator.generic</code></sub></a> |
-| <a href="#nav-VSI-generic"><img src="../tests/contrib/nav-VSI-generic.svg" width="110" alt="nav.VSI.generic"><br><sub><code>nav.VSI.generic</code></sub></a> | <a href="#radionav-ADF-generic"><img src="../tests/contrib/radionav-ADF-generic.svg" width="110" alt="radionav.ADF.generic"><br><sub><code>radionav.ADF.generic</code></sub></a> | <a href="#radionav-VOR-generic"><img src="../tests/contrib/radionav-VOR-generic.svg" width="110" alt="radionav.VOR.generic"><br><sub><code>radionav.VOR.generic</code></sub></a> | <a href="#engine-tachometer-DHC2"><img src="../tests/contrib/engine-tachometer-DHC2.svg" width="110" alt="engine.tachometer.DHC2"><br><sub><code>engine.tachometer.DHC2</code></sub></a> | <a href="#engine-tachometer-jageype"><img src="../tests/contrib/engine-tachometer-jageype.svg" width="110" alt="engine.tachometer.jageype"><br><sub><code>engine.tachometer.jageype</code></sub></a> |
-| <a href="#engine-speedometer-BMW"><img src="../tests/contrib/engine-speedometer-BMW.svg" width="110" alt="engine.speedometer.BMW"><br><sub><code>engine.speedometer.BMW</code></sub></a> | <a href="#engine-suctionPressure-DHC2"><img src="../tests/contrib/engine-suctionPressure-DHC2.svg" width="110" alt="engine.suctionPressure.DHC2"><br><sub><code>engine.suctionPressure.DHC2</code></sub></a> | <a href="#engine-manifoldPressure-DHC2"><img src="../tests/contrib/engine-manifoldPressure-DHC2.svg" width="110" alt="engine.manifoldPressure.DHC2"><br><sub><code>engine.manifoldPressure.DHC2</code></sub></a> | <a href="#engine-fuel-generic"><img src="../tests/contrib/engine-fuel-generic.svg" width="110" alt="engine.fuel.generic"><br><sub><code>engine.fuel.generic</code></sub></a> | <a href="#engine-fuel-DHC2"><img src="../tests/contrib/engine-fuel-DHC2.svg" width="110" alt="engine.fuel.DHC2"><br><sub><code>engine.fuel.DHC2</code></sub></a> |
-| <a href="#engine-oilFuelStatus-DHC2"><img src="../tests/contrib/engine-oilFuelStatus-DHC2.svg" width="110" alt="engine.oilFuelStatus.DHC2"><br><sub><code>engine.oilFuelStatus.DHC2</code></sub></a> | <a href="#engine-carbMixtureTemp-DHC2"><img src="../tests/contrib/engine-carbMixtureTemp-DHC2.svg" width="110" alt="engine.carbMixtureTemp.DHC2"><br><sub><code>engine.carbMixtureTemp.DHC2</code></sub></a> | <a href="#engine-cylinderHeadTemp-DHC2"><img src="../tests/contrib/engine-cylinderHeadTemp-DHC2.svg" width="110" alt="engine.cylinderHeadTemp.DHC2"><br><sub><code>engine.cylinderHeadTemp.DHC2</code></sub></a> | <a href="#electrical-ammeter-DHC2"><img src="../tests/contrib/electrical-ammeter-DHC2.svg" width="110" alt="electrical.ammeter.DHC2"><br><sub><code>electrical.ammeter.DHC2</code></sub></a> | <a href="#electrical-voltmeter-DHC2"><img src="../tests/contrib/electrical-voltmeter-DHC2.svg" width="110" alt="electrical.voltmeter.DHC2"><br><sub><code>electrical.voltmeter.DHC2</code></sub></a> |
-| <a href="#clocks-simple"><img src="../tests/contrib/clocks-simple.svg" width="110" alt="clocks.simple"><br><sub><code>clocks.simple</code></sub></a> | <a href="#clocks-casioF91W"><img src="../tests/contrib/clocks-casioF91W.svg" width="110" alt="clocks.casioF91W"><br><sub><code>clocks.casioF91W</code></sub></a> | <a href="#clocks-omegaSpeedmaster"><img src="../tests/contrib/clocks-omegaSpeedmaster.svg" width="110" alt="clocks.omegaSpeedmaster"><br><sub><code>clocks.omegaSpeedmaster</code></sub></a> | <a href="#switches-toggle"><img src="../tests/contrib/switches-toggle.svg" width="110" alt="switches.toggle"><br><sub><code>switches.toggle</code></sub></a> | <a href="#debug-alignment"><img src="../tests/contrib/debug-alignment.svg" width="110" alt="debug.alignment"><br><sub><code>debug.alignment</code></sub></a> |
+| <a href="#nav-VSI-generic"><img src="../tests/contrib/nav-VSI-generic.svg" width="110" alt="nav.VSI.generic"><br><sub><code>nav.VSI.generic</code></sub></a> | <a href="#radionav-ADF-generic"><img src="../tests/contrib/radionav-ADF-generic.svg" width="110" alt="radionav.ADF.generic"><br><sub><code>radionav.ADF.generic</code></sub></a> | <a href="#radionav-VOR-generic"><img src="../tests/contrib/radionav-VOR-generic.svg" width="110" alt="radionav.VOR.generic"><br><sub><code>radionav.VOR.generic</code></sub></a> | <a href="#radionav-transponder-KT76C"><img src="../tests/contrib/radionav-transponder-KT76C.svg" width="110" alt="radionav.transponder.KT76C"><br><sub><code>radionav.transponder.KT76C</code></sub></a> | <a href="#engine-tachometer-DHC2"><img src="../tests/contrib/engine-tachometer-DHC2.svg" width="110" alt="engine.tachometer.DHC2"><br><sub><code>engine.tachometer.DHC2</code></sub></a> |
+| <a href="#engine-tachometer-jageype"><img src="../tests/contrib/engine-tachometer-jageype.svg" width="110" alt="engine.tachometer.jageype"><br><sub><code>engine.tachometer.jageype</code></sub></a> | <a href="#engine-speedometer-BMW"><img src="../tests/contrib/engine-speedometer-BMW.svg" width="110" alt="engine.speedometer.BMW"><br><sub><code>engine.speedometer.BMW</code></sub></a> | <a href="#engine-suctionPressure-DHC2"><img src="../tests/contrib/engine-suctionPressure-DHC2.svg" width="110" alt="engine.suctionPressure.DHC2"><br><sub><code>engine.suctionPressure.DHC2</code></sub></a> | <a href="#engine-manifoldPressure-DHC2"><img src="../tests/contrib/engine-manifoldPressure-DHC2.svg" width="110" alt="engine.manifoldPressure.DHC2"><br><sub><code>engine.manifoldPressure.DHC2</code></sub></a> | <a href="#engine-fuel-generic"><img src="../tests/contrib/engine-fuel-generic.svg" width="110" alt="engine.fuel.generic"><br><sub><code>engine.fuel.generic</code></sub></a> |
+| <a href="#engine-fuel-DHC2"><img src="../tests/contrib/engine-fuel-DHC2.svg" width="110" alt="engine.fuel.DHC2"><br><sub><code>engine.fuel.DHC2</code></sub></a> | <a href="#engine-oilFuelStatus-DHC2"><img src="../tests/contrib/engine-oilFuelStatus-DHC2.svg" width="110" alt="engine.oilFuelStatus.DHC2"><br><sub><code>engine.oilFuelStatus.DHC2</code></sub></a> | <a href="#engine-carbMixtureTemp-DHC2"><img src="../tests/contrib/engine-carbMixtureTemp-DHC2.svg" width="110" alt="engine.carbMixtureTemp.DHC2"><br><sub><code>engine.carbMixtureTemp.DHC2</code></sub></a> | <a href="#engine-cylinderHeadTemp-DHC2"><img src="../tests/contrib/engine-cylinderHeadTemp-DHC2.svg" width="110" alt="engine.cylinderHeadTemp.DHC2"><br><sub><code>engine.cylinderHeadTemp.DHC2</code></sub></a> | <a href="#electrical-ammeter-DHC2"><img src="../tests/contrib/electrical-ammeter-DHC2.svg" width="110" alt="electrical.ammeter.DHC2"><br><sub><code>electrical.ammeter.DHC2</code></sub></a> |
+| <a href="#electrical-voltmeter-DHC2"><img src="../tests/contrib/electrical-voltmeter-DHC2.svg" width="110" alt="electrical.voltmeter.DHC2"><br><sub><code>electrical.voltmeter.DHC2</code></sub></a> | <a href="#clocks-simple"><img src="../tests/contrib/clocks-simple.svg" width="110" alt="clocks.simple"><br><sub><code>clocks.simple</code></sub></a> | <a href="#clocks-casioF91W"><img src="../tests/contrib/clocks-casioF91W.svg" width="110" alt="clocks.casioF91W"><br><sub><code>clocks.casioF91W</code></sub></a> | <a href="#clocks-omegaSpeedmaster"><img src="../tests/contrib/clocks-omegaSpeedmaster.svg" width="110" alt="clocks.omegaSpeedmaster"><br><sub><code>clocks.omegaSpeedmaster</code></sub></a> | <a href="#switches-toggle"><img src="../tests/contrib/switches-toggle.svg" width="110" alt="switches.toggle"><br><sub><code>switches.toggle</code></sub></a> |
+| <a href="#switches-button"><img src="../tests/contrib/switches-button.svg" width="110" alt="switches.button"><br><sub><code>switches.button</code></sub></a> | <a href="#switches-rotary"><img src="../tests/contrib/switches-rotary.svg" width="110" alt="switches.rotary"><br><sub><code>switches.rotary</code></sub></a> | <a href="#switches-selector"><img src="../tests/contrib/switches-selector.svg" width="110" alt="switches.selector"><br><sub><code>switches.selector</code></sub></a> | <a href="#debug-alignment"><img src="../tests/contrib/debug-alignment.svg" width="110" alt="debug.alignment"><br><sub><code>debug.alignment</code></sub></a> |   |
 
 ## Flight Navigation (`g3.contrib.nav`)
 
@@ -364,7 +365,7 @@ export function VSIGeneric(): GaugeComponent {
 ## Radio Navigation (`g3.contrib.radionav`)
 
 <a id="radionav-ADF-generic" href="#radionav-ADF-generic">#</a>
-g3.contrib.**radionav.ADF.generic**() · [source](../src/contrib/radionav.ts#L82-L113)
+g3.contrib.**radionav.ADF.generic**() · [source](../src/contrib/radionav.ts#L84-L115)
 
 <img align="right" width="160" src="../tests/contrib/radionav-ADF-generic.svg" alt="g3.contrib.radionav.ADF.generic">
 
@@ -416,7 +417,7 @@ export function ADFGeneric(): GaugeComponent {
 ---
 
 <a id="radionav-VOR-generic" href="#radionav-VOR-generic">#</a>
-g3.contrib.**radionav.VOR.generic**() · [source](../src/contrib/radionav.ts#L12-L76)
+g3.contrib.**radionav.VOR.generic**() · [source](../src/contrib/radionav.ts#L14-L78)
 
 <img align="right" width="160" src="../tests/contrib/radionav-VOR-generic.svg" alt="g3.contrib.radionav.VOR.generic">
 
@@ -491,6 +492,152 @@ export function VORGeneric(): GaugeComponent {
             // top triangular indicator
             g3.element('path', {d: 'M 0,-80 l 0,10 l 8,14 l -16,0 l 8,-14 z'})
                 .class('g3-highlight-fill g3-highlight-stroke'),
+        );
+}
+```
+</details>
+
+<br clear="both" />
+
+---
+
+<a id="radionav-transponder-KT76C" href="#radionav-transponder-KT76C">#</a>
+g3.contrib.**radionav.transponder.KT76C**([*opts*: KT76COptions]) · [source](../src/contrib/radionav.ts#L153-L275)
+
+<img align="right" width="160" src="../tests/contrib/radionav-transponder-KT76C.svg" alt="g3.contrib.radionav.transponder.KT76C">
+
+Bendix/King KT 76C TSO panel-mount aviation transponder with a 7-segment gas-discharge display (flight level, mode annunciators and 4-digit squawk code), a 5-position mode selector (`OFF / SBY / TST / ON / ALT`), `IDT` ident button, and `0–7 / CLR / VFR` code entry buttons. A new code is only set once all four digits have been entered.
+
+**Parameters:**
+- `opts` (*KT76COptions*): Optional metric names for `code`, `mode`, `ident` and `altitude`
+
+**Metrics:** `altitude.pressure` (`ft`), `transponderMode`, `transponderCode`
+
+<details>
+<summary>Factory implementation (<code>src/contrib/radionav.ts</code>, 123 lines)</summary>
+
+```ts
+export function transponderKT76C(opts: KT76COptions = {}): GaugeComponent {
+    const code = opts.code ?? 'transponderCode',
+        mode = opts.mode ?? 'transponderMode',
+        ident = opts.ident ?? 'transponderIdent',
+        altitude = opts.altitude ?? 'altitude.pressure';
+
+    const isMode = (v: any, ...modes: KT76CMode[]) => modes.some(s => Number(v) === KT76C_MODES.indexOf(s));
+    const squawk = (v: any) => v === undefined || v === null || v === '' ? '----' : String(v).padStart(4, '0');
+
+    // local UI state for each drawn transponder: the digits typed so far, and what to show without them
+    type EntryState = { entry: string; code?: any; mode?: any; text?: d3.Selection<SVGTextElement, unknown, null, undefined> };
+    const state = d3.local<EntryState>();
+
+    function redraw(s: EntryState) {
+        s.text?.text(isMode(s.mode, 'TST') ? '8888' : s.entry ? s.entry.padEnd(4, '-') : squawk(s.code));
+    }
+
+    const init: RenderFunction = (sel: SelectorOrSelection) => {
+        state.set(gaugeNode(sel, 'kt76c'), { entry: '' });
+    };
+
+    // the code readout combines the reported code and mode with any digits being typed
+    const codeReadout: RenderFunction = (sel: SelectorOrSelection, g?: GaugeComponent) => {
+        const text = g3.d3sel(sel).append('text').attr('font-size', 12.5).attr('class', 'kt76c-digits'),
+            s = state.get(text.node() as Element)!;
+        s.text = text as any;
+        if (g3.activeController && g) {
+            g3.activeController.register((v, _t, metrics) => {
+                s.code = v;
+                s.mode = metrics?.[mode];
+                redraw(s);
+            }, g.metrics(), g.unit());
+        }
+        redraw(s);
+    };
+
+    const enter = (update: (entry: string) => string, commit?: string) => (e: Event, g: GaugeComponent) => {
+        const s = state.get(e.currentTarget as Element)!;
+        s.entry = commit === undefined ? update(s.entry) : '';
+        if (s.entry.length == 4) {
+            g.send({ op: 'set', metric: code, value: s.entry });
+            s.entry = '';
+        } else if (commit !== undefined) {
+            g.send({ op: 'set', metric: code, value: commit });
+        }
+        redraw(s);
+    };
+
+    const annunciator = (text: string, cls: string, x: number, y: number, lit: (v: any, metrics?: Record<string, any>) => boolean) =>
+        g3.indicateStyle().trigger((v, metrics) => lit(v, metrics) ? 1 : 0).append(
+            g3.put().class(cls).append(
+                g3.gaugeLabel(text, {x, y, size: 3.6}).class('kt76c-segment'),
+            )
+        );
+
+    const keypadButton = (label: string, x: number, width: number, onPress: (e: Event, g: GaugeComponent) => void) =>
+        g3.put().x(x).y(20).scale(0.16).append(
+            buttonFactory(undefined, label, { shape: 'rect', width, height: 56, onPress })
+        );
+
+    const digitPositions = [-86, -69, -52, -35, -18, 4, 21, 38];
+
+    return g3.gauge()
+        .class('kt76c')
+        .append(
+            init,
+            // rack bezel and recessed faceplate
+            g3.element('rect', {x: -100, y: -32, width: 200, height: 64, rx: 3}).class('kt76c-bezel'),
+            g3.element('rect', {x: -97, y: -29, width: 194, height: 40, rx: 2}).class('kt76c-face'),
+            g3.gaugeLabel('BENDIX/KING', {x: -76, y: -23.5, size: 4.1}).class('kt76c-silkscreen'),
+            g3.gaugeLabel('XPDR', {x: 52, y: -23.5, size: 4.1}).class('kt76c-silkscreen'),
+            g3.gaugeLabel('KT 76C TSO', {x: 80, y: -23.5, size: 3.7}).class('kt76c-silkscreen'),
+
+            g3.put().x(-76).y(-8).scale(0.2).append(
+                buttonFactory(undefined, 'IDT', { shape: 'rect', width: 92, height: 52, mode: 'trigger', event: ident })
+            ),
+
+            // display window
+            g3.element('rect', {x: -55, y: -24, width: 98, height: 29, rx: 1.5}).class('kt76c-window'),
+            g3.element('rect', {x: -53, y: -22, width: 94, height: 25, rx: 1}).class('kt76c-window-inner'),
+
+            // flight level, shown in ALT and TST
+            g3.gauge().metric(altitude, mode).unit('ft').fake(g3.forceSeries(1000, 18000)).append(
+                g3.indicateStyle().trigger((_v, metrics) => isMode(metrics?.[mode], 'ALT', 'TST') ? 1 : 0).append(
+                    g3.gaugeLabel('FL', {x: -47, y: -3, size: 4.2}).class('kt76c-segment'),
+                    g3.put().x(-30).y(-9).class('kt76c-fl').append(
+                        g3.indicateText().size(12.5).class('kt76c-digits')
+                            .format((v, metrics) => isMode(metrics?.[mode], 'TST')
+                                ? '888'
+                                : d3.format('03d')(Math.max(0, Math.round((Number(v) || 0) / 100))))
+                    ),
+                )
+            ),
+
+            // mode annunciators, and R while replying to an ident (or in TST)
+            g3.gauge().metric(mode, ident).append(
+                annunciator('ALT', 'kt76c-alt', -11, -15.5, v => isMode(v, 'ALT', 'TST')),
+                annunciator('ON', 'kt76c-on', -2, -15.5, v => isMode(v, 'ON', 'ALT', 'TST')),
+                annunciator('SBY', 'kt76c-sby', -7, -3, v => isMode(v, 'SBY', 'TST')),
+                annunciator('R', 'kt76c-reply', 5, -15.5,
+                    (v, metrics) => isMode(v, 'TST') || (!!metrics?.[ident] && isMode(v, 'ON', 'ALT'))),
+            ),
+
+            // squawk code, shown unless OFF
+            g3.gauge().metric(code, mode).fake('1200').append(
+                g3.indicateStyle().trigger((_v, metrics) => isMode(metrics?.[mode], 'OFF') ? 0 : 1).append(
+                    g3.put().x(22).y(-9).class('kt76c-code').append(codeReadout),
+                )
+            ),
+
+            g3.put().x(76).y(-4).scale(0.24).append(
+                selectorFactory(mode, '', [...KT76C_MODES], { range: [-135, -20] }).fake(KT76C_MODES.indexOf('ALT'))
+            ),
+
+            // keypad: octal digits, ambient light sensor, CLR backs up one digit, VFR sets 1200
+            ...digitPositions.map((x, digit) =>
+                keypadButton(String(digit), x, 82, enter(entry => entry + digit))
+            ),
+            g3.element('circle', {cx: -7, cy: 20, r: 2.2}).class('kt76c-photocell'),
+            keypadButton('CLR', 61, 96, enter(entry => entry.slice(0, -1))),
+            keypadButton('VFR', 83, 96, enter(entry => entry, '1200')),
         );
 }
 ```
@@ -1298,40 +1445,309 @@ text {fill: #ccc}
 ## Switches & Controls (`g3.contrib.switches`)
 
 <a id="switches-toggle" href="#switches-toggle">#</a>
-g3.contrib.**switches.toggle**([*metric*: string], [*label*: string]) · [source](../src/contrib/switches.ts#L11-L30)
+g3.contrib.**switches.toggle**([*metric*: string], [*label*: string]) · [source](../src/contrib/switches.ts#L76-L99)
 
 <img align="right" width="160" src="../tests/contrib/switches-toggle.svg" alt="g3.contrib.switches.toggle">
 
-Two-position linear on/off toggle switch indicator.
+Two-position linear on/off toggle switch; clicking sets the metric to the opposite of its reported value.
 
 **Parameters:**
-- `metric` (*string*): Metric name to indicate (default 'status')
+- `metric` (*string*): Metric name to indicate and set (default 'status')
 - `label` (*string*): Text label displayed above the switch (defaults to `metric`)
 
 **Metrics:** `status`
 
 <details>
-<summary>Factory implementation (<code>src/contrib/switches.ts</code>, 20 lines)</summary>
+<summary>Factory implementation (<code>src/contrib/switches.ts</code>, 24 lines)</summary>
 
 ```ts
 export function toggleFactory(metric?: string, label?: string): GaugeComponent {
     const m = metric || 'status';
-    const l = label || m;
+    const l = label ?? m;
     return g3.gauge()
         .metric(m)
-        .fake(g3.categoricalSeries([0, 1]))
+        .fake(0)
         .measure(d3.scaleLinear().domain([0, 1]).range([-40, 40]))
         .kind('linear')
         .append(
-            g3.put().rotate(-90).append(
-                g3.element('path', {d: 'M 40,40 a 40,40 0 0 0 0,-80 l -80,0 a 40,40 0 0 0 0,80 z'})
-                    .class('g3-fg-stroke g3-bg-fill').style('stroke-width: 7'),
-                g3.axisLabels({0: 'off', 1: 'on'}).inset(60).rotate(90),
-                g3.gaugeLabel(l, {size: 20, y: -60}),
-                g3.indicatePointer().append(
-                    g3.element('circle', {r: 30}).class('g3-fg-fill')
+            trackReported(),
+            g3.put().rotate(-90).class('g3-switch-control')
+                .on('click', (e: Event, g: GaugeComponent) =>
+                    g.send({ op: 'set', value: reported.get(e.currentTarget as Element) ? 0 : 1 }))
+                .append(
+                    g3.element('path', {d: 'M 40,40 a 40,40 0 0 0 0,-80 l -80,0 a 40,40 0 0 0 0,80 z'})
+                        .class('g3-fg-stroke g3-bg-fill').style('stroke-width: 7'),
+                    g3.axisLabels({0: 'off', 1: 'on'}).inset(60).rotate(90),
+                    g3.gaugeLabel(l, {size: 20, y: -60}),
+                    g3.indicatePointer().append(
+                        g3.element('circle', {r: 30}).class('g3-fg-fill')
+                    ),
+                )
+        );
+}
+```
+</details>
+
+<br clear="both" />
+
+---
+
+<a id="switches-button" href="#switches-button">#</a>
+g3.contrib.**switches.button**([*metric*: string], [*label*: string], [*opts*: ButtonOptions]) · [source](../src/contrib/switches.ts#L128-L221)
+
+<img align="right" width="160" src="../tests/contrib/switches-button.svg" alt="g3.contrib.switches.button">
+
+Push-button (round or rectangular) that looks pressed while held, or while a latched metric is 1.
+
+**Parameters:**
+- `metric` (*string*): Metric name to set (default 'button'; may be omitted for `trigger` or `onPress` buttons)
+- `label` (*string*): Text label displayed above a round button or on the cap of a rectangular button (defaults to `metric`)
+- `opts` (*ButtonOptions*): Optional `shape`, `width`, `height`, `mode`, `event` and `onPress`
+
+**Metrics:** `button`
+
+<details>
+<summary>Factory implementation (<code>src/contrib/switches.ts</code>, 94 lines)</summary>
+
+```ts
+export function buttonFactory(metric?: string, label?: string, opts: ButtonOptions = {}): GaugeComponent {
+    const m = metric ?? (opts.onPress || opts.mode === 'trigger' ? undefined : 'button');
+    const l = label ?? m ?? '';
+    const mode = opts.mode ?? 'momentary';
+    const held = d3.local<boolean>();
+
+    const showPressed = (node: Element, on: boolean) =>
+        d3.select(node).select('.g3-switch-pressed').style('opacity', on ? 1 : 0);
+
+    function press(e: Event, g: GaugeComponent) {
+        if (opts.onPress) {
+            opts.onPress(e, g);
+        } else if (mode === 'trigger') {
+            const event = opts.event ?? g.metric();
+            if (event) g.send({ op: 'trigger', event });
+        } else if (mode === 'latch') {
+            g.send({ op: 'set', value: reported.get(e.currentTarget as Element) ? 0 : 1 });
+        } else {
+            g.send({ op: 'set', value: 1 });
+        }
+    }
+
+    function down(e: Event, g: GaugeComponent) {
+        const node = e.currentTarget as Element;
+        if (held.get(node)) return;
+        held.set(node, true);
+        showPressed(node, true);
+        press(e, g);
+    }
+
+    function release(e: Event, g: GaugeComponent) {
+        const node = e.currentTarget as Element;
+        if (!held.get(node)) return;
+        held.set(node, false);
+        showPressed(node, false);
+        if (mode === 'momentary' && !opts.onPress) g.send({ op: 'set', value: 0 });
+    }
+
+    const control = g3.put().class('g3-switch-control');
+    if (mode === 'latch' && !opts.onPress) {
+        control.on('click', press);
+    } else {
+        control.on('pointerdown', down)
+            .on('pointerup', release)
+            .on('pointerleave', release)
+            .on('pointercancel', release);
+    }
+
+    const g = g3.gauge().class('g3-switch-button');
+    if (m) g.metric(m);
+    if (m && mode !== 'trigger') g.fake(0);
+    // a latched button looks pressed while its reported value is set
+    g.append(trackReported(mode === 'latch' ? (node, v) => showPressed(node, !!v) : undefined));
+
+    if (opts.shape === 'rect') {
+        const w = opts.width ?? 84,
+            h = opts.height ?? 54,
+            rx = Math.round(Math.min(w, h) * 0.18),
+            fontSize = Math.round(h * 0.48);
+        const cap = (inset: number, height: number, r: number, cls: string, dy = 0) =>
+            g3.element('rect', {x: -w / 2 + inset, y: -h / 2 + inset + dy, width: w - 2 * inset, height, rx: r}).class(cls);
+
+        return g.append(
+            control.append(
+                cap(0, h, rx, 'g3-switch-bezel'),
+                cap(3, h - 6, rx * 0.8, 'g3-switch-recess'),
+                cap(5, h - 10, rx * 0.65, 'g3-switch-cap'),
+                g3.element('rect', {x: -w / 2 + 8, y: -h / 2 + 7, width: w - 16, height: (h - 14) * 0.34, rx: rx * 0.45})
+                    .class('g3-switch-cap-shine'),
+                g3.gaugeLabel(l, {size: fontSize}),
+                g3.put().class('g3-switch-pressed').style('opacity: 0').append(
+                    cap(5, h - 10, rx * 0.65, 'g3-switch-cap-down'),
+                    cap(6, h - 13, rx * 0.55, 'g3-switch-cap-down-face', 1),
+                    g3.gaugeLabel(l, {y: 2, size: fontSize}),
                 ),
             )
+        );
+    }
+
+    return g.append(
+        g3.gaugeLabel(l, {size: 20, y: -60}),
+        control.append(
+            g3.element('circle', {r: 45}).class('g3-fg-fill'),
+            g3.element('circle', {r: 38}).class('g3-bg-fill'),
+            g3.element('circle', {r: 33}).class('g3-switch-recess'),
+            g3.element('circle', {r: 28}).class('g3-fg-fill').style('filter: url(#dropShadow2)'),
+            g3.put().class('g3-switch-pressed').style('opacity: 0').append(
+                g3.element('circle', {r: 29}).class('g3-switch-cap-down'),
+                g3.element('circle', {r: 26}).class('g3-switch-bezel'),
+            ),
+            g3.element('circle', {r: 28}).class('g3-highlight'),
+        )
+    );
+}
+```
+</details>
+
+<br clear="both" />
+
+---
+
+<a id="switches-rotary" href="#switches-rotary">#</a>
+g3.contrib.**switches.rotary**([*metric*: string], [*label*: string], [*opts*: RotaryOptions]) · [source](../src/contrib/switches.ts#L243-L281)
+
+<img align="right" width="160" src="../tests/contrib/switches-rotary.svg" alt="g3.contrib.switches.rotary">
+
+Rotary encoder knob that sends `adjust` actions (click left/right half, or scroll wheel) and turns to show the reported value of the metric it adjusts.
+
+**Parameters:**
+- `metric` (*string*): Metric name to adjust and indicate (default 'rotary')
+- `label` (*string*): Text label displayed above the knob (defaults to `metric`)
+- `opts` (*RotaryOptions*): Optional `step`, `min`, `max`, `wrap` and `detents`
+
+**Metrics:** `rotary`
+
+<details>
+<summary>Factory implementation (<code>src/contrib/switches.ts</code>, 39 lines)</summary>
+
+```ts
+export function rotaryFactory(metric?: string, label?: string, opts: RotaryOptions = {}): GaugeComponent {
+    const m = metric || 'rotary';
+    const l = label ?? m;
+    const step = opts.step ?? 1,
+        detents = opts.detents ?? 12,
+        hints = Object.fromEntries(
+            (['min', 'max', 'wrap'] as const).filter(k => opts[k] !== undefined).map(k => [k, opts[k]])
+        );
+    const turn = (g: GaugeComponent, dir: number) => g.send({ op: 'adjust', by: dir * step, ...hints });
+
+    return g3.gauge()
+        .metric(m)
+        .fake(opts.min ?? 0)
+        .measure(d3.scaleLinear().domain([0, step * detents]).range([0, 360]))
+        .append(
+            g3.gaugeLabel(l, {size: 20, y: -65}),
+            g3.axisSector([-4.2 * step, -1.8 * step]).inset(48).size(0).class('g3-fg-stroke').style('stroke-width: 2'),
+            g3.axisSector([1.8 * step, 4.2 * step]).inset(48).size(0).class('g3-fg-stroke').style('stroke-width: 2'),
+            g3.gaugeLabel('-', {x: -55, y: 0, size: 24}),
+            g3.gaugeLabel('+', {x: 55, y: 0, size: 20}),
+            g3.put().class('g3-switch-control')
+                .on('click', (e: MouseEvent, g: GaugeComponent) => turn(g, d3.pointer(e)[0] < 0 ? -1 : 1))
+                .on('wheel', (e: WheelEvent, g: GaugeComponent) => {
+                    e.preventDefault();
+                    turn(g, e.deltaY < 0 ? 1 : -1);
+                }, { passive: false })
+                .append(
+                    g3.element('circle', {r: 44}).class('g3-fg-fill'),
+                    g3.element('circle', {r: 39}).class('g3-bg-fill'),
+                    g3.indicatePointer().append(
+                        g3.element('path', {d: knurlPath(35, 31.5, 20)}).class('g3-switch-collar'),
+                        g3.element('circle', {r: 29.5}).class('g3-switch-cap-down-face'),
+                        g3.element('circle', {r: 28}).class('g3-switch-collar-recess'),
+                        g3.element('circle', {cy: -17, r: 5}).class('g3-switch-cap-down'),
+                        g3.element('circle', {r: 28}).class('g3-highlight'),
+                    ),
+                )
+        );
+}
+```
+</details>
+
+<br clear="both" />
+
+---
+
+<a id="switches-selector" href="#switches-selector">#</a>
+g3.contrib.**switches.selector**([*metric*: string], [*label*: string], [*positions*: string[] | Record<number, string>], [*opts*: SelectorOptions]) · [source](../src/contrib/switches.ts#L300-L355)
+
+<img align="right" width="160" src="../tests/contrib/switches-selector.svg" alt="g3.contrib.switches.selector">
+
+Multi-position detented rotary selector switch, e.g. a magneto or mode selector. Positions are evenly spaced; clicking (left/right half) or scrolling sets the next position, stopping at the ends.
+
+**Parameters:**
+- `metric` (*string*): Metric name to indicate and set (default 'selector')
+- `label` (*string*): Text label displayed below the switch (defaults to `metric`)
+- `positions` (*string[] | Record<number, string>*): Position labels, whose values are their indices, or a map of value to label (default `['OFF', 'ON']`)
+- `opts` (*SelectorOptions*): Optional angular `range` and `wrap`
+
+**Metrics:** `selector`
+
+<details>
+<summary>Factory implementation (<code>src/contrib/switches.ts</code>, 56 lines)</summary>
+
+```ts
+export function selectorFactory(
+    metric?: string,
+    label?: string,
+    positions?: string[] | Record<number, string>,
+    opts: SelectorOptions = {}
+): GaugeComponent {
+    const m = metric || 'selector';
+    const l = label ?? m;
+    const pos = positions || ['OFF', 'ON'];
+    const labelMap: Record<number, string> = Array.isArray(pos)
+        ? Object.fromEntries(pos.map((s, i) => [i, s]))
+        : pos;
+    const values = Object.keys(labelMap).map(Number).sort((a, b) => a - b),
+        n = values.length,
+        index = (v: any) => values.indexOf(Number(v));
+
+    function stepPosition(e: Event, g: GaugeComponent, dir: number) {
+        const i = index(reported.get(e.currentTarget as Element));
+        let j = i < 0 ? 0 : i + dir;
+        if (j < 0 || j >= n) {
+            if (!opts.wrap) return;
+            j = (j + n) % n;
+        }
+        g.send({ op: 'set', value: values[j] });
+    }
+
+    // the gauge works in position (index) space, so positions are evenly spaced whatever their values
+    return g3.gauge()
+        .metric(m)
+        .fake(values[0])
+        .measure(d3.scaleLinear().domain([0, Math.max(1, n - 1)]).range(opts.range || [-60, 60]))
+        .append(
+            trackReported(),
+            g3.axisTicks(d3.range(n)).inset(54).size(6).style('stroke-width: 1.5'),
+            g3.axisLabels(Object.fromEntries(values.map((v, i) => [i, labelMap[v]]))).inset(34).size(14),
+            g3.gaugeLabel(l, {size: 20, y: 68}),
+            g3.put().class('g3-switch-control')
+                .on('click', (e: MouseEvent, g: GaugeComponent) => stepPosition(e, g, d3.pointer(e)[0] < 0 ? -1 : 1))
+                .on('wheel', (e: WheelEvent, g: GaugeComponent) => {
+                    e.preventDefault();
+                    stepPosition(e, g, e.deltaY < 0 ? 1 : -1);
+                }, { passive: false })
+                .append(
+                    g3.element('circle', {r: 36}).class('g3-switch-collar'),
+                    g3.element('circle', {r: 32}).class('g3-switch-collar-recess'),
+                    g3.element('circle', {r: 29}).class('g3-bg-fill'),
+                    g3.indicatePointer().rescale((v: any) => Math.max(0, index(v))).append(
+                        g3.element('path', {d: knurlPath(27, 24.5, 18)}).class('g3-switch-knurl'),
+                        g3.element('circle', {r: 23}).class('g3-switch-knob'),
+                        g3.element('path', {d: 'M -5.5,15 L -3.5,-30 L 3.5,-30 L 5.5,15 Z'}).class('g3-switch-knob-ridge'),
+                        g3.element('rect', {x: -1.6, y: -30, width: 3.2, height: 16, rx: 0.8}).class('g3-fg-fill'),
+                        g3.element('circle', {r: 23}).class('g3-highlight'),
+                    ),
+                )
         );
 }
 ```
