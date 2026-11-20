@@ -18,6 +18,7 @@ import type {
     GaugeLabelComponent,
     StatusLightComponent
 } from './types';
+import { isFullCircle } from './scale';
 
 
 export function gauge(initialMetric?: string): GaugeComponent {
@@ -71,8 +72,7 @@ export function gauge(initialMetric?: string): GaugeComponent {
                 if (fake && m) activeController.fake(m, fake);
 
                 if (autoindicate && m) {
-                    const range = measure.range();
-                    const isCyclic = kind == 'circular' && range[0] !== range[1] && ((range[0] - range[1]) % 360 == 0);
+                    const isCyclic = isFullCircle(kind, measure.range());
                     const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
                         const xform = gaugeFn.metrictransform(rescale(v, metrics, u), true);
                         const t = typeof transition === 'function' ? transition(_) : _;
