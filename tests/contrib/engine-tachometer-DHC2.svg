@@ -274,7 +274,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <text x="0" y="-45" dx="0" dy="0" font-size="12" class="g3-gauge-label">RPM</text>
 <text x="0" y="-30" dx="0" dy="0" font-size="8" class="g3-gauge-label">HUNDREDS</text>
-<g class="g3-indicate-pointer" transform="rotate(489.5266322954558)">
+<g class="g3-indicate-pointer" transform="rotate(488.58744830092417)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,15 L 1,0 l -2,0 z" class="g3-pointer-blade">
 </path>

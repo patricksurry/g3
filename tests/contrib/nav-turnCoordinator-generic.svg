@@ -77,7 +77,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g transform="translate(0, -255) rotate(0) scale(1, 1)">
 <path d="M79.975,298.471A309,309,0,0,1,-79.975,298.471L-75.316,281.084A291,291,0,0,0,75.316,281.084Z" class="g3-axis-sector" style="fill: #c0c0a8; filter: url(#dropShadow3)">
 </path>
-<g class="g3-indicate-pointer" transform="rotate(175.1688066124916)">
+<g class="g3-indicate-pointer" transform="rotate(175.1616990521783)">
 <g transform="translate(0, -300) rotate(-180) scale(0.8, 1)">
 <circle r="8" style="fill: #333">
 </circle>

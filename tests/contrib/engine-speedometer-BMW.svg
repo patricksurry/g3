@@ -341,7 +341,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(115.40845264785457)">
+<g class="g3-indicate-pointer" transform="rotate(114.78659542299175)">
 <g transform="translate(0, 0) rotate(0) scale(1, 1)">
 <rect x="-1" y="-90" width="2" height="100" class="g3-pointer-needle">
 </rect>
@@ -566,7 +566,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text font-size="10" transform="rotate(154.28571428571428) translate(0, -75) rotate(-154.28571428571428)">400</text>
 </g>
 </g>
-<path class="g3-indicate-sector" style="fill: red" d="M-61.216,65.975A90,90,0,0,0,-25.658,86.265L-24.232,81.473A85,85,0,0,1,-57.815,62.309Z">
+<path class="g3-indicate-sector" style="fill: red" d="M-61.216,65.975A90,90,0,0,0,-24.918,86.482L-23.534,81.677A85,85,0,0,1,-57.815,62.309Z">
 </path>
 <g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke-width: 2">
 <g transform="rotate(222.85714285714286) translate(0, -90)">
@@ -607,7 +607,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <g class="g3-gauge">
 <g>
-<g class="g3-indicate-pointer" style="fill: white; stroke: black; filter: none;" transform="rotate(181.35382101205843)">
+<g class="g3-indicate-pointer" style="fill: white; stroke: black; filter: none;" transform="rotate(181.3392743850659)">
 <circle cy="-85" r="4">
 </circle>
 </g>

@@ -39,6 +39,23 @@ describe('faketimeseries module', () => {
     });
   });
 
+  describe('continuing from a current value', () => {
+    test('forceSeries should continue from the current value when given', () => {
+      const series = forceSeries(0, 100);
+      expect(series(37)).toBeCloseTo(37);
+    });
+
+    test('forceSeries should clamp a current value outside its range', () => {
+      const series = forceSeries(0, 100);
+      expect(series(150)).toBeCloseTo(100);
+    });
+
+    test('categoricalSeries should continue from the current category when given', () => {
+      const series = categoricalSeries(['a', 'b', 'c']);
+      expect(series('b')).toBe('b');
+    });
+  });
+
   describe('categoricalSeries', () => {
     test('should create a categorical series generator', () => {
       const series = categoricalSeries(['a', 'b', 'c']);

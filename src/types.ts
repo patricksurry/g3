@@ -135,10 +135,14 @@ export interface GaugeComponent extends
     AppendableMixin<GaugeComponent> {
     (sel: SelectorOrSelection, parent?: GaugeComponent): void;
     _ns: string[];
-    /** Get the metric name indicated by this gauge. */
+    /** Get the (qualified) primary metric key indicated by this gauge. */
     metric(): string | undefined;
-    /** Set the metric name indicated by this gauge. */
-    metric(_?: string): GaugeComponent;
+    /** Set the primary metric key indicated by this gauge, plus any secondary metrics it also redraws on. */
+    metric(_?: string, ...others: string[]): GaugeComponent;
+    /** Get all (qualified) metric keys this gauge depends on, primary first. */
+    metrics(): string[];
+    /** Send actions to the panel's hub; `metric` and `unit` default to this gauge's. */
+    send(...actions: Action[]): void;
     /** Get the metric pre-measure rescaling function (default `identity`). */
     rescale(): (v: any, metrics?: Record<string, any>, unit?: string) => any;
     /** Set a function that rescales metric values before applying `measure()`. */
@@ -151,10 +155,10 @@ export interface GaugeComponent extends
     instance(): string | undefined;
     /** Set the metric instance qualifier. */
     instance(_?: string | null): GaugeComponent;
-    /** Get the fake metric generator function used when no panel URL is set. */
-    fake(): (() => any) | undefined;
-    /** Set the fake metric generator function used when no panel URL is set. */
-    fake(_?: () => any): GaugeComponent;
+    /** Get the fake used by the local hub: a generator `(current) => next`, or a constant starting value. */
+    fake(): Fake | undefined;
+    /** Set the fake used by the local hub: a generator `(current) => next`, or a constant starting value. */
+    fake(_?: Fake): GaugeComponent;
     /** Get the axis coordinate system kind (`'circular'` or `'linear'`, default `'circular'`). */
     kind(): GaugeKind;
     /** Set the axis coordinate system kind (`'circular'` or `'linear'`). */
@@ -321,6 +325,10 @@ export interface PanelComponent extends
     url(): URL | undefined;
     /** Set the external metrics endpoint URL (polls JSON or uses `EventSource` when `interval(0)`). */
     url(_: string | URL): PanelComponent;
+    /** Get the hub endpoint that actions are POSTed to. */
+    inputUrl(): URL | undefined;
+    /** Set the hub endpoint that actions are POSTed to. */
+    inputUrl(_: string | URL): PanelComponent;
     /** Get the polling interval in milliseconds (default 250). */
     interval(): number;
     /** Set the polling interval in milliseconds (set to 0 for SSE `EventSource`). */
@@ -499,15 +507,41 @@ export interface ControllerData {
     units?: Record<string, string>;
 }
 
+/** A fake metric for the local hub: a generator called with the current value, or a constant starting value. */
+export type Fake = ((current?: any) => any) | string | number | boolean | Date | null;
+
+/** An action sent from a panel to its hub, see doc/API.md#actions. */
+export type Action =
+    | { op: 'set'; metric?: string; value: any; unit?: string }
+    | { op: 'adjust'; metric?: string; by: number; unit?: string; min?: number; max?: number; wrap?: boolean }
+    | { op: 'trigger'; event: string; value?: any };
+
+export type MetricUpdater = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => void;
+
+/** Mirrors the metrics reported by a hub, and redraws registered updaters that depend on them. */
 export interface GaugeController {
+    /** Apply a message of changed metrics (and optional units) reported by the hub. */
     (data: ControllerData, transition?: TransitionFunction): void;
-    register(updater: (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => void, metric?: string, unit?: string): void;
-    fake(metric: string, generator: () => any): void;
-    fakeMetrics(): {
-        latest: number;
-        units: Record<string, string>;
-        metrics: Record<string, any>;
-    };
+    /** Register an updater for a metric key, or a list of keys (primary first), in an optional target unit. */
+    register(updater: MetricUpdater, metric?: string | string[], unit?: string): void;
+    /** Declare the local hub fake for a metric, in an optional unit; the first declaration wins. */
+    fake(metric: string, fake: Fake, unit?: string): void;
+    /** All fake declarations, keyed by metric. */
+    fakes(): Record<string, { fake: Fake; unit?: string }>;
+    /** All registered metric keys. */
     indicators(): string[];
-    mappedMetrics(): string[] | null;
+    /** Set the function that delivers each batch of actions to the hub. */
+    sink(fn: (actions: Action[]) => void): GaugeController;
+    /** Send a batch of actions to the hub via the sink. */
+    send(...actions: Action[]): void;
+}
+
+/** The in-browser hub used when a panel has no url, created by `g3.localHub()`. */
+export interface LocalHub {
+    /** All current metrics, with units. */
+    snapshot(): Required<ControllerData>;
+    /** Advance each generated metric from its current value, returning the changes. */
+    tick(): Required<ControllerData>;
+    /** Apply a batch of actions in order, returning the changes. */
+    apply(actions: Action[]): Required<ControllerData>;
 }

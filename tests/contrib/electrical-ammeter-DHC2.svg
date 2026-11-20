@@ -171,7 +171,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text font-size="15" transform="rotate(51.923076923076934) translate(0, -100) rotate(-51.923076923076934)">C</text>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(46.56691117919624)">
+<g class="g3-indicate-pointer" transform="rotate(46.24180902724298)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,15 L 1,0 l -2,0 z" class="g3-pointer-blade">
 </path>

@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import { stylable, appendable, transformable } from './mixin';
 import { gaugeController } from './controller';
+import { localHub } from './hub';
 import { element, d3sel } from './common';
 import { grid } from './grid';
 import type { SelectorOrSelection, PanelComponent, D3Selection, TransitionFunction } from './types';
@@ -37,13 +38,20 @@ const globalDefs = (width: number, height: number) => [
 ];
 
 
+function absoluteURL(u: string | URL): URL {
+    const base = typeof document !== 'undefined' && document.location ? document.location.href : 'http://localhost';
+    return new URL(u.toString(), base);
+}
+
+
 export function panel(): PanelComponent {
     let width = 1024,
         height = 768,
         interval = 250,
         showgrid = false,
         smooth = true,
-        url: URL | undefined;
+        url: URL | undefined,
+        inputUrl: URL | undefined;
 
     const panelFn: PanelComponent = stylable<PanelComponent>(appendable(transformable(Object.assign(
         function(sel: SelectorOrSelection) {
@@ -67,40 +75,59 @@ export function panel(): PanelComponent {
 
             if (showgrid) grid().width(width).height(height)(_);
 
-            console.log('Starting panel expecting metrics for:', controller.indicators());
+            const keys = controller.indicators();
+            console.log('Starting panel expecting metrics for:', keys);
 
             if (!url) {
-                // fake metrics
-                setInterval(() => {
-                    controller(controller.fakeMetrics(), transition);
-                }, interval || 250);
-            } else if (interval) {
-                // with non-zero interval, poll an endpoint
+                // local hub: draw its starting snapshot, apply actions immediately, and tick each interval
+                const hub = localHub(controller.fakes());
+                controller.sink(actions => controller(hub.apply(actions), transition));
+                controller(hub.snapshot());
+                setInterval(() => controller(hub.tick(), transition), interval || 250);
+                return;
+            }
+
+            if (inputUrl) {
+                // send each batch of actions in order, one request at a time
+                let pending: Promise<unknown> = Promise.resolve();
+                controller.sink(actions => {
+                    pending = pending
+                        .then(() => fetch(inputUrl!, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ actions }),
+                        }))
+                        .then(response => {
+                            if (response && response.ok === false) console.log('g3: hub rejected actions', response.status, actions);
+                        })
+                        .catch(err => console.log('g3: failed to send actions', err, actions));
+                });
+            }
+
+            if (interval) {
+                // with non-zero interval, poll the hub for changes since the latest response
                 let latest = 0;
                 setInterval(() => {
-                    const params: Record<string, string> = {
+                    url!.search = new URLSearchParams({
                         latest: String(latest),
                         units: String(latest == 0),
-                    };
-                    // add the matched metrics once we've determined them
-                    if (latest) {
-                        const mapped = controller.mappedMetrics();
-                        if (mapped) params.metrics = mapped.join(',');
-                    }
-                    url!.search = new URLSearchParams(params).toString();
+                        keys: keys.join(','),
+                    }).toString();
                     fetch(url!)
                         .then(response => response.json())
                         .then(data => {
                             controller(data, transition);
-                            latest = data.latest;
+                            latest = data.latest ?? 0;
+                        })
+                        .catch(err => {
+                            // ask for a full snapshot once we reconnect
+                            console.log('g3: failed to poll metrics', err);
+                            latest = 0;
                         });
                 }, interval);
             } else {
-                // set interval to 0 or None to use server-sent event endpoint
-                url.search = new URLSearchParams({
-                    // server should determine best match metrics
-                    indicators: controller.indicators().join(','),
-                }).toString();
+                // set interval to 0 to subscribe to a server-sent event stream
+                url.search = new URLSearchParams({ keys: keys.join(',') }).toString();
                 const source = new EventSource(url);
                 source.onmessage = function(e: MessageEvent) {
                     controller(JSON.parse(e.data), transition);
@@ -118,8 +145,10 @@ export function panel(): PanelComponent {
                 return arguments.length ? (showgrid = !!_, panelFn) : showgrid;
             },
             url(_?: string | URL): any {
-                const base = typeof document !== 'undefined' && document.location ? document.location.href : 'http://localhost';
-                return arguments.length ? (url = new URL(_!.toString(), base), panelFn) : url;
+                return arguments.length ? (url = absoluteURL(_!), panelFn) : url;
+            },
+            inputUrl(_?: string | URL): any {
+                return arguments.length ? (inputUrl = absoluteURL(_!), panelFn) : inputUrl;
             },
             interval(_?: number): any {
                 return arguments.length ? (interval = _!, panelFn) : interval;

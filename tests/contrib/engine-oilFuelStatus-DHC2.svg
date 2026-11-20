@@ -215,7 +215,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 <text x="-5" y="-20" dx="0" dy="0" font-size="20" class="g3-gauge-label">OIL</text>
-<g class="g3-indicate-pointer" transform="rotate(356.3510881969705)">
+<g class="g3-indicate-pointer" transform="rotate(357.3811956935004)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z" class="g3-pointer-blade">
 </path>
@@ -307,7 +307,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 <text x="5" y="-20" dx="0" dy="0" font-size="20" class="g3-gauge-label">FUEL</text>
-<g class="g3-indicate-pointer" transform="rotate(124.78459239006042)">
+<g class="g3-indicate-pointer" transform="rotate(124.75404447337613)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z" class="g3-pointer-blade">
 </path>
@@ -494,7 +494,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 </g>
 <text x="0" y="-45" dx="0" dy="0" font-size="11" class="g3-gauge-label">TEMP°C</text>
-<g class="g3-indicate-pointer" transform="rotate(-2.8430241253226995)">
+<g class="g3-indicate-pointer" transform="rotate(-3.3372152973990836)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z" class="g3-pointer-blade">
 </path>

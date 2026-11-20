@@ -74,7 +74,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g>
 <g transform="translate(0, 0) rotate(90) scale(1, 1)">
 <g class="g3-gauge">
-<g class="will-change-transform" transform="rotate(-110.43081521987915)">
+<g class="will-change-transform" transform="rotate(-110.3284663513674)">
 <circle r="100" class="g3-gauge-face" style="fill: #111">
 </circle>
 <g class="g3-axis-ticks g3-axis-ticks-tick">
@@ -742,7 +742,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <circle r="65" fill="url(#altitudeDangerPattern)">
 </circle>
-<g class="g3-indicate-pointer" style="filter: url(#dropShadow1)" transform="rotate(317.43195875454694)">
+<g class="g3-indicate-pointer" style="filter: url(#dropShadow1)" transform="rotate(317.6173781039223)">
 <path d="M-42.426,42.426A60,60,0,1,1,42.426,-42.426L0,0Z" class="g3-axis-sector g3-bg-fill">
 </path>
 </g>
@@ -1069,7 +1069,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text x="-40" y="-8" dx="0" dy="0" font-size="6" class="g3-gauge-label">CALIBRATED</text>
 <text x="-40" y="0" dx="0" dy="0" font-size="6" class="g3-gauge-label">TO</text>
 <text x="-40" y="8" dx="0" dy="0" font-size="6" class="g3-gauge-label">20,000 FEET</text>
-<g class="g3-indicate-pointer" transform="rotate(105.81065291818231)">
+<g class="g3-indicate-pointer" transform="rotate(105.8724593679741)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,6 L 1.2,3 L 0.6,0 L -0.6,0 L -1.2,3 Z" class="g3-pointer-blade">
 </path>
@@ -1079,7 +1079,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </circle>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(1058.1065291818231)">
+<g class="g3-indicate-pointer" transform="rotate(1058.724593679741)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,9 L 0.6,7 l 0,-7 l -1.2,0 l 0,7 z" class="g3-pointer-blade">
 </path>
@@ -1087,7 +1087,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </circle>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(10581.065291818231)">
+<g class="g3-indicate-pointer" transform="rotate(10587.24593679741)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z" class="g3-pointer-blade">
 </path>

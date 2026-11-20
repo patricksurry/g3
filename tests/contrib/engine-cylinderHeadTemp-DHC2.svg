@@ -317,7 +317,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text font-size="10" transform="rotate(-74) translate(0, -90) rotate(74)">0</text>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(67.16195748653263)">
+<g class="g3-indicate-pointer" transform="rotate(67.96315220605581)">
 <g transform="translate(0, 0) rotate(0) scale(1, 1)">
 <rect x="-1" y="-90" width="2" height="100" class="g3-pointer-needle">
 </rect>

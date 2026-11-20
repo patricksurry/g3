@@ -69,7 +69,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g class="g3-gauge">
 <g>
 <g class="g3-gauge">
-<g class="will-change-transform" transform="rotate(-110.43081521987915)">
+<g class="will-change-transform" transform="rotate(-110.32846635136754)">
 <path d="M0,-100A100,100,0,1,1,0,100A100,100,0,1,1,0,-100M0,-70A70,70,0,1,0,0,70A70,70,0,1,0,0,-70Z" class="g3-axis-sector g3-bg-fill">
 </path>
 <g class="g3-axis-ticks g3-axis-ticks-tick">
@@ -600,7 +600,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <circle r="70" class="g3-gauge-face">
 </circle>
-<g class="g3-indicate-pointer" transform="rotate(352.70217639394104)">
+<g class="g3-indicate-pointer" transform="rotate(354.76239138700066)">
 <path d="M 0,-65 L 0,60" class="g3-fg-stroke" style="stroke-width: 4">
 </path>
 <path d="M 0,65 l 5,-15 l -10,0 z" class="g3-fg-fill">

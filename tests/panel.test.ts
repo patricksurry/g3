@@ -50,16 +50,61 @@ describe('g3.panel', () => {
         expect((globalThis as any).fetch).toHaveBeenCalledTimes(2);
     });
 
-    it('should use fake metrics when no URL is set', () => {
-        const myGauge = g3.gauge().metric('fake.metric').fake(() => 123);
-        const myPanel = g3.panel().append(myGauge).interval(500);
-        myPanel('#panel-container');
-        const controller = g3.activeController; // Get the controller created by the panel
-        expect(controller).toBeDefined();
-        const spy = vi.spyOn(controller!, 'fakeMetrics');
+    it('should send its metric keys when polling', () => {
+        const myGauge = g3.gauge().metric('code', 'mode').append(g3.indicateText());
+        g3.panel().url('/metrics').interval(500).append(myGauge)('#panel-container');
         vi.advanceTimersByTime(500);
-        expect(spy).toHaveBeenCalled();
-        spy.mockRestore();
+        const url: URL = (globalThis as any).fetch.mock.calls[0][0];
+        expect(url.searchParams.get('keys')!.split(',').sort()).toEqual(['code', 'mode']);
+        expect(url.searchParams.get('latest')).toBe('0');
+        expect(url.searchParams.get('units')).toBe('true');
+    });
+
+    describe('with the local hub', () => {
+        it('should draw the starting snapshot immediately, then advance generators each interval', () => {
+            let n = 0;
+            const myGauge = g3.gauge().metric('n').fake(() => ++n).append(g3.indicateText());
+            g3.panel().append(myGauge).interval(500).smooth(false)('#panel-container');
+            const text = () => d3.select('#panel-container text.g3-indicate-text').text();
+            expect(text()).toBe('1');
+            vi.advanceTimersByTime(500);
+            expect(text()).toBe('2');
+        });
+
+        it('should apply actions and redraw immediately', () => {
+            const myGauge = g3.gauge().metric('sw').fake(0).append(g3.indicateText());
+            g3.panel().append(myGauge).smooth(false)('#panel-container');
+            myGauge.send({ op: 'set', value: 1 });
+            expect(d3.select('#panel-container text.g3-indicate-text').text()).toBe('1');
+        });
+    });
+
+    describe('sending actions to an external hub', () => {
+        it('should POST each batch to inputUrl, one at a time', async () => {
+            const myGauge = g3.gauge().metric('sw');
+            g3.panel().url('/metrics').inputUrl('/inputs').append(myGauge)('#panel-container');
+            const fetch = (globalThis as any).fetch;
+
+            myGauge.send({ op: 'set', value: 1 });
+            myGauge.send({ op: 'set', value: 0 });
+            await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+
+            const [url, init] = fetch.mock.calls[0];
+            expect(url.toString()).toContain('/inputs');
+            expect(init.method).toBe('POST');
+            expect(JSON.parse(init.body)).toEqual({ actions: [{ op: 'set', metric: 'sw', value: 1 }] });
+            expect(JSON.parse(fetch.mock.calls[1][1].body).actions[0].value).toBe(0);
+        });
+
+        it('should log and drop actions when there is a url but no inputUrl', () => {
+            const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+            const myGauge = g3.gauge().metric('sw');
+            g3.panel().url('/metrics').append(myGauge)('#panel-container');
+            myGauge.send({ op: 'set', value: 1 });
+            expect((globalThis as any).fetch).not.toHaveBeenCalled();
+            expect(log).toHaveBeenCalledWith(expect.stringContaining('dropped'), expect.anything());
+            log.mockRestore();
+        });
     });
 
     it('should allow disabling smooth transitions', () => {
@@ -78,7 +123,7 @@ describe('g3.panel', () => {
         expect(d3.select('#panel-container .g3-grid').empty()).toBe(false);
     });
 
-    it('should use EventSource with indicators query param when interval is 0', () => {
+    it('should use EventSource with keys query param when interval is 0', () => {
         let capturedUrl: string | undefined, instance: any;
         (globalThis as any).EventSource = vi.fn(function(this: any, url: any) {
             capturedUrl = url.toString();
@@ -90,7 +135,7 @@ describe('g3.panel', () => {
         myPanel('#panel-container');
 
         expect((globalThis as any).EventSource).toHaveBeenCalledTimes(1);
-        expect(capturedUrl).toContain('indicators=heading');
+        expect(capturedUrl).toContain('keys=heading');
 
         // Simulate receiving an SSE message
         instance.onmessage({ data: JSON.stringify({ metrics: { heading: 0.25 } }) });

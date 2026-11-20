@@ -71,14 +71,14 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g class="g3-gauge">
 <g>
 <g class="g3-gauge">
-<g clip-path="url(#gauge-clip1)" class="will-change-transform" transform="rotate(-23.98641338804738)">
+<g clip-path="url(#gauge-clip1)" class="will-change-transform" transform="rotate(-24.272554359305644)">
 <clipPath id="gauge-clip1">
 <circle r="100" class="g3-gauge-face">
 </circle>
 </clipPath>
 <g transform="translate(0, 0) rotate(-90) scale(1, 1)">
 <g class="g3-gauge css-1dos0lw">
-<g class="will-change-transform" transform="translate(12.07798346877098, 0)">
+<g class="will-change-transform" transform="translate(12.095752369554248, 0)">
 <rect height="200" width="150" y="-100" class="g3-sky-fill g3-fg-stroke">
 </rect>
 <rect height="200" width="150" x="-150" y="-100" class="g3-ground-fill g3-fg-stroke">

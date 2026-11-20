@@ -354,7 +354,7 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <text x="0" y="-33" dx="0" dy="0" font-size="15" class="g3-gauge-label">SUCTION</text>
 <text x="0" y="25" dx="0" dy="0" font-size="10" class="g3-gauge-label">INCHES OF MERCURY</text>
-<g class="g3-indicate-pointer" transform="rotate(503.9184803282842)">
+<g class="g3-indicate-pointer" transform="rotate(502.87494255658237)">
 <g transform="translate(0, 0) rotate(0) scale(5.625, -5.625)">
 <path d="M 0,16 L 0.6,14 l 0,-12 l -1.2,0 l 0,12 z" class="g3-pointer-blade">
 </path>

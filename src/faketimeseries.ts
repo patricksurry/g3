@@ -4,7 +4,7 @@ export interface ForceSeriesOptions {
     wrap?: boolean;
 }
 
-export function forceSeries(min_?: number, max_?: number, opts_?: ForceSeriesOptions): () => number {
+export function forceSeries(min_?: number, max_?: number, opts_?: ForceSeriesOptions): (current?: number) => number {
     const min = min_ ?? 0,
         max = max_ ?? 1,
         opts = opts_ ?? {},
@@ -14,7 +14,11 @@ export function forceSeries(min_?: number, max_?: number, opts_?: ForceSeriesOpt
     let x = Math.random(),
         v = 0;
 
-    function next(): number {
+    function next(current?: number): number {
+        // continue from the current value if given, e.g. after an action changed it
+        if (typeof current === 'number' && isFinite(current) && max > min) {
+            x = Math.min(1, Math.max(0, (current - min) / (max - min)));
+        }
         x += v;
         v += (2*Math.random()-1)*fmax;
         v *= damping;
@@ -32,12 +36,16 @@ export function forceSeries(min_?: number, max_?: number, opts_?: ForceSeriesOpt
 }
 
 
-export function categoricalSeries<T = any>(values: T[]): () => T {
+export function categoricalSeries<T = any>(values: T[]): (current?: T) => T {
     const n = values.length,
         vs = forceSeries(0, n, {wrap: true});
+    let last: T | undefined;
 
-    function next(): T {
-        return values[Math.min(Math.floor(vs()), n-1)];
+    function next(current?: T): T {
+        // re-seed from the current category only if it changed since we last produced it
+        const i = current === undefined || current === last ? -1 : values.indexOf(current);
+        last = values[Math.min(Math.floor(vs(i < 0 ? undefined : i + 0.5)), n-1)];
+        return last;
     }
     return next;
 }

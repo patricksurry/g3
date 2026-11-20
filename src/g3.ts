@@ -8,6 +8,7 @@ import 'dseg/css/dseg.css';
 export * from "./types";
 export * from "./panel";
 export * from "./controller";
+export * from "./hub";
 export * from "./gauge";
 export * from "./indicate";
 export * from "./pointers";

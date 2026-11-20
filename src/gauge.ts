@@ -16,7 +16,10 @@ import type {
     GaugeScrewComponent,
     GaugeLabelOptions,
     GaugeLabelComponent,
-    StatusLightComponent
+    StatusLightComponent,
+    GaugeController,
+    Fake,
+    Action
 } from './types';
 import { isFullCircle } from './scale';
 
@@ -24,10 +27,12 @@ import { isFullCircle } from './scale';
 export function gauge(initialMetric?: string): GaugeComponent {
 
     let metric: string | undefined = initialMetric,
+        others: string[] = [],
+        ctrl: GaugeController | undefined,  // the controller active when this gauge was drawn
         rescale = identity as (v: any, metrics?: Record<string, any>, unit?: string) => any,
         unit: string | undefined,
         instance: string | undefined,
-        fake: (() => any) | undefined,
+        fake: Fake | undefined,
         measure: any = d3.scaleLinear().range([0, 360]),
         kind: GaugeKind = 'circular',
         autoindicate = false,
@@ -68,8 +73,9 @@ export function gauge(initialMetric?: string): GaugeComponent {
 
             if (showgrid) grid().x(-r).y(-r).xmajor(50).ymajor(50).width(2 * r).height(2 * r)(_);
 
+            ctrl = activeController;
             if (activeController) {
-                if (fake && m) activeController.fake(m, fake);
+                if (fake !== undefined && m) activeController.fake(m, fake, unit);
 
                 if (autoindicate && m) {
                     const isCyclic = isFullCircle(kind, measure.range());
@@ -88,18 +94,34 @@ export function gauge(initialMetric?: string): GaugeComponent {
                     };
 
                     _.classed('will-change-transform', true);
-                    activeController.register(update, m, unit);
+                    activeController.register(update, gaugeFn.metrics(), unit);
                 }
             }
         },
         {
             _ns: [] as string[],
-            metric(_?: string): any {
-                // with an argument, sets metric,
-                // with no argument, returns qualified metric, e.g. fuel.copilot.rear
+            metric(_?: string, ...rest: string[]): any {
+                // with an argument, sets the primary metric and any secondary metrics,
+                // with no argument, returns qualified primary metric, e.g. fuel.copilot.rear
                 return arguments.length
-                    ? (metric = _, gaugeFn)
+                    ? (metric = _, others = rest, gaugeFn)
                     : (metric && [metric].concat(gaugeFn._ns).join('.'));
+            },
+            metrics(): string[] {
+                return (metric ? [metric, ...others] : [])
+                    .map(k => [k].concat(gaugeFn._ns).join('.'));
+            },
+            send(...actions: Action[]) {
+                const primary = gaugeFn.metric(),
+                    filled = actions.map(a =>
+                        a.op === 'trigger' || a.metric !== undefined ? a
+                            : { ...a, metric: primary, ...(unit && !a.unit ? { unit } : {}) }
+                    );
+                if (ctrl) {
+                    ctrl.send(...filled);
+                } else {
+                    console.log('g3: actions dropped, gauge has not been drawn:', filled);
+                }
             },
             rescale(_?: (v: any) => any): any {
                 return arguments.length ? (rescale = _!, gaugeFn) : rescale;
@@ -113,7 +135,7 @@ export function gauge(initialMetric?: string): GaugeComponent {
             instance(_?: string | null): any {
                 return arguments.length ? (instance = _ ?? undefined, gaugeFn) : instance;
             },
-            fake(_?: () => any): any {
+            fake(_?: Fake): any {
                 return arguments.length ? (fake = _, gaugeFn) : fake;
             },
             kind(_?: GaugeKind): any {
@@ -326,7 +348,7 @@ export function statusLight(): StatusLightComponent {
             instance(_?: string | null): any {
                 return arguments.length ? (g.instance(_), statusLightFn) : g.instance();
             },
-            fake(_?: () => any): any {
+            fake(_?: Fake): any {
                 return arguments.length ? (g.fake(_), statusLightFn) : g.fake();
             },
             trigger(_?: (v: any) => any): any {

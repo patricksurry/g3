@@ -1,135 +1,88 @@
-import configureMeasurements from 'convert-units';
-import allMeasures from 'convert-units/definitions/all';
-import type { GaugeController, ControllerData, TransitionFunction } from './types';
+import { maybeConvert, resolveKey } from './metrics';
+import type { GaugeController, ControllerData, TransitionFunction, MetricUpdater, Fake, Action } from './types';
 
-export const
-    convertUnits = configureMeasurements(allMeasures),
-    knownUnits = convertUnits().possibilities();
+export { convertUnits, knownUnits } from './metrics';
 
 
 export let activeController: GaugeController | undefined;  // hack to provide current context for gauges to register with
 
 
-function maybeConvert(v: any, fromUnit?: string, toUnit?: string): any {
-    let u = v;
-    if (fromUnit && toUnit) {
-        try {
-            u = convertUnits(v).from(fromUnit).to(toUnit);
-        } catch (err: unknown) {
-            const msg = err instanceof Error ? err.message : String(err);
-            console.log('Unit conversion error: ' + msg);
-        }
-    } else if (typeof v === 'string' && v.match(/^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)) {
-        // convert string-serialized date metrics back to JS objects
-        u = new Date(v);
-    }
-    return u;
-}
-
-
 export function gaugeController(): GaugeController {
     /*
-    create a gauge controller that we'll use to update values
-
-    `callbacks` is keyed by the panel indicator names,
-    which can be more precise than the actual metric name, e.g. fuel.copilot;
-    `updaters` is populated after the first call with best match to actual metrics
+    The controller mirrors the metrics reported by a hub (see doc/API.md#where-state-lives).
+    It never compares values: every metric in a message counts as changed,
+    and each registered updater whose keys resolve to a changed metric is redrawn
+    with the value of its primary key.
     */
+    type Registration = { updater: MetricUpdater; keys: string[]; unit: string };
 
-    type UpdaterFn = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => void;
-    const callbacks: Record<string, Record<string, UpdaterFn[]>> = {},     // nested dict of metric => (unit || '') => list of update fns
-        fakes: Record<string, () => any> = {},         // dict of metric => generator
-        latestMetrics: Record<string, any> = {};       // latest values across updates
-    let updaters: Record<string, { unit: string; updaters: Record<string, UpdaterFn[]> | null }> | null = null;
+    const registrations: Registration[] = [],
+        fakes: Record<string, { fake: Fake; unit?: string }> = {},
+        mirror: Record<string, any> = {},       // latest reported value of each metric
+        units: Record<string, string> = {},     // reported unit of each metric
+        resolved = new Map<string, string | undefined>();   // key => metric, reset when new metrics appear
+    let sinkFn: ((actions: Action[]) => void) | undefined,
+        checkedKeys = false;
 
-    // call the controller to display current metric values
+    function resolve(key: string): string | undefined {
+        if (!resolved.has(key)) resolved.set(key, resolveKey(key, mirror));
+        return resolved.get(key);
+    }
+
     const controller: GaugeController = Object.assign(
         function(data: ControllerData, transition?: TransitionFunction) {
-            /*
-            data is a dictionary {latest: 1234, metrics: {}, [units: {}]}
-            where metrics is a dictionary
-            with keys like: "metric.some.qualification"
-            and corresponding values
-            */
-            if (data.metrics) Object.assign(latestMetrics, data.metrics);
+            const changed = data.metrics || {};
+            if (Object.keys(changed).some(m => !(m in mirror))) resolved.clear();
+            Object.assign(mirror, changed);
+            Object.assign(units, data.units || {});
 
-            if (!updaters) {
-                // First call, we establish the mapping from metric keys => callbacks
-                updaters = {};
-                Object.keys(data.metrics || {}).forEach(m => {
-                    updaters![m] = { unit: (data.units || {})[m] || '', updaters: null };
-                });
-
-                Object.entries(callbacks).forEach(([m, ufs]) => {
-                    const ks = m.split('.');
-                    let matched = false;
-                    while (ks.length && !matched) {
-                        const k = ks.join('.');
-                        if (k in updaters!) {
-                            if (!updaters![k].updaters) updaters![k].updaters = {};
-                            Object.entries(ufs).forEach(([u, fs]) => {
-                                if (!(u in updaters![k].updaters!)) updaters![k].updaters![u] = [];
-                                updaters![k].updaters![u].push(...fs);
-                            });
-                            matched = true;
-                        }
-                        ks.pop();
-                    }
-                    if (!matched) console.log('Warning: no source metric matching', m);
-                });
-                Object.entries(updaters).forEach(([m, d]) => {
-                    if (!d.updaters) {
-                        console.log('Warning: unmapped source metric', m);
-                        delete updaters![m];
-                    }
-                });
+            if (!checkedKeys && Object.keys(changed).length) {
+                checkedKeys = true;
+                const missing = controller.indicators().filter(k => resolve(k) === undefined);
+                if (missing.length) console.log('Warning: no metric matching', missing);
             }
 
-            // Trigger updates for each source metric
-            Object.entries(updaters).forEach(([m, d]) => {
-                if (data.units && m in data.units) {
-                    d.unit = data.units[m] || '';
-                }
-                if (data.metrics && m in data.metrics && d.updaters) {
-                    Object.entries(d.updaters).forEach(([unit, fs]) => {
-                        const v = maybeConvert(data.metrics[m], d.unit, unit);
-                        if (typeof v === 'undefined') {
-                            console.log(`Warning: failed to convert ${data.metrics[m]} from ${d.unit} to ${unit}`);
-                        } else {
-                            const resolvedUnit = unit || d.unit;
-                            fs.forEach(f => f(v, transition, latestMetrics, resolvedUnit));
-                        }
-                    });
+            registrations.forEach(({ updater, keys, unit }) => {
+                if (!keys.some(k => { const m = resolve(k); return m !== undefined && m in changed; })) return;
+                const m = resolve(keys[0]);
+                if (m === undefined) return;
+                const from = units[m] || '',
+                    v = maybeConvert(mirror[m], from, unit);
+                if (typeof v === 'undefined') {
+                    console.log(`Warning: failed to convert ${mirror[m]} from ${from} to ${unit}`);
+                } else {
+                    updater(v, transition, mirror, unit || from);
                 }
             });
         },
         {
-            register(updater: UpdaterFn, metric?: string, unit?: string) {
-                if (!metric) return;
-                const u = unit || '';
-                if (!(metric in callbacks)) callbacks[metric] = {};
-                if (!(u in callbacks[metric])) callbacks[metric][u] = [];
-                callbacks[metric][u].push(updater);
+            register(updater: MetricUpdater, metric?: string | string[], unit?: string) {
+                const keys = (Array.isArray(metric) ? metric : [metric]).filter((k): k is string => !!k);
+                if (keys.length) registrations.push({ updater, keys, unit: unit || '' });
             },
-            fake(metric: string, generator: () => any) {
-                fakes[metric] = generator;
+            fake(metric: string, fake: Fake, unit?: string) {
+                if (metric in fakes) {
+                    console.log(`Warning: ignoring duplicate fake for ${metric}`);
+                } else {
+                    fakes[metric] = { fake, unit };
+                }
             },
-            fakeMetrics() {
-                return {
-                    latest: 0,
-                    units: {},
-                    metrics: Object.fromEntries(
-                        Object.entries(fakes).map(([m, g]) => [m, g()])
-                    )
-                };
+            fakes() {
+                return fakes;
             },
             indicators(): string[] {
-                // return panel indicator keys, available at startup but possibly more specific than actual metrics
-                return Object.keys(callbacks);
+                return Array.from(new Set(registrations.flatMap(r => r.keys)));
             },
-            mappedMetrics(): string[] | null {
-                // return matched metrics, available after first data update
-                return updaters && Object.keys(updaters);
+            sink(fn: (actions: Action[]) => void) {
+                sinkFn = fn;
+                return controller;
+            },
+            send(...actions: Action[]) {
+                if (sinkFn) {
+                    sinkFn(actions);
+                } else {
+                    console.log('g3: actions dropped, no hub input configured:', actions);
+                }
             },
         }
     );
