@@ -164,6 +164,23 @@ describe('indicate components', () => {
             expect(interpolator(0.5)).toBe('rotate(0)');
             expect(interpolator(1)).toBe('rotate(-125)');
         });
+
+        it('should treat a piecewise full-circle scale as cyclic', () => {
+            const piecewise = g3.gauge()
+                .metric('hours')
+                .measure(d3.scaleLinear().domain([0, 6, 12]).range([0, 90, 360]));
+            svg.call(g3.indicatePointer(), piecewise);
+
+            let tweenFn: unknown;
+            const mockTransition = (sel: any) => ({
+                attr: (k: string, v: string) => sel.attr(k, v),
+                attrTween: (_k: string, fn: any) => { tweenFn = fn; },
+            });
+            controller({ metrics: { hours: 11 } }, mockTransition as any);
+            controller({ metrics: { hours: 1 } }, mockTransition as any);
+            // cyclic pointers take the short way round rather than tweening through the whole dial
+            expect(tweenFn).toBeUndefined();
+        });
     });
 
     describe('g3.indicateStyle', () => {

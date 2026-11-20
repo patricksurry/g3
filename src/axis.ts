@@ -10,6 +10,7 @@ import type {
     AxisTicksComponent,
     AxisLabelsComponent
 } from './types';
+import { ends, isFullCircle } from './scale';
 
 
 function tickvals(vs?: number[] | string[], step?: number, start?: number, g?: GaugeComponent): any[] {
@@ -18,17 +19,14 @@ function tickvals(vs?: number[] | string[], step?: number, start?: number, g?: G
     let values: any[];
 
     if (typeof step === 'number' && g) {
-        const domain = g.measure().domain().slice();
-        const range = g.measure().range();
-        domain.sort((a: number, b: number) => a - b);
+        const [lo, hi] = ends<number>(g.measure().domain().slice().sort((a: number, b: number) => a - b));
         values = [];
-        for (let v = start ?? Math.ceil(domain[0]/step)*step; v <= domain[1]; v += step)
+        for (let v = start ?? Math.ceil(lo/step)*step; v <= hi; v += step)
             values.push(v);
         if (
-            g.kind() == 'circular'
-            && ((range[0] - range[1]) % 360 == 0)
-            && values.includes(domain[0])
-            && values.includes(domain[1])
+            isFullCircle(g.kind(), g.measure().range())
+            && values.includes(lo)
+            && values.includes(hi)
         ) values.pop();
     } else if (g) {
         values = g.measure().ticks();
@@ -46,7 +44,7 @@ export function axisSector(vs?: number[]): AxisSectorComponent {
 
     const sector: AxisSectorComponent = stylable<AxisSectorComponent>(Object.assign(
         function(sel: SelectorOrSelection, g?: GaugeComponent) {
-            const [v0, v1] = values || g!.measure().domain();
+            const [v0, v1] = values || ends(g!.measure().domain());
             const _ = d3sel(sel)
                 .append('path')
                 .attr('d', g!.sectorpath(v0, v1, size, inset));

@@ -15,6 +15,7 @@ import type {
     IndicateSectorComponent,
     IndicateStyleComponent
 } from './types';
+import { isFullCircle } from './scale';
 
 
 export function indicateText(): IndicateTextComponent {
@@ -95,10 +96,8 @@ export function indicatePointer(): IndicatePointerComponent {
             pointer.appendable(_, g);
 
             if (activeController && g) {
-                const range = g.measure().range();
-                const isFullCircle = g.kind() == 'circular' && range[0] !== range[1] && ((range[0] - range[1]) % 360 == 0);
                 const isClamped = typeof clamp[0] === 'number' || typeof clamp[1] === 'number';
-                const isCyclic = isFullCircle && !isClamped;
+                const isCyclic = isFullCircle(g.kind(), g.measure().range()) && !isClamped;
 
                 const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, unit?: string) => {
                     let z = rescale(v, metrics, unit);
