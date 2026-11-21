@@ -16,7 +16,7 @@ Here's a screenshot with some of the included flight gauges
 
 - [Install G3](#installing)
 - [Get started](#getting-started) by running a panel or designing a new gauge
-- Browse the [Contributed Gauge Gallery](doc/CONTRIB.md) and complete [API reference](doc/API.md)
+- Browse the [Contributed Gauge Gallery](doc/CONTRIB.md), the [Cookbook](doc/COOKBOOK.md) of short recipes, and the complete [API reference](doc/API.md)
 - Give back by [contributing](#contributing) new gauges and panels
 - Explore related [resources](#resources)
 
@@ -516,4 +516,4 @@ npm publish --access public
 
 ## API
 
-See [doc/API.md](doc/API.md)
+See [doc/API.md](doc/API.md), and [doc/COOKBOOK.md](doc/COOKBOOK.md) for short recipes.
