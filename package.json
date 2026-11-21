@@ -53,7 +53,7 @@
       "test:watch": "vitest",
       "test:coverage": "vitest run --coverage",
       "test:render": "vitest run tests/contrib.render.test.ts",
-      "docs": "UPDATE_CONTRIB=1 vitest run tests/contrib.render.test.ts",
+      "docs": "UPDATE_CONTRIB=1 vitest run tests/contrib.render.test.ts tests/cookbook.test.ts",
       "build": "rollup -c && tsc -p tsconfig.build.json",
       "prepack": "npm run build",
       "start": "vite"

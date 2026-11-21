@@ -38,6 +38,8 @@ const gauge = g3.gauge()                        // factory returns a renderer
 // gauge.metric() with no argument is a getter: 'rpm'
 ```
 
+<p align='center'><img src="/tests/cookbook/the-pattern-factory-configure-render.svg" width="180" alt="The pattern: factory, configure, render"></p>
+
 Think about how the physical gauge works:
 anything that moves is driven by a metric, and everything else is fixed decoration.
 
@@ -64,6 +66,8 @@ const gauge = g3.gauge()
         g3.element('path', {d: 'M 0,-75 l 6,15 l -12,0 z'}).class('g3-highlight-fill'),  // fixed lubber mark
     );
 ```
+
+<p align='center'><img src="/tests/cookbook/move-the-scale-not-the-pointer.svg" width="180" alt="Move the scale, not the pointer"></p>
 
 
 ### A sector that follows a metric
@@ -92,6 +96,8 @@ const gauge = g3.gauge()
         g3.indicatePointer(),
     );
 ```
+
+<p align='center'><img src="/tests/cookbook/a-sector-that-follows-a-metric.svg" width="180" alt="A sector that follows a metric"></p>
 
 
 ### A heading tape with no seam
@@ -133,6 +139,8 @@ const gauge = g3.gauge()
     );
 ```
 
+<p align='center'><img src="/tests/cookbook/a-heading-tape-with-no-seam.svg" width="180" alt="A heading tape with no seam"></p>
+
 Both tapes read the same `heading` metric, so only one needs a `.fake()`.
 
 
@@ -157,6 +165,8 @@ const gauge = g3.gauge()
     );
 ```
 
+<p align='center'><img src="/tests/cookbook/custom-units.svg" width="180" alt="Custom units"></p>
+
 
 ### LCD and segmented text
 
@@ -175,6 +185,8 @@ const gauge = g3.gauge()
     );
 ```
 
+<p align='center'><img src="/tests/cookbook/lcd-and-segmented-text.svg" width="180" alt="LCD and segmented text"></p>
+
 
 ### Combine several metrics
 
@@ -190,6 +202,8 @@ const gauge = g3.gauge()
         g3.indicateText().format((left, metrics) => `${Math.round(left + (metrics.fuelRight ?? 0))} gal`),
     );
 ```
+
+<p align='center'><img src="/tests/cookbook/combine-several-metrics.svg" width="180" alt="Combine several metrics"></p>
 
 
 ### Further reading
