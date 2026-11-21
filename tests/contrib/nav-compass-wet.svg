@@ -88,26 +88,30 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <feGaussianBlur in="SourceGraphic" stdDeviation="3">
 </feGaussianBlur>
 </filter>
-<radialGradient id="g3-wet-compass-shade" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="85">
-<stop offset="0" stop-color="#000" stop-opacity="0">
+<linearGradient id="g3-wet-compass-shade" gradientUnits="userSpaceOnUse" x1="-85" y1="0" x2="85" y2="0">
+<stop offset="0" stop-color="#000" stop-opacity="0.85">
 </stop>
-<stop offset="0.3" stop-color="#000" stop-opacity="0.039">
+<stop offset="0.1" stop-color="#000" stop-opacity="0.34">
 </stop>
-<stop offset="0.5" stop-color="#000" stop-opacity="0.114">
+<stop offset="0.2" stop-color="#000" stop-opacity="0.17">
 </stop>
-<stop offset="0.65" stop-color="#000" stop-opacity="0.204">
+<stop offset="0.3" stop-color="#000" stop-opacity="0.071">
 </stop>
-<stop offset="0.75" stop-color="#000" stop-opacity="0.288">
+<stop offset="0.4" stop-color="#000" stop-opacity="0.017">
 </stop>
-<stop offset="0.85" stop-color="#000" stop-opacity="0.402">
+<stop offset="0.5" stop-color="#000" stop-opacity="0">
 </stop>
-<stop offset="0.92" stop-color="#000" stop-opacity="0.517">
+<stop offset="0.6" stop-color="#000" stop-opacity="0.017">
 </stop>
-<stop offset="0.97" stop-color="#000" stop-opacity="0.643">
+<stop offset="0.7" stop-color="#000" stop-opacity="0.071">
+</stop>
+<stop offset="0.8" stop-color="#000" stop-opacity="0.17">
+</stop>
+<stop offset="0.9" stop-color="#000" stop-opacity="0.34">
 </stop>
 <stop offset="1" stop-color="#000" stop-opacity="0.85">
 </stop>
-</radialGradient>
+</linearGradient>
 </defs>
 <g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
 <g class="g3-gauge css-giyvnh">
@@ -124,78 +128,74 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </rect>
 <g class="g3-gauge">
 <g>
-<path d="M-82.475,-20.566L-82.449,-20.563L-82.326,-20.563L-82.102,-20.563L-81.779,-20.563L-81.356,-20.563L-80.834,-20.563L-80.213,-20.563L-79.495,-20.563L-78.68,-20.563L-77.769,-20.563L-76.763,-20.563L-75.663,-20.563L-74.472,-20.563L-73.19,-20.563L-71.818,-20.563L-70.359,-20.563L-68.815,-20.563L-67.186,-20.563L-65.476,-20.563L-63.686,-20.563L-61.818,-20.563L-59.875,-20.563L-57.859,-20.563L-55.773,-20.563L-53.618,-20.563L-51.398,-20.563L-49.116,-20.563L-46.774,-20.563L-44.375,-20.563L-41.921,-20.563L-39.417,-20.563L-36.865,-20.563L-34.267,-20.563L-31.628,-20.563L-28.951,-20.563L-26.238,-20.563L-23.493,-20.563L-20.72,-20.563L-17.921,-20.563L-15.101,-20.563L-12.262,-20.563L-12.262,-20.563L-9.408,-20.563L-6.543,-20.563L-3.67,-20.563L-0.792,-20.563L2.087,-20.563L4.963,-20.563L7.833,-20.563L10.694,-20.563L13.541,-20.563L16.372,-20.563L19.183,-20.563L21.971,-20.563L24.732,-20.563L27.463,-20.563L30.16,-20.563L32.821,-20.563L35.441,-20.563L38.019,-20.563L40.55,-20.563L43.032,-20.563L45.461,-20.563L47.835,-20.563L50.15,-20.563L52.405,-20.563L54.596,-20.563L56.72,-20.563L58.775,-20.563L60.758,-20.563L62.668,-20.563L64.501,-20.563L66.255,-20.563L67.929,-20.563L69.52,-20.563L71.026,-20.563L72.446,-20.563L73.778,-20.563L75.019,-20.563L76.169,-20.563L77.227,-20.563L78.19,-20.563L79.058,-20.563L79.83,-20.563L80.505,-20.563L81.081,-20.563L81.559,-20.563L81.937,-20.563L82.215,-20.563L82.393,-20.563L82.471,-20.563L82.475,-20.566L82.475,-20.566L83.142,-17.675L83.708,-14.762L84.172,-11.832L84.534,-8.887L84.793,-5.932L84.948,-2.969L85,-0.002L84.948,2.964L84.793,5.927L84.535,8.883L84.173,11.827L83.709,14.758L83.143,17.67L82.476,20.561L81.708,23.427L81.706,23.432L81.703,23.429L81.626,23.429L81.45,23.429L81.174,23.429L80.799,23.429L80.326,23.429L79.755,23.429L79.087,23.429L78.322,23.429L77.462,23.429L76.508,23.429L75.46,23.429L74.321,23.429L73.091,23.429L71.772,23.429L70.365,23.429L68.873,23.429L67.297,23.429L65.638,23.429L63.9,23.429L62.084,23.429L60.193,23.429L58.228,23.429L56.192,23.429L54.087,23.429L51.917,23.429L49.684,23.429L47.389,23.429L45.038,23.429L42.631,23.429L40.172,23.429L37.665,23.429L35.111,23.429L32.515,23.429L29.879,23.429L27.207,23.429L24.502,23.429L21.766,23.429L19.005,23.429L16.22,23.429L13.415,23.429L10.594,23.429L7.76,23.429L4.917,23.429L2.067,23.429L-0.784,23.429L-3.635,23.429L-6.482,23.429L-9.32,23.429L-12.148,23.429L-12.148,23.429L-14.96,23.429L-17.754,23.429L-20.527,23.429L-23.275,23.429L-25.994,23.429L-28.681,23.429L-31.334,23.429L-33.948,23.429L-36.521,23.429L-39.05,23.429L-41.531,23.429L-43.961,23.429L-46.338,23.429L-48.659,23.429L-50.92,23.429L-53.119,23.429L-55.253,23.429L-57.32,23.429L-59.317,23.429L-61.242,23.429L-63.093,23.429L-64.866,23.429L-66.561,23.429L-68.174,23.429L-69.704,23.429L-71.149,23.429L-72.508,23.429L-73.778,23.429L-74.959,23.429L-76.048,23.429L-77.044,23.429L-77.947,23.429L-78.755,23.429L-79.466,23.429L-80.081,23.429L-80.598,23.429L-81.018,23.429L-81.338,23.429L-81.559,23.429L-81.681,23.429L-81.706,23.432L-81.707,23.432L-82.474,20.566L-83.142,17.675L-83.708,14.763L-84.172,11.832L-84.534,8.888L-84.793,5.932L-84.948,2.969L-85,0.003L-84.948,-2.964L-84.793,-5.927L-84.535,-8.882L-84.173,-11.827L-83.709,-14.757L-83.143,-17.67L-82.476,-20.561Z" class="g3-axis-sector" style="fill: #202020">
+<path d="M -85,-20.769 L 85,-20.769 L 85,23.736 L -85,23.736 Z" class="g3-axis-sector" style="fill: #202020">
 </path>
 <g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke: #eee">
-<g transform="matrix(0.99,0,-0.026,0.984,-12.445,-14.76)">
+<g transform="matrix(0.989,0,0,1,-12.637,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.973,0,-0.042,0.984,-19.613,-14.76)">
+<g transform="matrix(0.972,0,0,1,-19.915,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.949,0,-0.057,0.984,-26.631,-14.76)">
+<g transform="matrix(0.948,0,0,1,-27.041,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.918,0,-0.071,0.984,-33.446,-14.76)">
+<g transform="matrix(0.917,0,0,1,-33.962,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.88,0,-0.085,0.984,-40.007,-14.76)">
+<g transform="matrix(0.878,0,0,1,-40.624,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.836,0,-0.098,0.984,-46.263,-14.76)">
+<g transform="matrix(0.833,0,0,1,-46.977,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.785,0,-0.111,0.984,-52.167,-14.76)">
+<g transform="matrix(0.782,0,0,1,-52.972,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.728,0,-0.123,0.984,-57.674,-14.76)">
+<g transform="matrix(0.725,0,0,1,-58.564,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.665,0,-0.133,0.984,-62.743,-14.76)">
+<g transform="matrix(0.662,0,0,1,-63.71,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.598,0,-0.143,0.984,-67.333,-14.76)">
+<g transform="matrix(0.594,0,0,1,-68.372,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.525,0,-0.152,0.984,-71.412,-14.76)">
+<g transform="matrix(0.522,0,0,1,-72.513,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.449,0,-0.159,0.984,-74.946,-14.76)">
+<g transform="matrix(0.445,0,0,1,-76.103,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.37,0,-0.166,0.984,-77.911,-14.76)">
+<g transform="matrix(0.366,0,0,1,-79.113,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.287,0,-0.171,0.984,-80.282,-14.76)">
+<g transform="matrix(0.283,0,0,1,-81.521,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.203,0,-0.174,0.984,-82.043,-14.76)">
+<g transform="matrix(0.199,0,0,1,-83.308,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.117,0,-0.177,0.984,-83.179,-14.76)">
+<g transform="matrix(0.112,0,0,1,-84.462,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.03,0,-0.178,0.984,-83.682,-14.76)">
-<path d="M0,0L0,5.934">
-</path>
-</g>
-<g transform="scale(0)">
+<g transform="matrix(0.025,0,0,1,-84.973,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
@@ -339,121 +339,121 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.058,0,0.178,0.984,83.548,-14.76)">
+<g transform="scale(0)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.144,0,0.176,0.984,82.778,-14.76)">
+<g transform="matrix(0.062,0,0,1,84.837,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.23,0,0.173,0.984,81.379,-14.76)">
+<g transform="matrix(0.149,0,0,1,84.055,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.314,0,0.169,0.984,79.36,-14.76)">
+<g transform="matrix(0.234,0,0,1,82.634,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.396,0,0.163,0.984,76.737,-14.76)">
+<g transform="matrix(0.318,0,0,1,80.584,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.474,0,0.156,0.984,73.53,-14.76)">
+<g transform="matrix(0.4,0,0,1,77.92,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.549,0,0.148,0.984,69.763,-14.76)">
+<g transform="matrix(0.478,0,0,1,74.664,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.62,0,0.139,0.984,65.466,-14.76)">
+<g transform="matrix(0.553,0,0,1,70.839,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.686,0,0.129,0.984,60.67,-14.76)">
+<g transform="matrix(0.623,0,0,1,66.475,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.747,0,0.118,0.984,55.412,-14.76)">
+<g transform="matrix(0.689,0,0,1,61.606,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.802,0,0.106,0.984,49.733,-14.76)">
+<g transform="matrix(0.75,0,0,1,56.267,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.851,0,0.093,0.984,43.675,-14.76)">
+<g transform="matrix(0.804,0,0,1,50.5,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.893,0,0.079,0.984,37.285,-14.76)">
+<g transform="matrix(0.853,0,0,1,44.349,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.929,0,0.065,0.984,30.611,-14.76)">
+<g transform="matrix(0.895,0,0,1,37.86,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.958,0,0.05,0.984,23.704,-14.76)">
+<g transform="matrix(0.931,0,0,1,31.083,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.979,0,0.035,0.984,16.617,-14.76)">
+<g transform="matrix(0.959,0,0,1,24.07,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.993,0,0.02,0.984,9.403,-14.76)">
+<g transform="matrix(0.98,0,0,1,16.873,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(1,0,0.005,0.984,2.118,-14.76)">
+<g transform="matrix(0.994,0,0,1,9.548,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
-<g transform="matrix(0.998,0,-0.011,0.984,-5.183,-14.76)">
+<g transform="matrix(1,0,0,1,2.151,-14.835)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.998,0,0,1,-5.263,-14.835)">
 <path d="M0,0L0,5.934">
 </path>
 </g>
 </g>
 <g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke: #eee">
-<g transform="matrix(0.99,0,-0.026,0.984,-12.445,-14.76)">
+<g transform="matrix(0.989,0,0,1,-12.637,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.949,0,-0.057,0.984,-26.631,-14.76)">
+<g transform="matrix(0.948,0,0,1,-27.041,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.88,0,-0.085,0.984,-40.007,-14.76)">
+<g transform="matrix(0.878,0,0,1,-40.624,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.785,0,-0.111,0.984,-52.167,-14.76)">
+<g transform="matrix(0.782,0,0,1,-52.972,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.665,0,-0.133,0.984,-62.743,-14.76)">
+<g transform="matrix(0.662,0,0,1,-63.71,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.525,0,-0.152,0.984,-71.412,-14.76)">
+<g transform="matrix(0.522,0,0,1,-72.513,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.37,0,-0.166,0.984,-77.911,-14.76)">
+<g transform="matrix(0.366,0,0,1,-79.113,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.203,0,-0.174,0.984,-82.043,-14.76)">
+<g transform="matrix(0.199,0,0,1,-83.308,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.03,0,-0.178,0.984,-83.682,-14.76)">
-<path d="M0,0L0,10.385">
-</path>
-</g>
-<g transform="scale(0)">
+<g transform="matrix(0.025,0,0,1,-84.973,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
@@ -525,52 +525,56 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.144,0,0.176,0.984,82.778,-14.76)">
+<g transform="scale(0)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.314,0,0.169,0.984,79.36,-14.76)">
+<g transform="matrix(0.149,0,0,1,84.055,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.474,0,0.156,0.984,73.53,-14.76)">
+<g transform="matrix(0.318,0,0,1,80.584,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.62,0,0.139,0.984,65.466,-14.76)">
+<g transform="matrix(0.478,0,0,1,74.664,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.747,0,0.118,0.984,55.412,-14.76)">
+<g transform="matrix(0.623,0,0,1,66.475,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.851,0,0.093,0.984,43.675,-14.76)">
+<g transform="matrix(0.75,0,0,1,56.267,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.929,0,0.065,0.984,30.611,-14.76)">
+<g transform="matrix(0.853,0,0,1,44.349,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(0.979,0,0.035,0.984,16.617,-14.76)">
+<g transform="matrix(0.931,0,0,1,31.083,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
-<g transform="matrix(1,0,0.005,0.984,2.118,-14.76)">
+<g transform="matrix(0.98,0,0,1,16.873,-14.835)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(1,0,0,1,2.151,-14.835)">
 <path d="M0,0L0,10.385">
 </path>
 </g>
 </g>
 <g class="g3-axis-labels">
 <g>
-<text font-size="16" transform="matrix(0.99,0,0.01,0.998,-12.606,5.929)">N</text>
+<text font-size="16" transform="matrix(0.989,0,0,1,-12.637,5.934)">N</text>
 </g>
 <g>
-<text font-size="16" transform="matrix(0.785,0,0.041,0.998,-52.843,5.929)">3</text>
+<text font-size="16" transform="matrix(0.782,0,0,1,-52.972,5.934)">3</text>
 </g>
 <g>
-<text font-size="16" transform="matrix(0.37,0,0.061,0.998,-78.92,5.929)">6</text>
+<text font-size="16" transform="matrix(0.366,0,0,1,-79.113,5.934)">6</text>
 </g>
 <g>
 <text font-size="16" transform="scale(0)">E</text>
@@ -591,13 +595,13 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <text font-size="16" transform="scale(0)">24</text>
 </g>
 <g>
-<text font-size="16" transform="matrix(0.144,0,-0.065,0.998,83.851,5.929)">W</text>
+<text font-size="16" transform="matrix(0.149,0,0,1,84.055,5.934)">W</text>
 </g>
 <g>
-<text font-size="16" transform="matrix(0.62,0,-0.051,0.998,66.313,5.929)">30</text>
+<text font-size="16" transform="matrix(0.623,0,0,1,66.475,5.934)">30</text>
 </g>
 <g>
-<text font-size="16" transform="matrix(0.929,0,-0.024,0.998,31.008,5.929)">33</text>
+<text font-size="16" transform="matrix(0.931,0,0,1,31.083,5.934)">33</text>
 </g>
 </g>
 </g>

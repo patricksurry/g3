@@ -11,13 +11,13 @@ combining JSDoc descriptions, runtime-reflected metric/unit bindings, a determin
 |   |   |   |   |
 | :---: | :---: | :---: | :---: |
 | <a href="#nav-airspeed-DHC2"><img src="../tests/contrib/nav-airspeed-DHC2.svg" width="160" alt="nav.airspeed.DHC2"><br><sub><code>nav.airspeed.DHC2</code></sub></a> | <a href="#nav-altitude-generic"><img src="../tests/contrib/nav-altitude-generic.svg" width="160" alt="nav.altitude.generic"><br><sub><code>nav.altitude.generic</code></sub></a> | <a href="#nav-attitude-generic"><img src="../tests/contrib/nav-attitude-generic.svg" width="160" alt="nav.attitude.generic"><br><sub><code>nav.attitude.generic</code></sub></a> | <a href="#nav-attitude-ball"><img src="../tests/contrib/nav-attitude-ball.svg" width="160" alt="nav.attitude.ball"><br><sub><code>nav.attitude.ball</code></sub></a> |
-| <a href="#nav-compass-wet"><img src="../tests/contrib/nav-compass-wet.svg" width="160" alt="nav.compass.wet"><br><sub><code>nav.compass.wet</code></sub></a> | <a href="#nav-heading-generic"><img src="../tests/contrib/nav-heading-generic.svg" width="160" alt="nav.heading.generic"><br><sub><code>nav.heading.generic</code></sub></a> | <a href="#nav-turnCoordinator-generic"><img src="../tests/contrib/nav-turnCoordinator-generic.svg" width="160" alt="nav.turnCoordinator.generic"><br><sub><code>nav.turnCoordinator.generic</code></sub></a> | <a href="#nav-VSI-generic"><img src="../tests/contrib/nav-VSI-generic.svg" width="160" alt="nav.VSI.generic"><br><sub><code>nav.VSI.generic</code></sub></a> |
-| <a href="#radionav-ADF-generic"><img src="../tests/contrib/radionav-ADF-generic.svg" width="160" alt="radionav.ADF.generic"><br><sub><code>radionav.ADF.generic</code></sub></a> | <a href="#radionav-VOR-generic"><img src="../tests/contrib/radionav-VOR-generic.svg" width="160" alt="radionav.VOR.generic"><br><sub><code>radionav.VOR.generic</code></sub></a> | <a href="#radionav-transponder-KT76C"><img src="../tests/contrib/radionav-transponder-KT76C.svg" width="160" alt="radionav.transponder.KT76C"><br><sub><code>radionav.transponder.KT76C</code></sub></a> | <a href="#engine-tachometer-DHC2"><img src="../tests/contrib/engine-tachometer-DHC2.svg" width="160" alt="engine.tachometer.DHC2"><br><sub><code>engine.tachometer.DHC2</code></sub></a> |
-| <a href="#engine-tachometer-jageype"><img src="../tests/contrib/engine-tachometer-jageype.svg" width="160" alt="engine.tachometer.jageype"><br><sub><code>engine.tachometer.jageype</code></sub></a> | <a href="#engine-speedometer-BMW"><img src="../tests/contrib/engine-speedometer-BMW.svg" width="160" alt="engine.speedometer.BMW"><br><sub><code>engine.speedometer.BMW</code></sub></a> | <a href="#engine-suctionPressure-DHC2"><img src="../tests/contrib/engine-suctionPressure-DHC2.svg" width="160" alt="engine.suctionPressure.DHC2"><br><sub><code>engine.suctionPressure.DHC2</code></sub></a> | <a href="#engine-manifoldPressure-DHC2"><img src="../tests/contrib/engine-manifoldPressure-DHC2.svg" width="160" alt="engine.manifoldPressure.DHC2"><br><sub><code>engine.manifoldPressure.DHC2</code></sub></a> |
-| <a href="#engine-fuel-generic"><img src="../tests/contrib/engine-fuel-generic.svg" width="160" alt="engine.fuel.generic"><br><sub><code>engine.fuel.generic</code></sub></a> | <a href="#engine-fuel-DHC2"><img src="../tests/contrib/engine-fuel-DHC2.svg" width="160" alt="engine.fuel.DHC2"><br><sub><code>engine.fuel.DHC2</code></sub></a> | <a href="#engine-oilFuelStatus-DHC2"><img src="../tests/contrib/engine-oilFuelStatus-DHC2.svg" width="160" alt="engine.oilFuelStatus.DHC2"><br><sub><code>engine.oilFuelStatus.DHC2</code></sub></a> | <a href="#engine-carbMixtureTemp-DHC2"><img src="../tests/contrib/engine-carbMixtureTemp-DHC2.svg" width="160" alt="engine.carbMixtureTemp.DHC2"><br><sub><code>engine.carbMixtureTemp.DHC2</code></sub></a> |
-| <a href="#engine-cylinderHeadTemp-DHC2"><img src="../tests/contrib/engine-cylinderHeadTemp-DHC2.svg" width="160" alt="engine.cylinderHeadTemp.DHC2"><br><sub><code>engine.cylinderHeadTemp.DHC2</code></sub></a> | <a href="#electrical-ammeter-DHC2"><img src="../tests/contrib/electrical-ammeter-DHC2.svg" width="160" alt="electrical.ammeter.DHC2"><br><sub><code>electrical.ammeter.DHC2</code></sub></a> | <a href="#electrical-voltmeter-DHC2"><img src="../tests/contrib/electrical-voltmeter-DHC2.svg" width="160" alt="electrical.voltmeter.DHC2"><br><sub><code>electrical.voltmeter.DHC2</code></sub></a> | <a href="#clocks-simple"><img src="../tests/contrib/clocks-simple.svg" width="160" alt="clocks.simple"><br><sub><code>clocks.simple</code></sub></a> |
-| <a href="#clocks-casioF91W"><img src="../tests/contrib/clocks-casioF91W.svg" width="160" alt="clocks.casioF91W"><br><sub><code>clocks.casioF91W</code></sub></a> | <a href="#clocks-omegaSpeedmaster"><img src="../tests/contrib/clocks-omegaSpeedmaster.svg" width="160" alt="clocks.omegaSpeedmaster"><br><sub><code>clocks.omegaSpeedmaster</code></sub></a> | <a href="#switches-toggle"><img src="../tests/contrib/switches-toggle.svg" width="160" alt="switches.toggle"><br><sub><code>switches.toggle</code></sub></a> | <a href="#switches-button"><img src="../tests/contrib/switches-button.svg" width="160" alt="switches.button"><br><sub><code>switches.button</code></sub></a> |
-| <a href="#switches-rotary"><img src="../tests/contrib/switches-rotary.svg" width="160" alt="switches.rotary"><br><sub><code>switches.rotary</code></sub></a> | <a href="#switches-selector"><img src="../tests/contrib/switches-selector.svg" width="160" alt="switches.selector"><br><sub><code>switches.selector</code></sub></a> | <a href="#debug-alignment"><img src="../tests/contrib/debug-alignment.svg" width="160" alt="debug.alignment"><br><sub><code>debug.alignment</code></sub></a> |   |
+| <a href="#nav-compass-wet"><img src="../tests/contrib/nav-compass-wet.svg" width="160" alt="nav.compass.wet"><br><sub><code>nav.compass.wet</code></sub></a> | <a href="#nav-compass-wetTilting"><img src="../tests/contrib/nav-compass-wetTilting.svg" width="160" alt="nav.compass.wetTilting"><br><sub><code>nav.compass.wetTilting</code></sub></a> | <a href="#nav-heading-generic"><img src="../tests/contrib/nav-heading-generic.svg" width="160" alt="nav.heading.generic"><br><sub><code>nav.heading.generic</code></sub></a> | <a href="#nav-turnCoordinator-generic"><img src="../tests/contrib/nav-turnCoordinator-generic.svg" width="160" alt="nav.turnCoordinator.generic"><br><sub><code>nav.turnCoordinator.generic</code></sub></a> |
+| <a href="#nav-VSI-generic"><img src="../tests/contrib/nav-VSI-generic.svg" width="160" alt="nav.VSI.generic"><br><sub><code>nav.VSI.generic</code></sub></a> | <a href="#radionav-ADF-generic"><img src="../tests/contrib/radionav-ADF-generic.svg" width="160" alt="radionav.ADF.generic"><br><sub><code>radionav.ADF.generic</code></sub></a> | <a href="#radionav-VOR-generic"><img src="../tests/contrib/radionav-VOR-generic.svg" width="160" alt="radionav.VOR.generic"><br><sub><code>radionav.VOR.generic</code></sub></a> | <a href="#radionav-transponder-KT76C"><img src="../tests/contrib/radionav-transponder-KT76C.svg" width="160" alt="radionav.transponder.KT76C"><br><sub><code>radionav.transponder.KT76C</code></sub></a> |
+| <a href="#engine-tachometer-DHC2"><img src="../tests/contrib/engine-tachometer-DHC2.svg" width="160" alt="engine.tachometer.DHC2"><br><sub><code>engine.tachometer.DHC2</code></sub></a> | <a href="#engine-tachometer-jageype"><img src="../tests/contrib/engine-tachometer-jageype.svg" width="160" alt="engine.tachometer.jageype"><br><sub><code>engine.tachometer.jageype</code></sub></a> | <a href="#engine-speedometer-BMW"><img src="../tests/contrib/engine-speedometer-BMW.svg" width="160" alt="engine.speedometer.BMW"><br><sub><code>engine.speedometer.BMW</code></sub></a> | <a href="#engine-suctionPressure-DHC2"><img src="../tests/contrib/engine-suctionPressure-DHC2.svg" width="160" alt="engine.suctionPressure.DHC2"><br><sub><code>engine.suctionPressure.DHC2</code></sub></a> |
+| <a href="#engine-manifoldPressure-DHC2"><img src="../tests/contrib/engine-manifoldPressure-DHC2.svg" width="160" alt="engine.manifoldPressure.DHC2"><br><sub><code>engine.manifoldPressure.DHC2</code></sub></a> | <a href="#engine-fuel-generic"><img src="../tests/contrib/engine-fuel-generic.svg" width="160" alt="engine.fuel.generic"><br><sub><code>engine.fuel.generic</code></sub></a> | <a href="#engine-fuel-DHC2"><img src="../tests/contrib/engine-fuel-DHC2.svg" width="160" alt="engine.fuel.DHC2"><br><sub><code>engine.fuel.DHC2</code></sub></a> | <a href="#engine-oilFuelStatus-DHC2"><img src="../tests/contrib/engine-oilFuelStatus-DHC2.svg" width="160" alt="engine.oilFuelStatus.DHC2"><br><sub><code>engine.oilFuelStatus.DHC2</code></sub></a> |
+| <a href="#engine-carbMixtureTemp-DHC2"><img src="../tests/contrib/engine-carbMixtureTemp-DHC2.svg" width="160" alt="engine.carbMixtureTemp.DHC2"><br><sub><code>engine.carbMixtureTemp.DHC2</code></sub></a> | <a href="#engine-cylinderHeadTemp-DHC2"><img src="../tests/contrib/engine-cylinderHeadTemp-DHC2.svg" width="160" alt="engine.cylinderHeadTemp.DHC2"><br><sub><code>engine.cylinderHeadTemp.DHC2</code></sub></a> | <a href="#electrical-ammeter-DHC2"><img src="../tests/contrib/electrical-ammeter-DHC2.svg" width="160" alt="electrical.ammeter.DHC2"><br><sub><code>electrical.ammeter.DHC2</code></sub></a> | <a href="#electrical-voltmeter-DHC2"><img src="../tests/contrib/electrical-voltmeter-DHC2.svg" width="160" alt="electrical.voltmeter.DHC2"><br><sub><code>electrical.voltmeter.DHC2</code></sub></a> |
+| <a href="#clocks-simple"><img src="../tests/contrib/clocks-simple.svg" width="160" alt="clocks.simple"><br><sub><code>clocks.simple</code></sub></a> | <a href="#clocks-casioF91W"><img src="../tests/contrib/clocks-casioF91W.svg" width="160" alt="clocks.casioF91W"><br><sub><code>clocks.casioF91W</code></sub></a> | <a href="#clocks-omegaSpeedmaster"><img src="../tests/contrib/clocks-omegaSpeedmaster.svg" width="160" alt="clocks.omegaSpeedmaster"><br><sub><code>clocks.omegaSpeedmaster</code></sub></a> | <a href="#switches-toggle"><img src="../tests/contrib/switches-toggle.svg" width="160" alt="switches.toggle"><br><sub><code>switches.toggle</code></sub></a> |
+| <a href="#switches-button"><img src="../tests/contrib/switches-button.svg" width="160" alt="switches.button"><br><sub><code>switches.button</code></sub></a> | <a href="#switches-rotary"><img src="../tests/contrib/switches-rotary.svg" width="160" alt="switches.rotary"><br><sub><code>switches.rotary</code></sub></a> | <a href="#switches-selector"><img src="../tests/contrib/switches-selector.svg" width="160" alt="switches.selector"><br><sub><code>switches.selector</code></sub></a> | <a href="#debug-alignment"><img src="../tests/contrib/debug-alignment.svg" width="160" alt="debug.alignment"><br><sub><code>debug.alignment</code></sub></a> |
 
 ## Flight Navigation (`g3.contrib.nav`)
 
@@ -263,7 +263,7 @@ export function attitudeBall(): GaugeComponent {
                 .clip(g3.element('circle', {r: A}))
                 .append(
                     g3.gauge()
-                        .kind('longitude').r(B)
+                        .kind('ball.yaw').r(B)
                         .metric('heading').unit('deg')
                         .fake(g3.forceSeries(0, 360, {wrap: true}))
                         .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
@@ -275,9 +275,9 @@ export function attitudeBall(): GaugeComponent {
                             g3.axisTicks().step(5).size(w(1.5)).style('stroke: #fff'),
                             g3.axisTicks().step(10).size(w(3)).style('stroke: #fff'),
                             g3.axisLabels().step(30).inset(w(6.5)).size(11).format(headingFormat),
-                            // a latitude gauge nested in the heading ball pitches the same ball
+                            // a pitch gauge nested in the heading ball pitches the same ball
                             g3.gauge()
-                                .kind('latitude')
+                                .kind('ball.pitch')
                                 .metric('pitch').unit('deg')
                                 .fake(g3.forceSeries(-20, 20))
                                 .measure(d3.scaleLinear().domain([-90, 90]).range([-90, 90]))
@@ -313,24 +313,22 @@ export function attitudeBall(): GaugeComponent {
 ---
 
 <a id="nav-compass-wet" href="#nav-compass-wet">#</a>
-g3.contrib.**nav.compass.wet**() · [source](../src/contrib/nav.ts#L240-L272)
+g3.contrib.**nav.compass.wet**() · [source](../src/contrib/nav.ts#L241-L264)
 
 <img align="right" width="160" src="../tests/contrib/nav-compass-wet.svg" alt="g3.contrib.nav.compass.wet">
 
-Wet (whiskey) magnetic compass: a card on a ball seen through a window, read from behind so east appears to the left of north.
+Wet (whiskey) magnetic compass: a cylindrical card on a drum seen through a window, read from behind so east appears to the left of north. See nav.compass.wetTilting for a card that also tilts with pitch and roll.
 
 **Metrics:** `heading` (`deg`)
 
 <details>
-<summary>Factory implementation (<code>src/contrib/nav.ts</code>, 33 lines)</summary>
+<summary>Factory implementation (<code>src/contrib/nav.ts</code>, 24 lines)</summary>
 
 ```ts
 export function wetCompass(): GaugeComponent {
-    const B = 85,
-        w = arc(B),
-        win = {x: -78, y: -36, width: 156, height: 72, rx: 8};
+    const win = {x: -78, y: -36, width: 156, height: 72, rx: 8};
     return g3.gauge()
-        .defs(ballShading('g3-wet-compass-shade', B))
+        .defs(cardShading('g3-wet-compass-shade', 85))
         .css('text {fill: #eee}')
         .append(
             g3.element('rect', {x: -100, y: -60, width: 200, height: 120, rx: 12}).class('g3-gauge-face'),
@@ -339,23 +337,79 @@ export function wetCompass(): GaugeComponent {
                 .append(
                     g3.element('rect', win).style('fill: #0b0b0b'),
                     g3.gauge()
-                        .kind('longitude').r(B)
+                        .kind('drum').r(85)
                         .metric('heading').unit('deg')
                         .fake(g3.forceSeries(0, 360, {wrap: true}))
-                        // heading h sits at longitude -h, so the card reads reversed
+                        // heading h sits at -h around the drum, so the card reads reversed
                         .measure(d3.scaleLinear().domain([0, 360]).range([0, -360]))
                         .autoindicate(true)
-                        .append(
-                            g3.axisSector([0, 360]).inset(-w(14)).size(w(30)).style('fill: #202020'),
-                            g3.axisTicks().step(5).inset(-w(10)).size(w(4)).style('stroke: #eee'),
-                            g3.axisTicks().step(10).inset(-w(10)).size(w(7)).style('stroke: #eee'),
-                            g3.axisLabels().step(30).inset(w(4)).size(16).format(headingFormat),
-                        ),
+                        .append(...compassCard(arc(85))),
                     g3.element('rect', {...win, fill: 'url(#g3-wet-compass-shade)'}),
                 ),
-            g3.element('rect', win).style('stroke: #555; stroke-width: 2'),
-            // lubber line
-            g3.element('path', {d: `M 0,${win.y} v ${win.height}`}).class('g3-highlight-stroke').style('stroke-width: 2'),
+            ...compassCase(win),
+        );
+}
+```
+</details>
+
+<br clear="both" />
+
+---
+
+<a id="nav-compass-wetTilting" href="#nav-compass-wetTilting">#</a>
+g3.contrib.**nav.compass.wetTilting**() · [source](../src/contrib/nav.ts#L275-L317)
+
+<img align="right" width="160" src="../tests/contrib/nav-compass-wetTilting.svg" alt="g3.contrib.nav.compass.wetTilting">
+
+Wet compass whose card hangs level on its pivot, so it appears to tilt in the window as the aircraft pitches and rolls, up to the stops at about 18° either way. Its heading is the aircraft's, without the turning and acceleration errors of a real compass, or the swing of the card as it settles. For those, bind the `heading` metric to an indicated heading from your own compass model, for example a damped spring that lags and overshoots the true heading, plus the northerly turning and acceleration errors.
+
+**Metrics:** `roll` (`deg`), `heading` (`deg`), `pitch` (`deg`)
+
+<details>
+<summary>Factory implementation (<code>src/contrib/nav.ts</code>, 43 lines)</summary>
+
+```ts
+export function wetCompassTilting(): GaugeComponent {
+    const B = 85,
+        w = arc(B),
+        tilt = d3.scaleLinear().domain([-18, 18]).range([-18, 18]).clamp(true),
+        win = {x: -78, y: -36, width: 156, height: 72, rx: 8};
+    return g3.gauge()
+        .defs(ballShading('g3-wet-compass-tilting-shade', B))
+        .css('text {fill: #eee}')
+        .append(
+            g3.element('rect', {x: -100, y: -60, width: 200, height: 120, rx: 12}).class('g3-gauge-face'),
+            g3.gauge()
+                .clip(g3.element('rect', win))
+                .append(
+                    g3.element('rect', win).style('fill: #0b0b0b'),
+                    // the card stays level as the case rolls around it
+                    g3.gauge()
+                        .metric('roll').unit('deg')
+                        .fake(g3.forceSeries(-25, 25))
+                        .measure(tilt)
+                        .autoindicate(true)
+                        .append(
+                            g3.gauge()
+                                .kind('ball.yaw').r(B)
+                                .metric('heading').unit('deg')
+                                .fake(g3.forceSeries(0, 360, {wrap: true}))
+                                .measure(d3.scaleLinear().domain([0, 360]).range([0, -360]))
+                                .autoindicate(true)
+                                .append(
+                                    ...compassCard(w),
+                                    // an empty pitch gauge pitches the shared ball, so the card dips as the nose rises
+                                    g3.gauge()
+                                        .kind('ball.pitch')
+                                        .metric('pitch').unit('deg')
+                                        .fake(g3.forceSeries(-15, 15))
+                                        .measure(tilt)
+                                        .autoindicate(true),
+                                ),
+                        ),
+                    g3.element('rect', {...win, fill: 'url(#g3-wet-compass-tilting-shade)'}),
+                ),
+            ...compassCase(win),
         );
 }
 ```
@@ -366,7 +420,7 @@ export function wetCompass(): GaugeComponent {
 ---
 
 <a id="nav-heading-generic" href="#nav-heading-generic">#</a>
-g3.contrib.**nav.heading.generic**() · [source](../src/contrib/nav.ts#L278-L292)
+g3.contrib.**nav.heading.generic**() · [source](../src/contrib/nav.ts#L348-L362)
 
 <img align="right" width="160" src="../tests/contrib/nav-heading-generic.svg" alt="g3.contrib.nav.heading.generic">
 
@@ -401,7 +455,7 @@ export function headingGeneric(): GaugeComponent {
 ---
 
 <a id="nav-turnCoordinator-generic" href="#nav-turnCoordinator-generic">#</a>
-g3.contrib.**nav.turnCoordinator.generic**() · [source](../src/contrib/nav.ts#L332-L374)
+g3.contrib.**nav.turnCoordinator.generic**() · [source](../src/contrib/nav.ts#L402-L444)
 
 <img align="right" width="160" src="../tests/contrib/nav-turnCoordinator-generic.svg" alt="g3.contrib.nav.turnCoordinator.generic">
 
@@ -464,7 +518,7 @@ export function turnCoordinatorGeneric(): GaugeComponent {
 ---
 
 <a id="nav-VSI-generic" href="#nav-VSI-generic">#</a>
-g3.contrib.**nav.VSI.generic**() · [source](../src/contrib/nav.ts#L298-L326)
+g3.contrib.**nav.VSI.generic**() · [source](../src/contrib/nav.ts#L368-L396)
 
 <img align="right" width="160" src="../tests/contrib/nav-VSI-generic.svg" alt="g3.contrib.nav.VSI.generic">
 

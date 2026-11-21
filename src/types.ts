@@ -5,15 +5,26 @@ export type SelectorOrSelection = string | D3Selection;
 export type TransitionFunction = (sel: D3Selection) => d3.Transition<any, any, any, any> | D3Selection;
 export type RenderFunction = (sel: any, g?: GaugeComponent) => void;
 
-export type GaugeKind = 'circular' | 'linear' | 'longitude' | 'latitude';
+export type GaugeKind = 'circular' | 'linear' | 'ball.yaw' | 'ball.pitch' | 'drum';
 
-/** Shared state for nested spherical gauges: one orthographic projection and the marks that follow its rotation. */
-export interface SphereBall {
-    proj: d3.GeoProjection;
-    /** current `[lambda, phi, gamma]` rotation in degrees */
-    rotation: [number, number, number];
+/** A surface that turns in three dimensions, with the marks drawn on it that re-project as it turns. */
+export interface Surface {
+    /** current rotation in degrees, one entry per axis */
+    rotation: number[];
     redraws: (() => void)[];
     redraw(): void;
+}
+
+/** Shared state for nested ball gauges: one orthographic projection rotated by `[yaw, pitch, roll]`. */
+export interface SphereBall extends Surface {
+    proj: d3.GeoProjection;
+    rotation: [number, number, number];
+}
+
+/** A drum gauge: a cylinder of radius `r` spinning about its vertical axis. */
+export interface Drum extends Surface {
+    r: number;
+    rotation: [number];
 }
 export type TickShape = 'tick' | 'dot' | 'wedge' | 'rect';
 export type LabelOrientation = 'fixed' | 'relative' | 'upward' | 'clockwise' | 'counterclockwise';
@@ -168,9 +179,9 @@ export interface GaugeComponent extends
     fake(): Fake | undefined;
     /** Set the fake used by the local hub: a generator `(current) => next`, or a constant starting value. */
     fake(_?: Fake): GaugeComponent;
-    /** Get the axis coordinate system kind (`'circular'`, `'linear'`, `'longitude'` or `'latitude'`, default `'circular'`). */
+    /** Get the axis coordinate system kind (`'circular'`, `'linear'`, `'ball.yaw'`, `'ball.pitch'` or `'drum'`, default `'circular'`). */
     kind(): GaugeKind;
-    /** Set the axis coordinate system kind (`'circular'`, `'linear'`, or a spherical `'longitude'` or `'latitude'`). */
+    /** Set the axis coordinate system kind (`'circular'`, `'linear'`, `'ball.yaw'`, `'ball.pitch'` or `'drum'`). */
     kind(_: GaugeKind): GaugeComponent;
     /** Get the clipping path renderer for this gauge. */
     clip(): RenderFunction | undefined;
@@ -195,10 +206,10 @@ export interface GaugeComponent extends
     metrictransform(v: any, invert?: boolean): string;
     marktransform(v: any, inset?: number): string;
     sectorpath(v0: any, v1: any, _size?: number, _inset?: number): string | null;
-    /** Call `fn` now, and again whenever the gauge geometry changes (e.g. a spherical gauge rotates). */
+    /** Call `fn` now, and again whenever the gauge geometry changes (e.g. a ball or drum turns). */
     redraw(fn: () => void): void;
-    /** The shared ball of a spherical gauge, set at drawing time. */
-    _ball?: SphereBall;
+    /** The surface a ball or drum gauge draws on, set at drawing time; nested ball gauges share one. */
+    _surface?: SphereBall | Drum;
 }
 
 /** Circular gauge face renderer created by `g3.gaugeFace()`. */

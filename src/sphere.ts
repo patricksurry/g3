@@ -1,9 +1,10 @@
 /*
-Geometry for spherical gauges ('longitude' and 'latitude' kinds).
+Geometry for ball gauges ('ball.yaw' and 'ball.pitch' kinds).
 
-A spherical gauge draws onto a ball seen in orthographic projection.
-Nested spherical gauges share one ball, so a heading gauge containing a pitch gauge
-rotates a single ball by both metrics. Marks are re-projected whenever the ball rotates.
+A ball gauge draws onto a ball seen in orthographic projection.
+Nested ball gauges share one ball, so a yaw gauge for heading containing a pitch gauge
+rotates a single ball by both metrics.  Marks on a yaw gauge are placed by longitude
+along the equator, and marks on a pitch gauge by latitude along the prime meridian. Marks are re-projected whenever the ball rotates.
 
 Insets and sizes are SVG units measured along the surface at the centre of the ball,
 so a tick or label keeps the size it would have on a flat gauge until it nears the limb.

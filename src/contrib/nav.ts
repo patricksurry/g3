@@ -189,7 +189,7 @@ export function attitudeBall(): GaugeComponent {
                 .clip(g3.element('circle', {r: A}))
                 .append(
                     g3.gauge()
-                        .kind('longitude').r(B)
+                        .kind('ball.yaw').r(B)
                         .metric('heading').unit('deg')
                         .fake(g3.forceSeries(0, 360, {wrap: true}))
                         .measure(d3.scaleLinear().domain([0, 360]).range([0, 360]))
@@ -201,9 +201,9 @@ export function attitudeBall(): GaugeComponent {
                             g3.axisTicks().step(5).size(w(1.5)).style('stroke: #fff'),
                             g3.axisTicks().step(10).size(w(3)).style('stroke: #fff'),
                             g3.axisLabels().step(30).inset(w(6.5)).size(11).format(headingFormat),
-                            // a latitude gauge nested in the heading ball pitches the same ball
+                            // a pitch gauge nested in the heading ball pitches the same ball
                             g3.gauge()
-                                .kind('latitude')
+                                .kind('ball.pitch')
                                 .metric('pitch').unit('deg')
                                 .fake(g3.forceSeries(-20, 20))
                                 .measure(d3.scaleLinear().domain([-90, 90]).range([-90, 90]))
@@ -234,15 +234,14 @@ export function attitudeBall(): GaugeComponent {
 
 
 /**
- * Wet (whiskey) magnetic compass: a card on a ball seen through a window,
+ * Wet (whiskey) magnetic compass: a cylindrical card on a drum seen through a window,
  * read from behind so east appears to the left of north.
+ * See nav.compass.wetTilting for a card that also tilts with pitch and roll.
  */
 export function wetCompass(): GaugeComponent {
-    const B = 85,
-        w = arc(B),
-        win = {x: -78, y: -36, width: 156, height: 72, rx: 8};
+    const win = {x: -78, y: -36, width: 156, height: 72, rx: 8};
     return g3.gauge()
-        .defs(ballShading('g3-wet-compass-shade', B))
+        .defs(cardShading('g3-wet-compass-shade', 85))
         .css('text {fill: #eee}')
         .append(
             g3.element('rect', {x: -100, y: -60, width: 200, height: 120, rx: 12}).class('g3-gauge-face'),
@@ -251,25 +250,96 @@ export function wetCompass(): GaugeComponent {
                 .append(
                     g3.element('rect', win).style('fill: #0b0b0b'),
                     g3.gauge()
-                        .kind('longitude').r(B)
+                        .kind('drum').r(85)
                         .metric('heading').unit('deg')
                         .fake(g3.forceSeries(0, 360, {wrap: true}))
-                        // heading h sits at longitude -h, so the card reads reversed
+                        // heading h sits at -h around the drum, so the card reads reversed
                         .measure(d3.scaleLinear().domain([0, 360]).range([0, -360]))
                         .autoindicate(true)
-                        .append(
-                            g3.axisSector([0, 360]).inset(-w(14)).size(w(30)).style('fill: #202020'),
-                            g3.axisTicks().step(5).inset(-w(10)).size(w(4)).style('stroke: #eee'),
-                            g3.axisTicks().step(10).inset(-w(10)).size(w(7)).style('stroke: #eee'),
-                            g3.axisLabels().step(30).inset(w(4)).size(16).format(headingFormat),
-                        ),
+                        .append(...compassCard(arc(85))),
                     g3.element('rect', {...win, fill: 'url(#g3-wet-compass-shade)'}),
                 ),
-            g3.element('rect', win).style('stroke: #555; stroke-width: 2'),
-            // lubber line
-            g3.element('path', {d: `M 0,${win.y} v ${win.height}`}).class('g3-highlight-stroke').style('stroke-width: 2'),
+            ...compassCase(win),
         );
 }
+
+
+/**
+ * Wet compass whose card hangs level on its pivot, so it appears to tilt in the window
+ * as the aircraft pitches and rolls, up to the stops at about 18° either way.
+ * Its heading is the aircraft's, without the turning and acceleration errors of a real compass,
+ * or the swing of the card as it settles.  For those, bind the `heading` metric to an indicated
+ * heading from your own compass model, for example a damped spring that lags and overshoots
+ * the true heading, plus the northerly turning and acceleration errors.
+ */
+export function wetCompassTilting(): GaugeComponent {
+    const B = 85,
+        w = arc(B),
+        tilt = d3.scaleLinear().domain([-18, 18]).range([-18, 18]).clamp(true),
+        win = {x: -78, y: -36, width: 156, height: 72, rx: 8};
+    return g3.gauge()
+        .defs(ballShading('g3-wet-compass-tilting-shade', B))
+        .css('text {fill: #eee}')
+        .append(
+            g3.element('rect', {x: -100, y: -60, width: 200, height: 120, rx: 12}).class('g3-gauge-face'),
+            g3.gauge()
+                .clip(g3.element('rect', win))
+                .append(
+                    g3.element('rect', win).style('fill: #0b0b0b'),
+                    // the card stays level as the case rolls around it
+                    g3.gauge()
+                        .metric('roll').unit('deg')
+                        .fake(g3.forceSeries(-25, 25))
+                        .measure(tilt)
+                        .autoindicate(true)
+                        .append(
+                            g3.gauge()
+                                .kind('ball.yaw').r(B)
+                                .metric('heading').unit('deg')
+                                .fake(g3.forceSeries(0, 360, {wrap: true}))
+                                .measure(d3.scaleLinear().domain([0, 360]).range([0, -360]))
+                                .autoindicate(true)
+                                .append(
+                                    ...compassCard(w),
+                                    // an empty pitch gauge pitches the shared ball, so the card dips as the nose rises
+                                    g3.gauge()
+                                        .kind('ball.pitch')
+                                        .metric('pitch').unit('deg')
+                                        .fake(g3.forceSeries(-15, 15))
+                                        .measure(tilt)
+                                        .autoindicate(true),
+                                ),
+                        ),
+                    g3.element('rect', {...win, fill: 'url(#g3-wet-compass-tilting-shade)'}),
+                ),
+            ...compassCase(win),
+        );
+}
+
+
+// shading across a drum of radius r lit from the viewer, falling off towards its edges like ballShading
+function cardShading(id: string, r: number) {
+    return g3.element('linearGradient', {id, gradientUnits: 'userSpaceOnUse', x1: -r, y1: 0, x2: r, y2: 0}).append(
+        ...[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(f => {
+            const s = Math.abs(2 * f - 1);
+            return g3.element('stop', {offset: f, 'stop-color': '#000', 'stop-opacity': +(0.85 * (1 - Math.sqrt(1 - s * s))).toFixed(3)});
+        })
+    );
+}
+
+// the compass card markings, with `w` converting degrees of arc to SVG units on the card
+const compassCard = (w: (deg: number) => number) => [
+    g3.axisSector([0, 360]).inset(-w(14)).size(w(30)).style('fill: #202020'),
+    g3.axisTicks().step(5).inset(-w(10)).size(w(4)).style('stroke: #eee'),
+    g3.axisTicks().step(10).inset(-w(10)).size(w(7)).style('stroke: #eee'),
+    g3.axisLabels().step(30).inset(w(4)).size(16).format(headingFormat),
+];
+
+// the window frame and lubber line on the compass case
+const compassCase = (win: {x: number, y: number, width: number, height: number, rx: number}) => [
+    g3.element('rect', win).style('stroke: #555; stroke-width: 2'),
+    g3.element('path', {d: `M 0,${win.y} v ${win.height}`}).class('g3-highlight-stroke').style('stroke-width: 2'),
+];
 
 
 /**

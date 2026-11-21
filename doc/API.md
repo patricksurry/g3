@@ -131,26 +131,45 @@ the gauge redraws when the hub reports the resulting change.
 
 *gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.ts)
 
-If *kind* is specified, it must be one of the strings `circular`, `linear`, `longitude` or `latitude`
+If *kind* is specified, it must be one of the strings `circular`, `linear`, `drum`, `ball.yaw` or `ball.pitch`
 to select how the axis is displayed for this gauge.
 If *kind* is not specified, return the current value, defaulting to `circular`.
 
-The `longitude` and `latitude` kinds draw on the surface of a ball,
-seen in [orthographic projection](https://d3js.org/d3-geo/azimuthal#geoOrthographic) with radius *gauge*.r(),
-for instruments like an attitude ball or a wet compass.
-The *measure* maps metric values to degrees of longitude or latitude respectively.
+The `drum` and `ball.*` kinds draw on a surface that turns in three dimensions, seen side on,
+for instruments like a wet compass or an attitude ball.
 Axis [ticks](#g3-axisTicks), [labels](#g3-axisLabels), [sectors](#g3-axisSector) and [lines](#g3-axisLine)
-are drawn tangent to the surface, so they foreshorten as the ball turns, and are hidden on its far side.
-Their *inset* and *size* are measured in SVG units along the surface at the centre of the ball
-(an arc of *d* degrees spans *d*·π/180·*r* units):
-on a `longitude` gauge, inset runs south from the equator, like ticks running inward on a circular gauge;
-on a `latitude` gauge, inset runs east from the prime meridian, with the axis pointing north,
-like a linear gauge rotated by -90°.
-A spherical gauge nested inside another shares its ball,
-so for example a `latitude` gauge for pitch inside a `longitude` gauge for heading turns one ball by both.
-Roll is an ordinary circular [autoindicate](#g3-gauge-autoindicate) wrapped around the ball.
-Pointers are not supported on spherical gauges.
-See `g3.contrib.nav.attitude.ball` and `g3.contrib.nav.compass.wet` in the [gallery](CONTRIB.md).
+are drawn flat against the surface, so they foreshorten as it turns, and are hidden on its far side.
+With [autoindicate](#g3-gauge-autoindicate), the gauge turns its surface so the current value faces the viewer,
+the short way round for a full turn.
+Pointers are not supported on these kinds.
+
+A `drum` is a cylinder of radius *gauge*.r() spinning about its vertical axis.
+The *measure* maps metric values to degrees around the drum, with zero facing the viewer and increasing to the right.
+*Inset* and *size* run down the drum's axis in SVG units, so marks squash horizontally but never bend.
+For a drum that rolls vertically, like an odometer wheel, wrap the gauge in `g3.put().rotate(90)`,
+just as you would orient a `linear` gauge.
+
+A ball is a sphere of radius *gauge*.r() in [orthographic projection](https://d3js.org/d3-geo/azimuthal#geoOrthographic).
+Unlike a drum it turns about more than one axis, and each axis is its own gauge, with its own metric, measure and marks:
+
+- a `ball.yaw` gauge turns the ball about its vertical axis, like a heading, with its *measure* mapping metric values
+  to degrees of longitude along the equator; *inset* runs south from the equator, like ticks running inward on a circular gauge.
+- a `ball.pitch` gauge tips the ball towards or away from the viewer, with its *measure* mapping metric values
+  to degrees of latitude along the prime meridian; *inset* runs east from the meridian, with the axis pointing north,
+  like a linear gauge rotated by -90°.
+
+To turn one ball about both axes, nest one gauge inside the other: a ball gauge drawn inside another ball gauge shares its ball,
+so for example a `ball.pitch` gauge for pitch inside a `ball.yaw` gauge for heading turns the ball by both,
+and the result is the same whichever is outermost.
+The pitch gauge needs no marks of its own if the ball is only meant to tilt, as on a wet compass card.
+Ball *inset* and *size* are measured in SVG units along the surface at the centre of the ball
+(an arc of *d* degrees spans *d*·π/180·*r* units).
+There is no `ball.roll`: roll spins the ball in the plane of the panel, which an ordinary `circular`
+[autoindicate](#g3-gauge-autoindicate) gauge wrapped around the ball already does exactly,
+turning any flat marks like a sky pointer along with it.
+
+See `g3.contrib.nav.attitude.ball`, `g3.contrib.nav.compass.wet` and `g3.contrib.nav.compass.wetTilting`
+in the [gallery](CONTRIB.md).
 
 *gauge*.**measure**(\[*measure*: any &rArr; number\]) · [source](/src/gauge.ts)
 

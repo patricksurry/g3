@@ -26,6 +26,7 @@ export const contrib = {
         },
         compass: {
             wet: nav.wetCompass,
+            wetTilting: nav.wetCompassTilting,
         },
         heading: {
             generic: nav.headingGeneric,
