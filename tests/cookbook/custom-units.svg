@@ -93,28 +93,45 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <circle r="100" class="g3-gauge-face">
 </circle>
 <g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(-48) translate(0, -100)">
+<path d="M0,0L0,10">
+</path>
+</g>
 <g transform="rotate(-24) translate(0, -100)">
 <path d="M0,0L0,10">
 </path>
 </g>
-<g transform="rotate(-12) translate(0, -100)">
+<g transform="rotate(23.999999999999996) translate(0, -100)">
 <path d="M0,0L0,10">
 </path>
 </g>
+<g transform="rotate(48) translate(0, -100)">
+<path d="M0,0L0,10">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
 <g transform="rotate(0) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(11.999999999999998) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(24) translate(0, -100)">
-<path d="M0,0L0,10">
+<path d="M0,0L0,20">
 </path>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(22.859990809053187)">
+<g class="g3-axis-labels">
+<g>
+<text font-size="20" transform="rotate(-48) translate(0, -78) rotate(48)">-2</text>
+</g>
+<g>
+<text font-size="20" transform="rotate(-24) translate(0, -78) rotate(24)">-1</text>
+</g>
+<g>
+<text font-size="20" transform="rotate(23.999999999999996) translate(0, -78) rotate(-23.999999999999996)">1</text>
+</g>
+<g>
+<text font-size="20" transform="rotate(48) translate(0, -78) rotate(-48)">2</text>
+</g>
+</g>
+<text x="0" y="40" dx="0" dy="0" font-size="10" class="g3-gauge-label">GS</text>
+<g class="g3-indicate-pointer" transform="rotate(60)">
 <g transform="translate(0, 0) rotate(0) scale(1, 1)">
 <rect x="-1" y="-90" width="2" height="100" class="g3-pointer-needle">
 </rect>

@@ -94,7 +94,133 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </circle>
 <g class="g3-gauge">
 <g>
-<path class="g3-indicate-sector g3-danger-fill g3-indicate-sector-negative" d="M98.24,-18.678A100,100,0,0,1,50,86.603L46,79.674A92,92,0,0,0,90.381,-17.184Z">
+<path class="g3-indicate-sector g3-danger-fill g3-indicate-sector-negative" d="M81.429,-58.046A100,100,0,0,1,50,86.603L46,79.674A92,92,0,0,0,74.915,-53.402Z">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick">
+<g transform="rotate(-150) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-140) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-130) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-120) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-110) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-100) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-90) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-79.99999999999999) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-70.00000000000001) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-60) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-50.000000000000014) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-40.00000000000001) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-30) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-20) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(-10) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(0) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(10) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(20) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(30) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(39.99999999999999) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(49.99999999999999) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(59.99999999999999) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(69.99999999999997) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(80.00000000000003) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(90) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(100) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(110) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(120) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(130) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(140) translate(0, -100)">
+<path d="M0,0L0,5">
+</path>
+</g>
+<g transform="rotate(150) translate(0, -100)">
+<path d="M0,0L0,5">
 </path>
 </g>
 </g>
@@ -103,31 +229,11 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <path d="M0,0L0,10">
 </path>
 </g>
-<g transform="rotate(-131.25) translate(0, -100)">
+<g transform="rotate(-100) translate(0, -100)">
 <path d="M0,0L0,10">
 </path>
 </g>
-<g transform="rotate(-112.5) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(-93.75) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(-75) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(-56.25) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(-37.5) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(-18.75) translate(0, -100)">
+<g transform="rotate(-50.000000000000014) translate(0, -100)">
 <path d="M0,0L0,10">
 </path>
 </g>
@@ -135,31 +241,11 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <path d="M0,0L0,10">
 </path>
 </g>
-<g transform="rotate(18.75) translate(0, -100)">
+<g transform="rotate(49.99999999999999) translate(0, -100)">
 <path d="M0,0L0,10">
 </path>
 </g>
-<g transform="rotate(37.5) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(56.25) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(75) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(93.75) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(112.5) translate(0, -100)">
-<path d="M0,0L0,10">
-</path>
-</g>
-<g transform="rotate(131.25) translate(0, -100)">
+<g transform="rotate(100) translate(0, -100)">
 <path d="M0,0L0,10">
 </path>
 </g>
@@ -170,34 +256,28 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 </g>
 <g class="g3-axis-labels">
 <g>
-<text font-size="20" transform="rotate(-150) translate(0, -80) rotate(150)">40</text>
+<text font-size="20" transform="rotate(-150) translate(0, -80) rotate(150)">100</text>
 </g>
 <g>
-<text font-size="20" transform="rotate(-112.5) translate(0, -80) rotate(112.5)">60</text>
+<text font-size="20" transform="rotate(-100) translate(0, -80) rotate(100)">150</text>
 </g>
 <g>
-<text font-size="20" transform="rotate(-75) translate(0, -80) rotate(75)">80</text>
+<text font-size="20" transform="rotate(-50.000000000000014) translate(0, -80) rotate(50.000000000000014)">200</text>
 </g>
 <g>
-<text font-size="20" transform="rotate(-37.5) translate(0, -80) rotate(37.5)">100</text>
+<text font-size="20" transform="rotate(0) translate(0, -80) rotate(0)">250</text>
 </g>
 <g>
-<text font-size="20" transform="rotate(0) translate(0, -80) rotate(0)">120</text>
+<text font-size="20" transform="rotate(49.99999999999999) translate(0, -80) rotate(-49.99999999999999)">300</text>
 </g>
 <g>
-<text font-size="20" transform="rotate(37.5) translate(0, -80) rotate(-37.5)">140</text>
+<text font-size="20" transform="rotate(100) translate(0, -80) rotate(-100)">350</text>
 </g>
 <g>
-<text font-size="20" transform="rotate(75) translate(0, -80) rotate(-75)">160</text>
-</g>
-<g>
-<text font-size="20" transform="rotate(112.5) translate(0, -80) rotate(-112.5)">180</text>
-</g>
-<g>
-<text font-size="20" transform="rotate(150) translate(0, -80) rotate(-150)">200</text>
+<text font-size="20" transform="rotate(150) translate(0, -80) rotate(-150)">400</text>
 </g>
 </g>
-<g class="g3-indicate-pointer" transform="rotate(72.27207884739616)">
+<g class="g3-indicate-pointer" transform="rotate(97.0902174372226)">
 <g transform="translate(0, 0) rotate(0) scale(1, 1)">
 <rect x="-1" y="-90" width="2" height="100" class="g3-pointer-needle">
 </rect>

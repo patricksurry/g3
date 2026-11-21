@@ -90,7 +90,18 @@ svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background:
 <g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
 <g class="g3-gauge">
 <g>
-<text font-size="20" class="g3-indicate-text">39 gal</text>
+<g class="g3-gauge">
+<g>
+</g>
+</g>
+<g class="g3-gauge">
+<g>
+</g>
+</g>
+<text font-size="30" class="g3-indicate-text">59</text>
+<g transform="translate(0, 25) rotate(0) scale(1, 1)">
+<text font-size="20" class="g3-indicate-unit">GAL</text>
+</g>
 </g>
 </g>
 </g>

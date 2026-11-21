@@ -1,7 +1,19 @@
 ## Cookbook
 
 Short recipes for common gauge-building problems.
-See the [API reference](API.md) for details and the [gallery](CONTRIB.md) for complete gauges.
+See the [tutorial](TUTORIAL.md) to build a gauge step by step,
+the [API reference](API.md) for details and the [gallery](CONTRIB.md) for complete gauges.
+
+- [The pattern: factory, configure, render](#the-pattern-factory-configure-render)
+- [Model a real gauge](#model-a-real-gauge)
+- [Move the scale, not the pointer](#move-the-scale-not-the-pointer)
+- [A sector that follows a metric](#a-sector-that-follows-a-metric)
+- [A heading tape with no seam](#a-heading-tape-with-no-seam)
+- [Custom units](#custom-units)
+- [LCD and segmented text](#lcd-and-segmented-text)
+- [Combine several metrics](#combine-several-metrics)
+- [Further reading](#further-reading)
+
 Each snippet defines a `gauge`; to see it, drop it into a page like this:
 
 ```html
@@ -40,8 +52,41 @@ const gauge = g3.gauge()                        // factory returns a renderer
 
 <p align='center'><img src="/tests/cookbook/the-pattern-factory-configure-render.svg" width="180" alt="The pattern: factory, configure, render"></p>
 
-Think about how the physical gauge works:
+
+### Model a real gauge
+
+Start from how the physical instrument works:
 anything that moves is driven by a metric, and everything else is fixed decoration.
+A pointer sweeping a fixed dial is an `indicatePointer` on a gauge with a `measure`.
+A card turning behind a fixed mark is an [autoindicated](#move-the-scale-not-the-pointer) sub-gauge.
+A drum or ball turning in a window is a sub-gauge of `kind('drum')` or `kind('ball')`,
+like the wet compass (`nav.compass.wet`) in the [gallery](CONTRIB.md).
+Nest a sub-gauge for each independent moving part, each with its own metric.
+
+To match the original's proportions, trace over a photo.
+Overlay a partially transparent image of the original on your gauge,
+and add `g3.contrib.debug.alignment()`, whose crosshairs and circle mark the gauge's center and its 100-unit radius,
+or turn on a background grid with `.grid(true)` on the gauge or panel.
+Crop the photo to a square around the dial so it lines up with the circle,
+then adjust angles and insets until the marks agree.
+Remove the overlay when you're done.
+
+```js
+const gauge = g3.gauge()
+    .metric('rpm')
+    .measure(d3.scaleLinear().domain([0, 6000]).range([-125, 125]))
+    .fake(g3.forceSeries(0, 6000))
+    .append(
+        g3.contrib.debug.alignment(),
+        g3.axisTicks().step(500),
+        g3.axisLabels().step(1000).format(v => v / 100).inset(20),
+        g3.indicatePointer(),
+        // your photo of the real gauge, cropped square around the dial
+        g3.element('image', {href: 'original.png', x: -100, y: -100, width: 200, height: 200, opacity: 0.4}),
+    );
+```
+
+<p align='center'><img src="/tests/cookbook/model-a-real-gauge.svg" width="180" alt="Model a real gauge"></p>
 
 
 ### Move the scale, not the pointer
@@ -72,32 +117,38 @@ const gauge = g3.gauge()
 
 ### A sector that follows a metric
 
-An `axisSector` is static decoration.
-To shade a range whose end moves, such as the region above a variable never-exceed speed,
-use `indicateSector`, which draws from a fixed `anchor` to the current value.
-Nest it in a sub-gauge with the same `measure` so it can track its own metric.
+An `axisSector` is fixed decoration, like the red line at a fixed never-exceed speed.
+To shade a range whose end moves, use `indicateSector`, which draws from a fixed `anchor` to the current value.
+For example, a jet's maximum operating speed falls as it climbs,
+so its airspeed indicator shows the limit with a moving red-and-white "barber pole".
+Nest the sector in a sub-gauge with the same `measure` so it can follow its own metric,
+while the pointer follows airspeed.
 
 ```js
-const measure = d3.scaleLinear().domain([40, 200]).range([-150, 150]);
+const measure = d3.scaleLinear().domain([100, 400]).range([-150, 150]);
 
 const gauge = g3.gauge()
     .metric('airspeed').unit('knot')
-    .fake(g3.forceSeries(60, 160))
+    .fake(g3.forceSeries(150, 350))
     .measure(measure)
     .append(
         g3.gaugeFace(),
         g3.gauge()
-            .metric('vne').unit('knot')         // a second metric on the same axis
-            .fake(g3.forceSeries(150, 190))
+            .metric('maxSpeed').unit('knot')    // a second metric on the same axis
+            .fake(g3.forceSeries(280, 360))
             .measure(measure)
-            .append(g3.indicateSector().anchor(200).size(8).class('g3-danger-fill')),
-        g3.axisTicks().step(10),
-        g3.axisLabels().step(20).inset(20),
+            .append(g3.indicateSector().anchor(400).size(8).class('g3-danger-fill')),
+        g3.axisTicks().step(10).size(5),
+        g3.axisTicks().step(50),
+        g3.axisLabels().step(50).inset(20),
         g3.indicatePointer(),
     );
 ```
 
 <p align='center'><img src="/tests/cookbook/a-sector-that-follows-a-metric.svg" width="180" alt="A sector that follows a metric"></p>
+
+Without the sub-gauge, an `indicateSector` follows the gauge's own metric,
+filling from its anchor to the current value like the arcs on a modern engine display.
 
 
 ### A heading tape with no seam
@@ -143,36 +194,46 @@ const gauge = g3.gauge()
 
 Both tapes read the same `heading` metric, so only one needs a `.fake()`.
 
+If your tape is really a card wrapped around a drum, as on a wet compass, there is no seam to hide:
+a `kind('drum')` gauge wraps its scale around a cylinder seen side-on.
+The wet compasses `nav.compass.wet` and `nav.compass.wetTilting` in the [gallery](CONTRIB.md)
+build the card on a drum and a ball.
+
 
 ### Custom units
 
 You only need `.unit()` if a gauge should convert automatically from whatever units the hub reports,
 using the units [convert-units](https://github.com/convert-units/convert-units) knows about.
-If you know what units your data arrives in, leave `.unit()` off and convert with `rescale`.
-For units that convert-units lacks, the alternative is a small shim in front of G3
-that converts the hub's metrics before the panel sees them.
+For anything else, leave `.unit()` off and write the `measure` in the units your data arrives in.
+For example, glideslope deviation is reported in dots, which convert-units has never heard of:
 
 ```js
-// the hub reports glideslope deviation in dots; the needle swings 12° per dot
+// the hub reports glideslope deviation in dots, up to 2.5 either side
 const gauge = g3.gauge()
     .metric('glideslope')                       // no .unit(): values are used as reported
-    .fake(g3.forceSeries(-2, 2))
-    .measure(d3.scaleLinear().domain([-30, 30]).range([-30, 30]))
+    .fake(g3.forceSeries(-3, 3))
+    .measure(d3.scaleLinear().domain([-2.5, 2.5]).range([-60, 60]))
     .append(
         g3.gaugeFace(),
-        g3.axisTicks([-24, -12, 0, 12, 24]).size(10),
-        g3.indicatePointer().rescale(dots => dots * 12).clamp([-30, 30]),
+        g3.axisTicks([-2, -1, 1, 2]).size(10),
+        g3.axisTicks([0]).size(20),
+        g3.axisLabels([-2, -1, 1, 2]).inset(22),
+        g3.gaugeLabel('GS').y(40),
+        g3.indicatePointer().clamp([-2.5, 2.5]),    // a stop at full deflection
     );
 ```
 
 <p align='center'><img src="/tests/cookbook/custom-units.svg" width="180" alt="Custom units"></p>
+
+If the hub's values need more than a linear scale, transform them in an indicator's `.rescale()`,
+or put a small shim in front of G3 that converts the metrics before the panel sees them.
 
 
 ### LCD and segmented text
 
 G3 declares the [DSEG](https://www.keshikan.net/fonts-e.html) fonts as `DSEG7-Classic` and `DSEG14-Classic`.
 Combine them with `indicateText` for radio and transponder displays.
-The KT 76C transponder (`g3.contrib.radionav.transponder.KT76C`) in the [gallery](CONTRIB.md) is a complete example.
+The KT 76C transponder (`radionav.transponder.KT76C`) in the [gallery](CONTRIB.md) is a complete example.
 
 ```js
 const gauge = g3.gauge()
@@ -191,19 +252,27 @@ const gauge = g3.gauge()
 ### Combine several metrics
 
 Name extra metrics after the primary one.
-The gauge redraws when any of them changes, and callbacks receive all current values as `metrics`.
-Values in `metrics` are as reported by the hub, without unit conversion.
+The gauge redraws when any of them changes, and callbacks receive all current values as `metrics`,
+followed by the unit of the primary metric.
+Values in `metrics` are as reported by the hub, without unit conversion,
+so leave `.unit()` off when you combine them, and show the hub's unit with `indicateUnit`.
+Empty sub-gauges supply fake values for each metric, in gallons.
 
 ```js
 const gauge = g3.gauge()
-    .metric('fuelLeft', 'fuelRight')
-    .fake(g3.forceSeries(10, 40))
+    .metric('fuelLeft', 'fuelRight')            // no .unit(): use whatever the hub reports
     .append(
-        g3.indicateText().format((left, metrics) => `${Math.round(left + (metrics.fuelRight ?? 0))} gal`),
+        g3.gauge().metric('fuelLeft').unit('gal').fake(g3.forceSeries(10, 40)),
+        g3.gauge().metric('fuelRight').unit('gal').fake(g3.forceSeries(10, 40)),
+        g3.indicateText().format((_, metrics) => Math.round(metrics.fuelLeft + metrics.fuelRight)).size(30),
+        g3.put().y(25).append(g3.indicateUnit().format(unit => unit.toUpperCase())),
     );
 ```
 
 <p align='center'><img src="/tests/cookbook/combine-several-metrics.svg" width="180" alt="Combine several metrics"></p>
+
+The first argument to `format` is the primary metric's value, converted to the gauge's unit if it has one,
+so with a `.unit()` you can still combine it with others that the hub reports in the same unit.
 
 
 ### Further reading
