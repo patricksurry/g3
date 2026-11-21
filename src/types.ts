@@ -5,7 +5,16 @@ export type SelectorOrSelection = string | D3Selection;
 export type TransitionFunction = (sel: D3Selection) => d3.Transition<any, any, any, any> | D3Selection;
 export type RenderFunction = (sel: any, g?: GaugeComponent) => void;
 
-export type GaugeKind = 'circular' | 'linear';
+export type GaugeKind = 'circular' | 'linear' | 'longitude' | 'latitude';
+
+/** Shared state for nested spherical gauges: one orthographic projection and the marks that follow its rotation. */
+export interface SphereBall {
+    proj: d3.GeoProjection;
+    /** current `[lambda, phi, gamma]` rotation in degrees */
+    rotation: [number, number, number];
+    redraws: (() => void)[];
+    redraw(): void;
+}
 export type TickShape = 'tick' | 'dot' | 'wedge' | 'rect';
 export type LabelOrientation = 'fixed' | 'relative' | 'upward' | 'clockwise' | 'counterclockwise';
 export type ScrewShape = 'slotted' | 'phillips' | 'robertson';
@@ -159,9 +168,9 @@ export interface GaugeComponent extends
     fake(): Fake | undefined;
     /** Set the fake used by the local hub: a generator `(current) => next`, or a constant starting value. */
     fake(_?: Fake): GaugeComponent;
-    /** Get the axis coordinate system kind (`'circular'` or `'linear'`, default `'circular'`). */
+    /** Get the axis coordinate system kind (`'circular'`, `'linear'`, `'longitude'` or `'latitude'`, default `'circular'`). */
     kind(): GaugeKind;
-    /** Set the axis coordinate system kind (`'circular'` or `'linear'`). */
+    /** Set the axis coordinate system kind (`'circular'`, `'linear'`, or a spherical `'longitude'` or `'latitude'`). */
     kind(_: GaugeKind): GaugeComponent;
     /** Get the clipping path renderer for this gauge. */
     clip(): RenderFunction | undefined;
@@ -186,6 +195,10 @@ export interface GaugeComponent extends
     metrictransform(v: any, invert?: boolean): string;
     marktransform(v: any, inset?: number): string;
     sectorpath(v0: any, v1: any, _size?: number, _inset?: number): string | null;
+    /** Call `fn` now, and again whenever the gauge geometry changes (e.g. a spherical gauge rotates). */
+    redraw(fn: () => void): void;
+    /** The shared ball of a spherical gauge, set at drawing time. */
+    _ball?: SphereBall;
 }
 
 /** Circular gauge face renderer created by `g3.gaugeFace()`. */

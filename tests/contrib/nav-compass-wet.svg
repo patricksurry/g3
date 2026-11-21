@@ -1,0 +1,616 @@
+<svg width="216" height="216" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216">
+<defs>
+<style>.will-change-transform { will-change: transform; }
+.g3-panel { background-color: black; display: block; margin: 0px auto; stroke: none; fill: none; }
+.g3-panel * { vector-effect: non-scaling-stroke; }
+.g3-panel text { text-anchor: middle; dominant-baseline: central; font-stretch: condensed; fill: rgb(170, 170, 170); }
+.g3-axis-ticks-dot,.g3-axis-ticks-wedge,.g3-axis-sector,.g3-fg-fill { fill: rgb(221, 221, 221); }
+.g3-axis-line,.g3-axis-ticks,.g3-fg-stroke { stroke: rgb(221, 221, 221); }
+.g3-axis-ticks .g3-axis-ticks-dot,.g3-axis-ticks .g3-axis-ticks-wedge { stroke: none; }
+.g3-grid-line line { stroke: rgb(102, 102, 102); }
+.g3-grid-hairline { stroke: rgb(51, 51, 51); }
+.g3-grid-label text { font-size: 8px; text-anchor: middle; dominant-baseline: central; fill: rgb(153, 153, 153); }
+.g3-grid-label rect { stroke: none; fill: black; opacity: 0.5; }
+.g3-gauge-face,.g3-bg-fill { fill: rgb(24, 24, 24); }
+.g3-bg-stroke { stroke: rgb(24, 24, 24); }
+.g3-no-fill { fill: none; }
+.g3-no-stroke { stroke: none; }
+.g3-highlight-fill { fill: orange; }
+.g3-highlight-stroke { stroke: orange; stroke-width: 2; }
+.g3-danger-stroke { stroke: red; stroke-width: 2; }
+.g3-danger-fill { fill: red; }
+.g3-warning-fill { fill: rgb(152, 120, 8); }
+.g3-normal-fill { fill: green; }
+.g3-cold-fill,.g3-sky-fill { fill: rgb(5, 128, 186); }
+.g3-ground-fill { fill: rgb(107, 86, 52); }
+.g3-indicate-pointer { fill: rgb(34, 34, 34); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-pointer-needle { fill: red; }
+.g3-pointer-blade { fill: rgb(232, 232, 232); stroke: rgb(232, 232, 232); }
+.g3-pointer-luminous { fill: rgb(224, 232, 208); stroke: rgb(208, 216, 192); }
+.g3-indicate-sector { fill: green; stroke: none; }
+.g3-indicate-sector.g3-indicate-sector-negative { fill: red; }
+.g3-gauge-screw { fill: rgb(51, 51, 51); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-gauge-screw rect { fill: rgb(34, 34, 34); }
+.g3-highlight { fill: url("#highlightGradient"); fill-opacity: 0.25; }
+.g3-switch-control { cursor: pointer; }
+.g3-switch-bezel { fill: rgb(85, 85, 85); }
+.g3-switch-recess { fill: rgb(20, 20, 20); }
+.g3-switch-cap { fill: rgb(40, 40, 40); }
+.g3-switch-cap-shine { fill: rgb(58, 58, 58); }
+.g3-switch-cap-down { fill: rgb(24, 24, 24); }
+.g3-switch-cap-down-face { fill: rgb(34, 34, 34); }
+.g3-switch-button text { fill: rgb(224, 224, 224); font-weight: bold; }
+.g3-switch-button .g3-switch-pressed text { fill: rgb(170, 170, 170); }
+.g3-switch-collar { fill: rgb(153, 153, 153); }
+.g3-switch-collar-recess { fill: rgb(51, 51, 51); }
+.g3-switch-knurl { fill: rgb(74, 74, 74); }
+.g3-switch-knob { fill: rgb(27, 27, 27); }
+.g3-switch-knob-ridge { fill: rgb(44, 44, 44); }
+.kt76c-bezel { fill: rgb(28, 28, 28); stroke: rgb(68, 68, 68); stroke-width: 1.5; }
+.kt76c-face { fill: rgb(19, 19, 19); stroke: rgb(42, 42, 42); stroke-width: 1; }
+.kt76c-silkscreen { fill: rgb(204, 204, 204); font-weight: bold; }
+.kt76c-window { fill: rgb(34, 9, 12); stroke: rgb(51, 51, 51); stroke-width: 1.5; }
+.kt76c-window-inner { fill: rgb(45, 11, 15); stroke: rgb(22, 4, 6); stroke-width: 1; }
+.kt76c-photocell { fill: rgb(17, 17, 17); stroke: rgb(68, 68, 68); stroke-width: 0.8; }
+.g3-panel text.kt76c-segment { fill: rgb(255, 46, 31); font-weight: bold; }
+.g3-panel text.kt76c-digits { fill: rgb(255, 46, 31); font-family: DSEG7-Classic, monospace; }
+.css-giyvnh { }
+.css-giyvnh text { fill: rgb(238, 238, 238); }
+svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background: none; }
+.g3-panel { background-color: transparent; fill: none; }</style>
+<radialGradient id="highlightGradient" cx="50%" cy="50%" fx="25%" fy="40%" r="50%">
+<stop stop-color="white" offset="0%">
+</stop>
+<stop stop-color="black" offset="100%">
+</stop>
+</radialGradient>
+<filter id="dropShadow1" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="1" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow2" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="2" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow3" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="3" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="gaussianBlur1">
+<feGaussianBlur in="SourceGraphic" stdDeviation="1">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur2">
+<feGaussianBlur in="SourceGraphic" stdDeviation="2">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur3">
+<feGaussianBlur in="SourceGraphic" stdDeviation="3">
+</feGaussianBlur>
+</filter>
+<radialGradient id="g3-wet-compass-shade" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="85">
+<stop offset="0" stop-color="#000" stop-opacity="0">
+</stop>
+<stop offset="0.3" stop-color="#000" stop-opacity="0.039">
+</stop>
+<stop offset="0.5" stop-color="#000" stop-opacity="0.114">
+</stop>
+<stop offset="0.65" stop-color="#000" stop-opacity="0.204">
+</stop>
+<stop offset="0.75" stop-color="#000" stop-opacity="0.288">
+</stop>
+<stop offset="0.85" stop-color="#000" stop-opacity="0.402">
+</stop>
+<stop offset="0.92" stop-color="#000" stop-opacity="0.517">
+</stop>
+<stop offset="0.97" stop-color="#000" stop-opacity="0.643">
+</stop>
+<stop offset="1" stop-color="#000" stop-opacity="0.85">
+</stop>
+</radialGradient>
+</defs>
+<g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
+<g class="g3-gauge css-giyvnh">
+<g>
+<rect x="-100" y="-60" width="200" height="120" rx="12" class="g3-gauge-face">
+</rect>
+<g class="g3-gauge">
+<g clip-path="url(#gauge-clip1)">
+<clipPath id="gauge-clip1">
+<rect x="-78" y="-36" width="156" height="72" rx="8">
+</rect>
+</clipPath>
+<rect x="-78" y="-36" width="156" height="72" rx="8" style="fill: #0b0b0b">
+</rect>
+<g class="g3-gauge">
+<g>
+<path d="M-82.475,-20.566L-82.449,-20.563L-82.326,-20.563L-82.102,-20.563L-81.779,-20.563L-81.356,-20.563L-80.834,-20.563L-80.213,-20.563L-79.495,-20.563L-78.68,-20.563L-77.769,-20.563L-76.763,-20.563L-75.663,-20.563L-74.472,-20.563L-73.19,-20.563L-71.818,-20.563L-70.359,-20.563L-68.815,-20.563L-67.186,-20.563L-65.476,-20.563L-63.686,-20.563L-61.818,-20.563L-59.875,-20.563L-57.859,-20.563L-55.773,-20.563L-53.618,-20.563L-51.398,-20.563L-49.116,-20.563L-46.774,-20.563L-44.375,-20.563L-41.921,-20.563L-39.417,-20.563L-36.865,-20.563L-34.267,-20.563L-31.628,-20.563L-28.951,-20.563L-26.238,-20.563L-23.493,-20.563L-20.72,-20.563L-17.921,-20.563L-15.101,-20.563L-12.262,-20.563L-12.262,-20.563L-9.408,-20.563L-6.543,-20.563L-3.67,-20.563L-0.792,-20.563L2.087,-20.563L4.963,-20.563L7.833,-20.563L10.694,-20.563L13.541,-20.563L16.372,-20.563L19.183,-20.563L21.971,-20.563L24.732,-20.563L27.463,-20.563L30.16,-20.563L32.821,-20.563L35.441,-20.563L38.019,-20.563L40.55,-20.563L43.032,-20.563L45.461,-20.563L47.835,-20.563L50.15,-20.563L52.405,-20.563L54.596,-20.563L56.72,-20.563L58.775,-20.563L60.758,-20.563L62.668,-20.563L64.501,-20.563L66.255,-20.563L67.929,-20.563L69.52,-20.563L71.026,-20.563L72.446,-20.563L73.778,-20.563L75.019,-20.563L76.169,-20.563L77.227,-20.563L78.19,-20.563L79.058,-20.563L79.83,-20.563L80.505,-20.563L81.081,-20.563L81.559,-20.563L81.937,-20.563L82.215,-20.563L82.393,-20.563L82.471,-20.563L82.475,-20.566L82.475,-20.566L83.142,-17.675L83.708,-14.762L84.172,-11.832L84.534,-8.887L84.793,-5.932L84.948,-2.969L85,-0.002L84.948,2.964L84.793,5.927L84.535,8.883L84.173,11.827L83.709,14.758L83.143,17.67L82.476,20.561L81.708,23.427L81.706,23.432L81.703,23.429L81.626,23.429L81.45,23.429L81.174,23.429L80.799,23.429L80.326,23.429L79.755,23.429L79.087,23.429L78.322,23.429L77.462,23.429L76.508,23.429L75.46,23.429L74.321,23.429L73.091,23.429L71.772,23.429L70.365,23.429L68.873,23.429L67.297,23.429L65.638,23.429L63.9,23.429L62.084,23.429L60.193,23.429L58.228,23.429L56.192,23.429L54.087,23.429L51.917,23.429L49.684,23.429L47.389,23.429L45.038,23.429L42.631,23.429L40.172,23.429L37.665,23.429L35.111,23.429L32.515,23.429L29.879,23.429L27.207,23.429L24.502,23.429L21.766,23.429L19.005,23.429L16.22,23.429L13.415,23.429L10.594,23.429L7.76,23.429L4.917,23.429L2.067,23.429L-0.784,23.429L-3.635,23.429L-6.482,23.429L-9.32,23.429L-12.148,23.429L-12.148,23.429L-14.96,23.429L-17.754,23.429L-20.527,23.429L-23.275,23.429L-25.994,23.429L-28.681,23.429L-31.334,23.429L-33.948,23.429L-36.521,23.429L-39.05,23.429L-41.531,23.429L-43.961,23.429L-46.338,23.429L-48.659,23.429L-50.92,23.429L-53.119,23.429L-55.253,23.429L-57.32,23.429L-59.317,23.429L-61.242,23.429L-63.093,23.429L-64.866,23.429L-66.561,23.429L-68.174,23.429L-69.704,23.429L-71.149,23.429L-72.508,23.429L-73.778,23.429L-74.959,23.429L-76.048,23.429L-77.044,23.429L-77.947,23.429L-78.755,23.429L-79.466,23.429L-80.081,23.429L-80.598,23.429L-81.018,23.429L-81.338,23.429L-81.559,23.429L-81.681,23.429L-81.706,23.432L-81.707,23.432L-82.474,20.566L-83.142,17.675L-83.708,14.763L-84.172,11.832L-84.534,8.888L-84.793,5.932L-84.948,2.969L-85,0.003L-84.948,-2.964L-84.793,-5.927L-84.535,-8.882L-84.173,-11.827L-83.709,-14.757L-83.143,-17.67L-82.476,-20.561Z" class="g3-axis-sector" style="fill: #202020">
+</path>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke: #eee">
+<g transform="matrix(0.99,0,-0.026,0.984,-12.445,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.973,0,-0.042,0.984,-19.613,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.949,0,-0.057,0.984,-26.631,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.918,0,-0.071,0.984,-33.446,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.88,0,-0.085,0.984,-40.007,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.836,0,-0.098,0.984,-46.263,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.785,0,-0.111,0.984,-52.167,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.728,0,-0.123,0.984,-57.674,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.665,0,-0.133,0.984,-62.743,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.598,0,-0.143,0.984,-67.333,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.525,0,-0.152,0.984,-71.412,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.449,0,-0.159,0.984,-74.946,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.37,0,-0.166,0.984,-77.911,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.287,0,-0.171,0.984,-80.282,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.203,0,-0.174,0.984,-82.043,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.117,0,-0.177,0.984,-83.179,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.03,0,-0.178,0.984,-83.682,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.058,0,0.178,0.984,83.548,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.144,0,0.176,0.984,82.778,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.23,0,0.173,0.984,81.379,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.314,0,0.169,0.984,79.36,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.396,0,0.163,0.984,76.737,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.474,0,0.156,0.984,73.53,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.549,0,0.148,0.984,69.763,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.62,0,0.139,0.984,65.466,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.686,0,0.129,0.984,60.67,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.747,0,0.118,0.984,55.412,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.802,0,0.106,0.984,49.733,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.851,0,0.093,0.984,43.675,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.893,0,0.079,0.984,37.285,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.929,0,0.065,0.984,30.611,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.958,0,0.05,0.984,23.704,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.979,0,0.035,0.984,16.617,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.993,0,0.02,0.984,9.403,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(1,0,0.005,0.984,2.118,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+<g transform="matrix(0.998,0,-0.011,0.984,-5.183,-14.76)">
+<path d="M0,0L0,5.934">
+</path>
+</g>
+</g>
+<g class="g3-axis-ticks g3-axis-ticks-tick" style="stroke: #eee">
+<g transform="matrix(0.99,0,-0.026,0.984,-12.445,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.949,0,-0.057,0.984,-26.631,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.88,0,-0.085,0.984,-40.007,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.785,0,-0.111,0.984,-52.167,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.665,0,-0.133,0.984,-62.743,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.525,0,-0.152,0.984,-71.412,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.37,0,-0.166,0.984,-77.911,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.203,0,-0.174,0.984,-82.043,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.03,0,-0.178,0.984,-83.682,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="scale(0)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.144,0,0.176,0.984,82.778,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.314,0,0.169,0.984,79.36,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.474,0,0.156,0.984,73.53,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.62,0,0.139,0.984,65.466,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.747,0,0.118,0.984,55.412,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.851,0,0.093,0.984,43.675,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.929,0,0.065,0.984,30.611,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(0.979,0,0.035,0.984,16.617,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+<g transform="matrix(1,0,0.005,0.984,2.118,-14.76)">
+<path d="M0,0L0,10.385">
+</path>
+</g>
+</g>
+<g class="g3-axis-labels">
+<g>
+<text font-size="16" transform="matrix(0.99,0,0.01,0.998,-12.606,5.929)">N</text>
+</g>
+<g>
+<text font-size="16" transform="matrix(0.785,0,0.041,0.998,-52.843,5.929)">3</text>
+</g>
+<g>
+<text font-size="16" transform="matrix(0.37,0,0.061,0.998,-78.92,5.929)">6</text>
+</g>
+<g>
+<text font-size="16" transform="scale(0)">E</text>
+</g>
+<g>
+<text font-size="16" transform="scale(0)">12</text>
+</g>
+<g>
+<text font-size="16" transform="scale(0)">15</text>
+</g>
+<g>
+<text font-size="16" transform="scale(0)">S</text>
+</g>
+<g>
+<text font-size="16" transform="scale(0)">21</text>
+</g>
+<g>
+<text font-size="16" transform="scale(0)">24</text>
+</g>
+<g>
+<text font-size="16" transform="matrix(0.144,0,-0.065,0.998,83.851,5.929)">W</text>
+</g>
+<g>
+<text font-size="16" transform="matrix(0.62,0,-0.051,0.998,66.313,5.929)">30</text>
+</g>
+<g>
+<text font-size="16" transform="matrix(0.929,0,-0.024,0.998,31.008,5.929)">33</text>
+</g>
+</g>
+</g>
+</g>
+<rect x="-78" y="-36" width="156" height="72" rx="8" fill="url(#g3-wet-compass-shade)">
+</rect>
+</g>
+</g>
+<rect x="-78" y="-36" width="156" height="72" rx="8" style="stroke: #555; stroke-width: 2">
+</rect>
+<path d="M 0,-36 v 72" class="g3-highlight-stroke" style="stroke-width: 2">
+</path>
+</g>
+</g>
+</g>
+</svg>

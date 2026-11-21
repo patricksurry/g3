@@ -45,9 +45,8 @@ export function axisSector(vs?: number[]): AxisSectorComponent {
     const sector: AxisSectorComponent = stylable<AxisSectorComponent>(Object.assign(
         function(sel: SelectorOrSelection, g?: GaugeComponent) {
             const [v0, v1] = values || ends(g!.measure().domain());
-            const _ = d3sel(sel)
-                .append('path')
-                .attr('d', g!.sectorpath(v0, v1, size, inset));
+            const _ = d3sel(sel).append('path');
+            g!.redraw(() => _.attr('d', g!.sectorpath(v0, v1, size, inset)));
             sector.stylable(_);
         },
         {
@@ -85,8 +84,8 @@ export function axisTicks(vs?: number[]): AxisTicksComponent {
             ticks.class('g3-axis-ticks-' + shape).stylable(_);
             const entered = _.selectAll(null)
                 .data(tickValues)
-              .enter().append('g')
-                .attr('transform', (d: any) => g!.marktransform(d, inset));
+              .enter().append('g');
+            g!.redraw(() => entered.attr('transform', (d: any) => g!.marktransform(d, inset)));
 
             switch (shape) {
                 case 'dot':
@@ -169,7 +168,8 @@ export function axisLabels(vs?: number[] | Record<string | number, string | numb
                     .attr('href', (_d: any, i: number) => `#${pathId}-${i}`)
                     .text(format);
             } else {
-                textEl.attr('transform', (d: any) => {
+                textEl.text(format);
+                g!.redraw(() => textEl.attr('transform', (d: any) => {
                     let xform = g!.marktransform(d, inset),
                         rot = rotate;
                     if (g!.kind() == 'circular') {
@@ -181,7 +181,7 @@ export function axisLabels(vs?: number[] | Record<string | number, string | numb
                     }
                     if (rot) xform += ` rotate(${rot})`;
                     return `${xform}`;
-                }).text(format);
+                }));
             }
         },
         {

@@ -14,5 +14,9 @@ export function ends<T>(vs: T[]): [T, T] {
 /** Whether a circular gauge's range covers a whole number of full turns, so values wrap around. */
 export function isFullCircle(kind: GaugeKind, range: number[]): boolean {
     const [r0, r1] = ends(range);
-    return kind == 'circular' && r0 !== r1 && (r0 - r1) % 360 == 0;
+    return (kind == 'circular' || kind == 'longitude') && r0 !== r1 && (r0 - r1) % 360 == 0;
+}
+
+export function isSphere(kind: GaugeKind): boolean {
+    return kind == 'longitude' || kind == 'latitude';
 }

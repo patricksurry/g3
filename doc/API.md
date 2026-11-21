@@ -131,9 +131,26 @@ the gauge redraws when the hub reports the resulting change.
 
 *gauge*.**kind**(\[*kind*: string\]) · [source](/src/gauge.ts)
 
-If *kind* is specified, it must be either the string `circular` or `linear`
+If *kind* is specified, it must be one of the strings `circular`, `linear`, `longitude` or `latitude`
 to select how the axis is displayed for this gauge.
 If *kind* is not specified, return the current value, defaulting to `circular`.
+
+The `longitude` and `latitude` kinds draw on the surface of a ball,
+seen in [orthographic projection](https://d3js.org/d3-geo/azimuthal#geoOrthographic) with radius *gauge*.r(),
+for instruments like an attitude ball or a wet compass.
+The *measure* maps metric values to degrees of longitude or latitude respectively.
+Axis [ticks](#g3-axisTicks), [labels](#g3-axisLabels), [sectors](#g3-axisSector) and [lines](#g3-axisLine)
+are drawn tangent to the surface, so they foreshorten as the ball turns, and are hidden on its far side.
+Their *inset* and *size* are measured in SVG units along the surface at the centre of the ball
+(an arc of *d* degrees spans *d*·π/180·*r* units):
+on a `longitude` gauge, inset runs south from the equator, like ticks running inward on a circular gauge;
+on a `latitude` gauge, inset runs east from the prime meridian, with the axis pointing north,
+like a linear gauge rotated by -90°.
+A spherical gauge nested inside another shares its ball,
+so for example a `latitude` gauge for pitch inside a `longitude` gauge for heading turns one ball by both.
+Roll is an ordinary circular [autoindicate](#g3-gauge-autoindicate) wrapped around the ball.
+Pointers are not supported on spherical gauges.
+See `g3.contrib.nav.attitude.ball` and `g3.contrib.nav.compass.wet` in the [gallery](CONTRIB.md).
 
 *gauge*.**measure**(\[*measure*: any &rArr; number\]) · [source](/src/gauge.ts)
 
@@ -171,7 +188,8 @@ Most gauges are fixed and use a pointer, text or style to indicate the current m
 A self-indicating gauge transforms itself so that the axis location corresponding
 to the current metric value stays at a fixed position.
 A circular gauge rotates so the correct axis value is shown at the top,
-and a linear gauge slides itself to the correct axis value is shown centered at *x*=0.
+a linear gauge slides itself to the correct axis value is shown centered at *x*=0,
+and a spherical gauge turns its ball so the correct value faces the viewer.
 To change the position where the gauge indicates, apply a transformation.
 For example, to indicate in a window at the 3 o'clock position, try:
 
