@@ -5,7 +5,27 @@ export type SelectorOrSelection = string | D3Selection;
 export type TransitionFunction = (sel: D3Selection) => d3.Transition<any, any, any, any> | D3Selection;
 export type RenderFunction = (sel: any, g?: GaugeComponent) => void;
 
-export type GaugeKind = 'circular' | 'linear';
+export type GaugeKind = 'circular' | 'linear' | 'ball.yaw' | 'ball.pitch' | 'drum';
+
+/** A surface that turns in three dimensions, with the marks drawn on it that re-project as it turns. */
+export interface Surface {
+    /** current rotation in degrees, one entry per axis */
+    rotation: number[];
+    redraws: (() => void)[];
+    redraw(): void;
+}
+
+/** Shared state for nested ball gauges: one orthographic projection rotated by `[yaw, pitch, roll]`. */
+export interface SphereBall extends Surface {
+    proj: d3.GeoProjection;
+    rotation: [number, number, number];
+}
+
+/** A drum gauge: a cylinder of radius `r` spinning about its vertical axis. */
+export interface Drum extends Surface {
+    r: number;
+    rotation: [number];
+}
 export type TickShape = 'tick' | 'dot' | 'wedge' | 'rect';
 export type LabelOrientation = 'fixed' | 'relative' | 'upward' | 'clockwise' | 'counterclockwise';
 export type ScrewShape = 'slotted' | 'phillips' | 'robertson';
@@ -159,9 +179,9 @@ export interface GaugeComponent extends
     fake(): Fake | undefined;
     /** Set the fake used by the local hub: a generator `(current) => next`, or a constant starting value. */
     fake(_?: Fake): GaugeComponent;
-    /** Get the axis coordinate system kind (`'circular'` or `'linear'`, default `'circular'`). */
+    /** Get the axis coordinate system kind (`'circular'`, `'linear'`, `'ball.yaw'`, `'ball.pitch'` or `'drum'`, default `'circular'`). */
     kind(): GaugeKind;
-    /** Set the axis coordinate system kind (`'circular'` or `'linear'`). */
+    /** Set the axis coordinate system kind (`'circular'`, `'linear'`, `'ball.yaw'`, `'ball.pitch'` or `'drum'`). */
     kind(_: GaugeKind): GaugeComponent;
     /** Get the clipping path renderer for this gauge. */
     clip(): RenderFunction | undefined;
@@ -186,6 +206,10 @@ export interface GaugeComponent extends
     metrictransform(v: any, invert?: boolean): string;
     marktransform(v: any, inset?: number): string;
     sectorpath(v0: any, v1: any, _size?: number, _inset?: number): string | null;
+    /** Call `fn` now, and again whenever the gauge geometry changes (e.g. a ball or drum turns). */
+    redraw(fn: () => void): void;
+    /** The surface a ball or drum gauge draws on, set at drawing time; nested ball gauges share one. */
+    _surface?: SphereBall | Drum;
 }
 
 /** Circular gauge face renderer created by `g3.gaugeFace()`. */

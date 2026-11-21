@@ -22,6 +22,11 @@ export const contrib = {
         },
         attitude: {
             generic: nav.attitudeGeneric,
+            ball: nav.attitudeBall,
+        },
+        compass: {
+            wet: nav.wetCompass,
+            wetTilting: nav.wetCompassTilting,
         },
         heading: {
             generic: nav.headingGeneric,
@@ -51,6 +56,9 @@ export const contrib = {
         },
         speedometer: {
             BMW: speedometer.speedometerBMW,
+        },
+        odometer: {
+            classic: speedometer.odometerClassic,
         },
         suctionPressure: {
             DHC2: dhc2engine.suctionPressure,

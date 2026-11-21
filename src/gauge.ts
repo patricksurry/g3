@@ -19,9 +19,13 @@ import type {
     StatusLightComponent,
     GaugeController,
     Fake,
-    Action
+    Action,
+    SphereBall,
+    Drum
 } from './types';
-import { isFullCircle } from './scale';
+import { isFullCircle, isBall } from './scale';
+import { sphereBall, sphereTransform, sphereRegion, arcDegrees } from './sphere';
+import { drumSurface, drumTransform, drumPath } from './drum';
 
 
 export function gauge(initialMetric?: string): GaugeComponent {
@@ -57,6 +61,11 @@ export function gauge(initialMetric?: string): GaugeComponent {
             }
             gaugeFn._ns = ns;
 
+            // ball gauges nested inside another share its ball, so all their rotations compose
+            gaugeFn._surface = isBall(kind)
+                ? (parent && isBall(parent.kind()) && parent._surface ? parent._surface : sphereBall(r))
+                : kind == 'drum' ? drumSurface(r) : undefined;
+
             const m = gaugeFn.metric();
 
             const selElement = d3sel(sel);
@@ -77,7 +86,31 @@ export function gauge(initialMetric?: string): GaugeComponent {
             if (activeController) {
                 if (fake !== undefined && m) activeController.fake(m, fake, unit);
 
-                if (autoindicate && m) {
+                if (autoindicate && m && gaugeFn._surface) {
+                    // turn the ball or drum so the current value faces the viewer, then re-project its marks
+                    const surface = gaugeFn._surface,
+                        axis = kind == 'ball.pitch' ? 1 : 0,
+                        cyclic = kind != 'ball.pitch';
+                    let drawn = false;
+                    const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
+                        const target = -measure(rescale(v, metrics, u)),
+                            t = drawn && typeof transition === 'function' ? transition(_) : undefined;
+                        drawn = true;
+                        if (!t || !('tween' in t)) {
+                            surface.rotation[axis] = target;
+                            surface.redraw();
+                            return;
+                        }
+                        const from = surface.rotation[axis] ?? 0;
+                        let delta = target - from;
+                        if (cyclic) delta = ((delta % 360) + 540) % 360 - 180;    // the short way round
+                        t.tween(`g3-surface-${axis}`, () => (k: number) => {
+                            surface.rotation[axis] = from + delta * k;
+                            surface.redraw();
+                        });
+                    };
+                    activeController.register(update, gaugeFn.metrics(), unit);
+                } else if (autoindicate && m) {
                     const isCyclic = isFullCircle(kind, measure.range());
                     const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
                         const xform = gaugeFn.metrictransform(rescale(v, metrics, u), true);
@@ -138,6 +171,10 @@ export function gauge(initialMetric?: string): GaugeComponent {
             fake(_?: Fake): any {
                 return arguments.length ? (fake = _, gaugeFn) : fake;
             },
+            redraw(fn: () => void): void {
+                if (gaugeFn._surface) gaugeFn._surface.redraws.push(fn);
+                fn();
+            },
             kind(_?: GaugeKind): any {
                 return arguments.length ? (kind = _!, gaugeFn) : kind;
             },
@@ -157,12 +194,22 @@ export function gauge(initialMetric?: string): GaugeComponent {
                 return arguments.length ? (showgrid = !!_, gaugeFn) : showgrid;
             },
             metrictransform(v: any, invert?: boolean): string {
+                if (gaugeFn._surface) return '';  // ball and drum gauges indicate by turning their surface
                 const
                     circular = kind == 'circular',
                     z = invert ? -measure(v) : measure(v);
                 return circular ? `rotate(${z})` : `translate(${z}, 0)`;
             },
             marktransform(v: any, inset?: number): string {
+                const surface = gaugeFn._surface;
+                if (kind == 'drum') return drumTransform(surface as Drum, measure(v), inset ?? 0);
+                if (surface) {
+                    const ball = surface as SphereBall,
+                        z = measure(v), off = arcDegrees(ball, inset ?? 0);
+                    return kind == 'ball.yaw'
+                        ? sphereTransform(ball, z, -off)
+                        : sphereTransform(ball, off, z, true);
+                }
                 const
                     circular = kind == 'circular',
                     insetVal = inset ?? 0,
@@ -171,6 +218,20 @@ export function gauge(initialMetric?: string): GaugeComponent {
                 return circular ? `rotate(${z}) translate(0, ${y})` : `translate(${z}, ${y})`;
             },
             sectorpath(v0: any, v1: any, _size?: number, _inset?: number): string | null {
+                const surface = gaugeFn._surface;
+                if (kind == 'drum') {
+                    const y0 = _inset ?? 0;
+                    return drumPath(surface as Drum, measure(v0), measure(v1), y0, y0 + (_size ?? 0));
+                }
+                if (surface) {
+                    const ball = surface as SphereBall,
+                        z0 = measure(v0), z1 = measure(v1),
+                        a = arcDegrees(ball, _inset ?? 0), b = arcDegrees(ball, (_inset ?? 0) + (_size ?? 0)),
+                        region = kind == 'ball.yaw'
+                            ? sphereRegion(z0, z1, -b, -a)    // inset runs south from the equator
+                            : sphereRegion(a, b, z0, z1);     // inset runs east from the meridian
+                    return d3.geoPath(ball.proj)(region);
+                }
                 const
                     size = _size ?? 0,
                     inset = _inset ?? 0,
