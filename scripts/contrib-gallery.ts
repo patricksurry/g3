@@ -169,10 +169,12 @@ export function renderContribGauge(factory: () => GaugeComponent): { svg: string
         svgEl.querySelectorAll('image').forEach(img => {
             const href = img.getAttribute('href') || img.getAttribute('xlink:href');
             if (href && !href.startsWith('data:') && !href.startsWith('http')) {
-                const assetPath = path.join(ROOT_DIR, 'src', href);
-                if (fs.existsSync(assetPath)) {
+                // contrib assets live in src/, cookbook examples borrow images from doc/
+                const assetPath = ['src', 'doc'].map(d => path.join(ROOT_DIR, d, href)).find(p => fs.existsSync(p));
+                if (assetPath) {
                     const b64 = fs.readFileSync(assetPath).toString('base64');
-                    img.setAttribute('href', `data:image/png;base64,${b64}`);
+                    const mime = /\.jpe?g$/i.test(assetPath) ? 'image/jpeg' : 'image/png';
+                    img.setAttribute('href', `data:${mime};base64,${b64}`);
                 }
             }
         });

@@ -71,18 +71,24 @@ Crop the photo to a square around the dial so it lines up with the circle,
 then adjust angles and insets until the marks agree.
 Remove the overlay when you're done.
 
+Here the [tutorial](TUTORIAL.md#create-a-new-gauge)'s Jaguar E-type tachometer
+traces over a photo of the original:
+
 ```js
 const gauge = g3.gauge()
-    .metric('rpm')
+    .metric('engineRPM').unit('rpm')
     .measure(d3.scaleLinear().domain([0, 6000]).range([-125, 125]))
     .fake(g3.forceSeries(0, 6000))
     .append(
         g3.contrib.debug.alignment(),
-        g3.axisTicks().step(500),
-        g3.axisLabels().step(1000).format(v => v / 100).inset(20),
-        g3.indicatePointer(),
-        // your photo of the real gauge, cropped square around the dial
-        g3.element('image', {href: 'original.png', x: -100, y: -100, width: 200, height: 200, opacity: 0.4}),
+        g3.put().scale(0.95).append(
+            g3.axisTicks().step(500).style('stroke-width: 5'),
+            g3.axisTicks().step(100).size(5),
+            g3.axisLabels().step(1000).format(v => v / 100).inset(20).size(15),
+            g3.indicatePointer(),
+        ),
+        // a photo of the real gauge, cropped square around the dial
+        g3.element('image', {href: 'jagetach.jpg', x: -100, y: -100, width: 200, height: 200, opacity: 0.5}),
     );
 ```
 
