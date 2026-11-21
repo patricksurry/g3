@@ -117,7 +117,7 @@ export function odometerClassic(): GaugeComponent {
                     g3.element('rect', win).style('fill: #050505'),
                     // only one drum needs to fake the shared metric, starting just before a rollover
                     g3.gauge().metric('odometer').unit('mi')
-                        .fake((v?: number) => v === undefined ? 89999.92 : v + 0.03),
+                        .fake((v?: number) => v === undefined ? 89999.7 : v + 0.02),
                     ...d3.range(n).map(drum),
                     g3.element('rect', {...win, fill: 'url(#g3-odometer-shade)'}),
                 ),
