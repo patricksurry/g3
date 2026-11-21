@@ -22,6 +22,10 @@ export const contrib = {
         },
         attitude: {
             generic: nav.attitudeGeneric,
+            ball: nav.attitudeBall,
+        },
+        compass: {
+            wet: nav.wetCompass,
         },
         heading: {
             generic: nav.headingGeneric,

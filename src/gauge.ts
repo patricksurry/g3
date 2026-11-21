@@ -21,7 +21,8 @@ import type {
     Fake,
     Action
 } from './types';
-import { isFullCircle } from './scale';
+import { isFullCircle, isSphere } from './scale';
+import { sphereBall, sphereTransform, sphereRegion, arcDegrees } from './sphere';
 
 
 export function gauge(initialMetric?: string): GaugeComponent {
@@ -57,6 +58,11 @@ export function gauge(initialMetric?: string): GaugeComponent {
             }
             gaugeFn._ns = ns;
 
+            // spherical gauges nested inside another share its ball, so all their rotations compose
+            gaugeFn._ball = isSphere(kind)
+                ? (parent && isSphere(parent.kind()) && parent._ball ? parent._ball : sphereBall(r))
+                : undefined;
+
             const m = gaugeFn.metric();
 
             const selElement = d3sel(sel);
@@ -77,7 +83,30 @@ export function gauge(initialMetric?: string): GaugeComponent {
             if (activeController) {
                 if (fake !== undefined && m) activeController.fake(m, fake, unit);
 
-                if (autoindicate && m) {
+                if (autoindicate && m && gaugeFn._ball) {
+                    // rotate the ball so the current value faces the viewer, then re-project its marks
+                    const ball = gaugeFn._ball,
+                        axis = kind == 'longitude' ? 0 : 1;
+                    let drawn = false;
+                    const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
+                        const target = -measure(rescale(v, metrics, u)),
+                            t = drawn && typeof transition === 'function' ? transition(_) : undefined;
+                        drawn = true;
+                        if (!t || !('tween' in t)) {
+                            ball.rotation[axis] = target;
+                            ball.redraw();
+                            return;
+                        }
+                        const from = ball.rotation[axis];
+                        let delta = target - from;
+                        if (axis == 0) delta = ((delta % 360) + 540) % 360 - 180;    // the short way round
+                        t.tween(`g3-sphere-${axis}`, () => (k: number) => {
+                            ball.rotation[axis] = from + delta * k;
+                            ball.redraw();
+                        });
+                    };
+                    activeController.register(update, gaugeFn.metrics(), unit);
+                } else if (autoindicate && m) {
                     const isCyclic = isFullCircle(kind, measure.range());
                     const update = (v: any, transition?: TransitionFunction, metrics?: Record<string, any>, u?: string) => {
                         const xform = gaugeFn.metrictransform(rescale(v, metrics, u), true);
@@ -138,6 +167,10 @@ export function gauge(initialMetric?: string): GaugeComponent {
             fake(_?: Fake): any {
                 return arguments.length ? (fake = _, gaugeFn) : fake;
             },
+            redraw(fn: () => void): void {
+                if (gaugeFn._ball) gaugeFn._ball.redraws.push(fn);
+                fn();
+            },
             kind(_?: GaugeKind): any {
                 return arguments.length ? (kind = _!, gaugeFn) : kind;
             },
@@ -157,12 +190,20 @@ export function gauge(initialMetric?: string): GaugeComponent {
                 return arguments.length ? (showgrid = !!_, gaugeFn) : showgrid;
             },
             metrictransform(v: any, invert?: boolean): string {
+                if (isSphere(kind)) return '';  // spherical gauges indicate by rotating the ball
                 const
                     circular = kind == 'circular',
                     z = invert ? -measure(v) : measure(v);
                 return circular ? `rotate(${z})` : `translate(${z}, 0)`;
             },
             marktransform(v: any, inset?: number): string {
+                const ball = gaugeFn._ball;
+                if (ball) {
+                    const z = measure(v), off = arcDegrees(ball, inset ?? 0);
+                    return kind == 'longitude'
+                        ? sphereTransform(ball, z, -off)
+                        : sphereTransform(ball, off, z, true);
+                }
                 const
                     circular = kind == 'circular',
                     insetVal = inset ?? 0,
@@ -171,6 +212,15 @@ export function gauge(initialMetric?: string): GaugeComponent {
                 return circular ? `rotate(${z}) translate(0, ${y})` : `translate(${z}, ${y})`;
             },
             sectorpath(v0: any, v1: any, _size?: number, _inset?: number): string | null {
+                const ball = gaugeFn._ball;
+                if (ball) {
+                    const z0 = measure(v0), z1 = measure(v1),
+                        a = arcDegrees(ball, _inset ?? 0), b = arcDegrees(ball, (_inset ?? 0) + (_size ?? 0)),
+                        region = kind == 'longitude'
+                            ? sphereRegion(z0, z1, -b, -a)    // inset runs south from the equator
+                            : sphereRegion(a, b, z0, z1);     // inset runs east from the meridian
+                    return d3.geoPath(ball.proj)(region);
+                }
                 const
                     size = _size ?? 0,
                     inset = _inset ?? 0,
