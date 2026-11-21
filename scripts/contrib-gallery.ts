@@ -87,6 +87,21 @@ export function reflectGaugeMetrics(root: GaugeComponent): MetricInfo[] {
     return Array.from(seen.entries()).map(([metric, unit]) => ({ metric, unit }));
 }
 
+// segment fonts that g3 declares from a CDN, keyed by family, with their file in the dseg package
+const EMBEDDED_FONTS: Record<string, string> = {
+    'DSEG7-Classic': 'DSEG7-Classic/DSEG7Classic-Bold.woff2',
+    'DSEG14-Classic': 'DSEG14-Classic/DSEG14Classic-Bold.woff2',
+};
+
+/** Does any element in svgEl get this font family, from an inline style or a stylesheet rule that matches it? */
+function svgUsesFont(svgEl: Element, family: string): boolean {
+    if (Array.from(svgEl.querySelectorAll('[style]')).some(el => el.getAttribute('style')!.includes(family))) return true;
+    return Array.from(document.querySelectorAll('style'))
+        .flatMap(s => (s.sheet ? Array.from(s.sheet.cssRules) : []))
+        .some(r => r instanceof CSSStyleRule && r.style.fontFamily.includes(family)
+            && (() => { try { return svgEl.querySelector(r.selectorText) !== null; } catch { return false; } })());
+}
+
 /**
  * Deterministically render a contributed gauge factory into a standalone SVG string
  * and reflect its configured metrics.
@@ -154,10 +169,12 @@ export function renderContribGauge(factory: () => GaugeComponent): { svg: string
         svgEl.querySelectorAll('image').forEach(img => {
             const href = img.getAttribute('href') || img.getAttribute('xlink:href');
             if (href && !href.startsWith('data:') && !href.startsWith('http')) {
-                const assetPath = path.join(ROOT_DIR, 'src', href);
-                if (fs.existsSync(assetPath)) {
+                // contrib assets live in src/, cookbook examples borrow images from doc/
+                const assetPath = ['src', 'doc'].map(d => path.join(ROOT_DIR, d, href)).find(p => fs.existsSync(p));
+                if (assetPath) {
                     const b64 = fs.readFileSync(assetPath).toString('base64');
-                    img.setAttribute('href', `data:image/png;base64,${b64}`);
+                    const mime = /\.jpe?g$/i.test(assetPath) ? 'image/jpeg' : 'image/png';
+                    img.setAttribute('href', `data:${mime};base64,${b64}`);
                 }
             }
         });
@@ -183,6 +200,13 @@ export function renderContribGauge(factory: () => GaugeComponent): { svg: string
                 }
             } else {
                 cssChunks.push(ruleText);
+            }
+        }
+        // An SVG shown via <img> can't fetch external fonts, so embed any segment font it actually uses
+        for (const [family, file] of Object.entries(EMBEDDED_FONTS)) {
+            if (svgUsesFont(svgEl, family)) {
+                const b64 = fs.readFileSync(path.join(ROOT_DIR, 'node_modules', 'dseg', 'fonts', file)).toString('base64');
+                cssChunks.push(`@font-face { font-family: '${family}'; src: url('data:font/woff2;base64,${b64}') format('woff2'); }`);
             }
         }
         // Ensure standalone SVG inherits default font-family and has a transparent background
