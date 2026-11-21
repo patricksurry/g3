@@ -1,0 +1,425 @@
+<svg width="216" height="216" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 216">
+<defs>
+<style>.will-change-transform { will-change: transform; }
+.g3-panel { background-color: black; display: block; margin: 0px auto; stroke: none; fill: none; }
+.g3-panel * { vector-effect: non-scaling-stroke; }
+.g3-panel text { text-anchor: middle; dominant-baseline: central; font-stretch: condensed; fill: rgb(170, 170, 170); }
+.g3-axis-ticks-dot,.g3-axis-ticks-wedge,.g3-axis-sector,.g3-fg-fill { fill: rgb(221, 221, 221); }
+.g3-axis-line,.g3-axis-ticks,.g3-fg-stroke { stroke: rgb(221, 221, 221); }
+.g3-axis-ticks .g3-axis-ticks-dot,.g3-axis-ticks .g3-axis-ticks-wedge { stroke: none; }
+.g3-grid-line line { stroke: rgb(102, 102, 102); }
+.g3-grid-hairline { stroke: rgb(51, 51, 51); }
+.g3-grid-label text { font-size: 8px; text-anchor: middle; dominant-baseline: central; fill: rgb(153, 153, 153); }
+.g3-grid-label rect { stroke: none; fill: black; opacity: 0.5; }
+.g3-gauge-face,.g3-bg-fill { fill: rgb(24, 24, 24); }
+.g3-bg-stroke { stroke: rgb(24, 24, 24); }
+.g3-no-fill { fill: none; }
+.g3-no-stroke { stroke: none; }
+.g3-highlight-fill { fill: orange; }
+.g3-highlight-stroke { stroke: orange; stroke-width: 2; }
+.g3-danger-stroke { stroke: red; stroke-width: 2; }
+.g3-danger-fill { fill: red; }
+.g3-warning-fill { fill: rgb(152, 120, 8); }
+.g3-normal-fill { fill: green; }
+.g3-cold-fill,.g3-sky-fill { fill: rgb(5, 128, 186); }
+.g3-ground-fill { fill: rgb(107, 86, 52); }
+.g3-indicate-pointer { fill: rgb(34, 34, 34); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-pointer-needle { fill: red; }
+.g3-pointer-blade { fill: rgb(232, 232, 232); stroke: rgb(232, 232, 232); }
+.g3-pointer-luminous { fill: rgb(224, 232, 208); stroke: rgb(208, 216, 192); }
+.g3-indicate-sector { fill: green; stroke: none; }
+.g3-indicate-sector.g3-indicate-sector-negative { fill: red; }
+.g3-gauge-screw { fill: rgb(51, 51, 51); -webkit-filter: url("#dropShadow2"); filter: url("#dropShadow2"); }
+.g3-gauge-screw rect { fill: rgb(34, 34, 34); }
+.g3-highlight { fill: url("#highlightGradient"); fill-opacity: 0.25; }
+.g3-switch-control { cursor: pointer; }
+.g3-switch-bezel { fill: rgb(85, 85, 85); }
+.g3-switch-recess { fill: rgb(20, 20, 20); }
+.g3-switch-cap { fill: rgb(40, 40, 40); }
+.g3-switch-cap-shine { fill: rgb(58, 58, 58); }
+.g3-switch-cap-down { fill: rgb(24, 24, 24); }
+.g3-switch-cap-down-face { fill: rgb(34, 34, 34); }
+.g3-switch-button text { fill: rgb(224, 224, 224); font-weight: bold; }
+.g3-switch-button .g3-switch-pressed text { fill: rgb(170, 170, 170); }
+.g3-switch-collar { fill: rgb(153, 153, 153); }
+.g3-switch-collar-recess { fill: rgb(51, 51, 51); }
+.g3-switch-knurl { fill: rgb(74, 74, 74); }
+.g3-switch-knob { fill: rgb(27, 27, 27); }
+.g3-switch-knob-ridge { fill: rgb(44, 44, 44); }
+.kt76c-bezel { fill: rgb(28, 28, 28); stroke: rgb(68, 68, 68); stroke-width: 1.5; }
+.kt76c-face { fill: rgb(19, 19, 19); stroke: rgb(42, 42, 42); stroke-width: 1; }
+.kt76c-silkscreen { fill: rgb(204, 204, 204); font-weight: bold; }
+.kt76c-window { fill: rgb(34, 9, 12); stroke: rgb(51, 51, 51); stroke-width: 1.5; }
+.kt76c-window-inner { fill: rgb(45, 11, 15); stroke: rgb(22, 4, 6); stroke-width: 1; }
+.kt76c-photocell { fill: rgb(17, 17, 17); stroke: rgb(68, 68, 68); stroke-width: 0.8; }
+.g3-panel text.kt76c-segment { fill: rgb(255, 46, 31); font-weight: bold; }
+.g3-panel text.kt76c-digits { fill: rgb(255, 46, 31); font-family: DSEG7-Classic, monospace; }
+.css-1tsg58a { }
+.css-1tsg58a .g3-odometer-drum { fill: rgb(21, 21, 21); }
+.css-1tsg58a .g3-odometer-drum~.g3-axis-labels text { fill: rgb(242, 234, 216); font-family: Helvetica, Arial, sans-serif; }
+.css-1tsg58a .g3-odometer-tenths { fill: rgb(233, 220, 192); }
+.css-1tsg58a .g3-odometer-tenths~.g3-axis-labels text { fill: rgb(17, 17, 17); font-family: Helvetica, Arial, sans-serif; }
+svg { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; background: none; }
+.g3-panel { background-color: transparent; fill: none; }</style>
+<radialGradient id="highlightGradient" cx="50%" cy="50%" fx="25%" fy="40%" r="50%">
+<stop stop-color="white" offset="0%">
+</stop>
+<stop stop-color="black" offset="100%">
+</stop>
+</radialGradient>
+<filter id="dropShadow1" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="1" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow2" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="2" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="dropShadow3" filterUnits="userSpaceOnUse" x="-216" width="432" y="-216" height="432">
+<feDropShadow stdDeviation="3" dx="0" dy="0">
+</feDropShadow>
+</filter>
+<filter id="gaussianBlur1">
+<feGaussianBlur in="SourceGraphic" stdDeviation="1">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur2">
+<feGaussianBlur in="SourceGraphic" stdDeviation="2">
+</feGaussianBlur>
+</filter>
+<filter id="gaussianBlur3">
+<feGaussianBlur in="SourceGraphic" stdDeviation="3">
+</feGaussianBlur>
+</filter>
+<linearGradient id="g3-odometer-shade" gradientUnits="userSpaceOnUse" x1="0" y1="-26" x2="0" y2="26">
+<stop offset="0" stop-color="#000" stop-opacity="0.9">
+</stop>
+<stop offset="0.1" stop-color="#000" stop-opacity="0.36">
+</stop>
+<stop offset="0.2" stop-color="#000" stop-opacity="0.18">
+</stop>
+<stop offset="0.3" stop-color="#000" stop-opacity="0.075">
+</stop>
+<stop offset="0.4" stop-color="#000" stop-opacity="0.018">
+</stop>
+<stop offset="0.5" stop-color="#000" stop-opacity="0">
+</stop>
+<stop offset="0.6" stop-color="#000" stop-opacity="0.018">
+</stop>
+<stop offset="0.7" stop-color="#000" stop-opacity="0.075">
+</stop>
+<stop offset="0.8" stop-color="#000" stop-opacity="0.18">
+</stop>
+<stop offset="0.9" stop-color="#000" stop-opacity="0.36">
+</stop>
+<stop offset="1" stop-color="#000" stop-opacity="0.9">
+</stop>
+</linearGradient>
+</defs>
+<g class="g3-panel" transform="translate(108, 108) rotate(0) scale(1, 1)">
+<g class="g3-gauge css-1tsg58a">
+<g>
+<rect x="-110" y="-32" width="220" height="64" rx="10" class="g3-gauge-face">
+</rect>
+<g class="g3-gauge">
+<g clip-path="url(#gauge-clip1)">
+<clipPath id="gauge-clip1">
+<rect x="-86" y="-15" width="172" height="30" rx="3">
+</rect>
+</clipPath>
+<rect x="-86" y="-15" width="172" height="30" rx="3" style="fill: #050505">
+</rect>
+<g class="g3-gauge">
+<g>
+</g>
+</g>
+<g transform="translate(72, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-tenths">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,8.034,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,21.034,0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,-21.034,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,-8.034,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(48, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-drum">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,8.034,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,21.034,0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,-21.034,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,-8.034,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(24, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-drum">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,8.034,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,21.034,0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,-21.034,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,-8.034,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(0, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-drum">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,8.034,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,21.034,0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,-21.034,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,-8.034,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(-24, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-drum">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,8.034,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,21.034,0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,-21.034,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,-8.034,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(-48, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-drum">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,21.034,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.588,0,0,1,-21.034,0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,-8.034,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.951,0,0,1,8.034,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g transform="translate(-72, 0) rotate(90) scale(1, 1)">
+<g class="g3-gauge">
+<g>
+<path d="M -26,-11 L 26,-11 L 26,11 L -26,11 Z" class="g3-axis-sector g3-odometer-drum">
+</path>
+<g class="g3-axis-labels">
+<g>
+<text font-size="17" transform="matrix(1,0,0,1,0,0) rotate(-90)">0</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.809,0,0,1,15.282,0) rotate(-90)">1</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.309,0,0,1,24.727,0) rotate(-90)">2</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">3</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">4</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">5</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">6</text>
+</g>
+<g>
+<text font-size="17" transform="scale(0) rotate(-90)">7</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.309,0,0,1,-24.727,0) rotate(-90)">8</text>
+</g>
+<g>
+<text font-size="17" transform="matrix(0.809,0,0,1,-15.282,0) rotate(-90)">9</text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<rect x="-86" y="-15" width="172" height="30" rx="3" fill="url(#g3-odometer-shade)">
+</rect>
+</g>
+</g>
+<rect x="-86" y="-15" width="172" height="30" rx="3" style="fill: none; stroke: #444; stroke-width: 1.5">
+</rect>
+</g>
+</g>
+</g>
+</svg>

@@ -57,6 +57,9 @@ export const contrib = {
         speedometer: {
             BMW: speedometer.speedometerBMW,
         },
+        odometer: {
+            classic: speedometer.odometerClassic,
+        },
         suctionPressure: {
             DHC2: dhc2engine.suctionPressure,
         },

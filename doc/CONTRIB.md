@@ -13,11 +13,12 @@ combining JSDoc descriptions, runtime-reflected metric/unit bindings, a determin
 | <a href="#nav-airspeed-DHC2"><img src="../tests/contrib/nav-airspeed-DHC2.svg" width="160" alt="nav.airspeed.DHC2"><br><sub><code>nav.airspeed.DHC2</code></sub></a> | <a href="#nav-altitude-generic"><img src="../tests/contrib/nav-altitude-generic.svg" width="160" alt="nav.altitude.generic"><br><sub><code>nav.altitude.generic</code></sub></a> | <a href="#nav-attitude-generic"><img src="../tests/contrib/nav-attitude-generic.svg" width="160" alt="nav.attitude.generic"><br><sub><code>nav.attitude.generic</code></sub></a> | <a href="#nav-attitude-ball"><img src="../tests/contrib/nav-attitude-ball.svg" width="160" alt="nav.attitude.ball"><br><sub><code>nav.attitude.ball</code></sub></a> |
 | <a href="#nav-compass-wet"><img src="../tests/contrib/nav-compass-wet.svg" width="160" alt="nav.compass.wet"><br><sub><code>nav.compass.wet</code></sub></a> | <a href="#nav-compass-wetTilting"><img src="../tests/contrib/nav-compass-wetTilting.svg" width="160" alt="nav.compass.wetTilting"><br><sub><code>nav.compass.wetTilting</code></sub></a> | <a href="#nav-heading-generic"><img src="../tests/contrib/nav-heading-generic.svg" width="160" alt="nav.heading.generic"><br><sub><code>nav.heading.generic</code></sub></a> | <a href="#nav-turnCoordinator-generic"><img src="../tests/contrib/nav-turnCoordinator-generic.svg" width="160" alt="nav.turnCoordinator.generic"><br><sub><code>nav.turnCoordinator.generic</code></sub></a> |
 | <a href="#nav-VSI-generic"><img src="../tests/contrib/nav-VSI-generic.svg" width="160" alt="nav.VSI.generic"><br><sub><code>nav.VSI.generic</code></sub></a> | <a href="#radionav-ADF-generic"><img src="../tests/contrib/radionav-ADF-generic.svg" width="160" alt="radionav.ADF.generic"><br><sub><code>radionav.ADF.generic</code></sub></a> | <a href="#radionav-VOR-generic"><img src="../tests/contrib/radionav-VOR-generic.svg" width="160" alt="radionav.VOR.generic"><br><sub><code>radionav.VOR.generic</code></sub></a> | <a href="#radionav-transponder-KT76C"><img src="../tests/contrib/radionav-transponder-KT76C.svg" width="160" alt="radionav.transponder.KT76C"><br><sub><code>radionav.transponder.KT76C</code></sub></a> |
-| <a href="#engine-tachometer-DHC2"><img src="../tests/contrib/engine-tachometer-DHC2.svg" width="160" alt="engine.tachometer.DHC2"><br><sub><code>engine.tachometer.DHC2</code></sub></a> | <a href="#engine-tachometer-jageype"><img src="../tests/contrib/engine-tachometer-jageype.svg" width="160" alt="engine.tachometer.jageype"><br><sub><code>engine.tachometer.jageype</code></sub></a> | <a href="#engine-speedometer-BMW"><img src="../tests/contrib/engine-speedometer-BMW.svg" width="160" alt="engine.speedometer.BMW"><br><sub><code>engine.speedometer.BMW</code></sub></a> | <a href="#engine-suctionPressure-DHC2"><img src="../tests/contrib/engine-suctionPressure-DHC2.svg" width="160" alt="engine.suctionPressure.DHC2"><br><sub><code>engine.suctionPressure.DHC2</code></sub></a> |
-| <a href="#engine-manifoldPressure-DHC2"><img src="../tests/contrib/engine-manifoldPressure-DHC2.svg" width="160" alt="engine.manifoldPressure.DHC2"><br><sub><code>engine.manifoldPressure.DHC2</code></sub></a> | <a href="#engine-fuel-generic"><img src="../tests/contrib/engine-fuel-generic.svg" width="160" alt="engine.fuel.generic"><br><sub><code>engine.fuel.generic</code></sub></a> | <a href="#engine-fuel-DHC2"><img src="../tests/contrib/engine-fuel-DHC2.svg" width="160" alt="engine.fuel.DHC2"><br><sub><code>engine.fuel.DHC2</code></sub></a> | <a href="#engine-oilFuelStatus-DHC2"><img src="../tests/contrib/engine-oilFuelStatus-DHC2.svg" width="160" alt="engine.oilFuelStatus.DHC2"><br><sub><code>engine.oilFuelStatus.DHC2</code></sub></a> |
-| <a href="#engine-carbMixtureTemp-DHC2"><img src="../tests/contrib/engine-carbMixtureTemp-DHC2.svg" width="160" alt="engine.carbMixtureTemp.DHC2"><br><sub><code>engine.carbMixtureTemp.DHC2</code></sub></a> | <a href="#engine-cylinderHeadTemp-DHC2"><img src="../tests/contrib/engine-cylinderHeadTemp-DHC2.svg" width="160" alt="engine.cylinderHeadTemp.DHC2"><br><sub><code>engine.cylinderHeadTemp.DHC2</code></sub></a> | <a href="#electrical-ammeter-DHC2"><img src="../tests/contrib/electrical-ammeter-DHC2.svg" width="160" alt="electrical.ammeter.DHC2"><br><sub><code>electrical.ammeter.DHC2</code></sub></a> | <a href="#electrical-voltmeter-DHC2"><img src="../tests/contrib/electrical-voltmeter-DHC2.svg" width="160" alt="electrical.voltmeter.DHC2"><br><sub><code>electrical.voltmeter.DHC2</code></sub></a> |
-| <a href="#clocks-simple"><img src="../tests/contrib/clocks-simple.svg" width="160" alt="clocks.simple"><br><sub><code>clocks.simple</code></sub></a> | <a href="#clocks-casioF91W"><img src="../tests/contrib/clocks-casioF91W.svg" width="160" alt="clocks.casioF91W"><br><sub><code>clocks.casioF91W</code></sub></a> | <a href="#clocks-omegaSpeedmaster"><img src="../tests/contrib/clocks-omegaSpeedmaster.svg" width="160" alt="clocks.omegaSpeedmaster"><br><sub><code>clocks.omegaSpeedmaster</code></sub></a> | <a href="#switches-toggle"><img src="../tests/contrib/switches-toggle.svg" width="160" alt="switches.toggle"><br><sub><code>switches.toggle</code></sub></a> |
-| <a href="#switches-button"><img src="../tests/contrib/switches-button.svg" width="160" alt="switches.button"><br><sub><code>switches.button</code></sub></a> | <a href="#switches-rotary"><img src="../tests/contrib/switches-rotary.svg" width="160" alt="switches.rotary"><br><sub><code>switches.rotary</code></sub></a> | <a href="#switches-selector"><img src="../tests/contrib/switches-selector.svg" width="160" alt="switches.selector"><br><sub><code>switches.selector</code></sub></a> | <a href="#debug-alignment"><img src="../tests/contrib/debug-alignment.svg" width="160" alt="debug.alignment"><br><sub><code>debug.alignment</code></sub></a> |
+| <a href="#engine-tachometer-DHC2"><img src="../tests/contrib/engine-tachometer-DHC2.svg" width="160" alt="engine.tachometer.DHC2"><br><sub><code>engine.tachometer.DHC2</code></sub></a> | <a href="#engine-tachometer-jageype"><img src="../tests/contrib/engine-tachometer-jageype.svg" width="160" alt="engine.tachometer.jageype"><br><sub><code>engine.tachometer.jageype</code></sub></a> | <a href="#engine-speedometer-BMW"><img src="../tests/contrib/engine-speedometer-BMW.svg" width="160" alt="engine.speedometer.BMW"><br><sub><code>engine.speedometer.BMW</code></sub></a> | <a href="#engine-odometer-classic"><img src="../tests/contrib/engine-odometer-classic.svg" width="160" alt="engine.odometer.classic"><br><sub><code>engine.odometer.classic</code></sub></a> |
+| <a href="#engine-suctionPressure-DHC2"><img src="../tests/contrib/engine-suctionPressure-DHC2.svg" width="160" alt="engine.suctionPressure.DHC2"><br><sub><code>engine.suctionPressure.DHC2</code></sub></a> | <a href="#engine-manifoldPressure-DHC2"><img src="../tests/contrib/engine-manifoldPressure-DHC2.svg" width="160" alt="engine.manifoldPressure.DHC2"><br><sub><code>engine.manifoldPressure.DHC2</code></sub></a> | <a href="#engine-fuel-generic"><img src="../tests/contrib/engine-fuel-generic.svg" width="160" alt="engine.fuel.generic"><br><sub><code>engine.fuel.generic</code></sub></a> | <a href="#engine-fuel-DHC2"><img src="../tests/contrib/engine-fuel-DHC2.svg" width="160" alt="engine.fuel.DHC2"><br><sub><code>engine.fuel.DHC2</code></sub></a> |
+| <a href="#engine-oilFuelStatus-DHC2"><img src="../tests/contrib/engine-oilFuelStatus-DHC2.svg" width="160" alt="engine.oilFuelStatus.DHC2"><br><sub><code>engine.oilFuelStatus.DHC2</code></sub></a> | <a href="#engine-carbMixtureTemp-DHC2"><img src="../tests/contrib/engine-carbMixtureTemp-DHC2.svg" width="160" alt="engine.carbMixtureTemp.DHC2"><br><sub><code>engine.carbMixtureTemp.DHC2</code></sub></a> | <a href="#engine-cylinderHeadTemp-DHC2"><img src="../tests/contrib/engine-cylinderHeadTemp-DHC2.svg" width="160" alt="engine.cylinderHeadTemp.DHC2"><br><sub><code>engine.cylinderHeadTemp.DHC2</code></sub></a> | <a href="#electrical-ammeter-DHC2"><img src="../tests/contrib/electrical-ammeter-DHC2.svg" width="160" alt="electrical.ammeter.DHC2"><br><sub><code>electrical.ammeter.DHC2</code></sub></a> |
+| <a href="#electrical-voltmeter-DHC2"><img src="../tests/contrib/electrical-voltmeter-DHC2.svg" width="160" alt="electrical.voltmeter.DHC2"><br><sub><code>electrical.voltmeter.DHC2</code></sub></a> | <a href="#clocks-simple"><img src="../tests/contrib/clocks-simple.svg" width="160" alt="clocks.simple"><br><sub><code>clocks.simple</code></sub></a> | <a href="#clocks-casioF91W"><img src="../tests/contrib/clocks-casioF91W.svg" width="160" alt="clocks.casioF91W"><br><sub><code>clocks.casioF91W</code></sub></a> | <a href="#clocks-omegaSpeedmaster"><img src="../tests/contrib/clocks-omegaSpeedmaster.svg" width="160" alt="clocks.omegaSpeedmaster"><br><sub><code>clocks.omegaSpeedmaster</code></sub></a> |
+| <a href="#switches-toggle"><img src="../tests/contrib/switches-toggle.svg" width="160" alt="switches.toggle"><br><sub><code>switches.toggle</code></sub></a> | <a href="#switches-button"><img src="../tests/contrib/switches-button.svg" width="160" alt="switches.button"><br><sub><code>switches.button</code></sub></a> | <a href="#switches-rotary"><img src="../tests/contrib/switches-rotary.svg" width="160" alt="switches.rotary"><br><sub><code>switches.rotary</code></sub></a> | <a href="#switches-selector"><img src="../tests/contrib/switches-selector.svg" width="160" alt="switches.selector"><br><sub><code>switches.selector</code></sub></a> |
+| <a href="#debug-alignment"><img src="../tests/contrib/debug-alignment.svg" width="160" alt="debug.alignment"><br><sub><code>debug.alignment</code></sub></a> |   |   |   |
 
 ## Flight Navigation (`g3.contrib.nav`)
 
@@ -1011,6 +1012,80 @@ export function speedometerBMW(): GaugeComponent {
                 .append(
                     g3.indicatePointer().append(g3.element('circle', {cy: -85, r: 4})).style('fill: white; stroke: black; filter: none;')
                 ),
+        );
+}
+```
+</details>
+
+<br clear="both" />
+
+---
+
+<a id="engine-odometer-classic" href="#engine-odometer-classic">#</a>
+g3.contrib.**engine.odometer.classic**() · [source](../src/contrib/speedometer.ts#L73-L126)
+
+<img align="right" width="160" src="../tests/contrib/engine-odometer-classic.svg" alt="g3.contrib.engine.odometer.classic">
+
+Classic mechanical odometer: a row of numbered drums behind a slot, with a contrasting tenths drum on the right. Each drum is a horizontal drum gauge, and the drums carry as they roll over, so 89999.9 rolls smoothly to 90000.0.
+
+**Metrics:** `odometer` (`mi`)
+
+<details>
+<summary>Factory implementation (<code>src/contrib/speedometer.ts</code>, 54 lines)</summary>
+
+```ts
+export function odometerClassic(): GaugeComponent {
+    const n = 7,            // six whole digits and tenths
+        w = 22,             // width of each drum
+        gap = 2,
+        R = 26,             // drum radius: digits sit 36° apart, about 16 units
+        win = {x: -n * (w + gap) / 2 - 2, y: -15, width: n * (w + gap) + 4, height: 30, rx: 3};
+    const drum = (k: number) => g3.put()
+        .x(win.x + 2 + gap / 2 + (n - 1 - k) * (w + gap) + w / 2)
+        // a drum spins about its vertical axis, so lay it on its side to roll digits up the slot
+        .rotate(90)
+        .append(
+            g3.gauge()
+                .kind('drum').r(R)
+                .metric('odometer').unit('mi')
+                .rescale((v: number) => odometerDrums(v, n)[k])
+                .measure(d3.scaleLinear().domain([0, 10]).range([0, 360]))
+                .autoindicate(true)
+                .append(
+                    g3.axisSector([0, 10]).inset(-w / 2).size(w)
+                        .class(k == 0 ? 'g3-odometer-tenths' : 'g3-odometer-drum'),
+                    g3.axisLabels(d3.range(10)).inset(0).rotate(-90).size(17).format(String),
+                ),
+        );
+    return g3.gauge()
+        .defs(
+            // drums darken towards the top and bottom of the slot as they curve away
+            g3.element('linearGradient', {id: 'g3-odometer-shade', gradientUnits: 'userSpaceOnUse', x1: 0, y1: -R, x2: 0, y2: R}).append(
+                ...[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(f => {
+                    const s = Math.abs(2 * f - 1);
+                    return g3.element('stop', {offset: f, 'stop-color': '#000', 'stop-opacity': +(0.9 * (1 - Math.sqrt(1 - s * s))).toFixed(3)});
+                })
+            ),
+        )
+        .css(`
+            .g3-odometer-drum {fill: #151515}
+            .g3-odometer-drum ~ .g3-axis-labels text {fill: #f2ead8; font-family: Helvetica, Arial, sans-serif}
+            .g3-odometer-tenths {fill: #e9dcc0}
+            .g3-odometer-tenths ~ .g3-axis-labels text {fill: #111; font-family: Helvetica, Arial, sans-serif}
+        `)
+        .append(
+            g3.element('rect', {x: -110, y: -32, width: 220, height: 64, rx: 10}).class('g3-gauge-face'),
+            g3.gauge()
+                .clip(g3.element('rect', win))
+                .append(
+                    g3.element('rect', win).style('fill: #050505'),
+                    // only one drum needs to fake the shared metric, starting just before a rollover
+                    g3.gauge().metric('odometer').unit('mi')
+                        .fake((v?: number) => v === undefined ? 89999.92 : v + 0.03),
+                    ...d3.range(n).map(drum),
+                    g3.element('rect', {...win, fill: 'url(#g3-odometer-shade)'}),
+                ),
+            g3.element('rect', win).style('fill: none; stroke: #444; stroke-width: 1.5'),
         );
 }
 ```
