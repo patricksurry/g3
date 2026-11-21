@@ -123,38 +123,31 @@ const gauge = g3.gauge()
 
 ### A sector that follows a metric
 
-An `axisSector` is fixed decoration, like the red line at a fixed never-exceed speed.
-To shade a range whose end moves, use `indicateSector`, which draws from a fixed `anchor` to the current value.
-For example, a jet's maximum operating speed falls as it climbs,
-so its airspeed indicator shows the limit with a moving red-and-white "barber pole".
-Nest the sector in a sub-gauge with the same `measure` so it can follow its own metric,
-while the pointer follows airspeed.
+An `axisSector` is fixed decoration, like a red arc marking low fuel.
+To shade a range that moves, use `indicateSector`, which fills from a fixed `anchor` to the metric's current value,
+like the bar on a modern fuel or battery gauge.
+The anchor defaults to 0, so here the sector fills up from empty.
 
 ```js
-const measure = d3.scaleLinear().domain([100, 400]).range([-150, 150]);
-
 const gauge = g3.gauge()
-    .metric('airspeed').unit('knot')
-    .fake(g3.forceSeries(150, 350))
-    .measure(measure)
+    .metric('fuelLevel')                        // fraction of a full tank
+    .fake(g3.forceSeries(0, 1))
+    .measure(d3.scaleLinear().domain([0, 1]).range([-75, 75]))
     .append(
         g3.gaugeFace(),
-        g3.gauge()
-            .metric('maxSpeed').unit('knot')    // a second metric on the same axis
-            .fake(g3.forceSeries(280, 360))
-            .measure(measure)
-            .append(g3.indicateSector().anchor(400).size(8).class('g3-danger-fill')),
-        g3.axisTicks().step(10).size(5),
-        g3.axisTicks().step(50),
-        g3.axisLabels().step(50).inset(20),
-        g3.indicatePointer(),
+        g3.axisSector([0, 0.125]).inset(4).size(5).class('g3-danger-fill'),     // fixed low-fuel mark on the rim
+        g3.indicateSector().inset(12).size(18).class('g3-normal-fill'),         // fills to the current level
+        g3.axisTicks([0, 0.25, 0.5, 0.75, 1]).inset(12).size(18),
+        g3.axisLabels({0: 'E', 0.5: '½', 1: 'F'}).inset(45).size(16),
+        g3.gaugeLabel('FUEL').y(30),
     );
 ```
 
 <p align='center'><img src="/tests/cookbook/a-sector-that-follows-a-metric.svg" width="180" alt="A sector that follows a metric"></p>
 
-Without the sub-gauge, an `indicateSector` follows the gauge's own metric,
-filling from its anchor to the current value like the arcs on a modern engine display.
+The sector can also follow a different metric than the rest of the gauge.
+Nest it in a sub-gauge with its own `metric` and the same `measure`,
+like the moving maximum-speed "barber pole" on a jet's airspeed indicator.
 
 
 ### A heading tape with no seam
